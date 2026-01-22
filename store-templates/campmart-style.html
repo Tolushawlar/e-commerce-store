@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{{store_name}} | Custom Ecommerce Store</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "{{primary_color}}",
+                        "accent": "{{accent_color}}",
+                        "surface": "#F8FAFC",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-white font-display text-slate-900 antialiased">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white border-b border-slate-100">
+        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between gap-8">
+            <a class="flex items-center gap-2.5 shrink-0" href="/">
+                <div class="size-10 flex items-center justify-center bg-primary text-accent rounded-lg shadow-inner">
+                    <span class="material-symbols-outlined font-bold text-2xl">shopping_bag</span>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight text-primary uppercase">{{store_name}}</span>
+            </a>
+            
+            <div class="hidden lg:flex flex-1 max-w-2xl items-center bg-slate-50 rounded-full border border-slate-200 p-1">
+                <div class="flex-1 flex items-center px-4">
+                    <span class="material-symbols-outlined text-slate-400 mr-2">search</span>
+                    <input class="w-full bg-transparent border-none focus:ring-0 text-sm placeholder:text-slate-400" placeholder="Search products..." type="text"/>
+                </div>
+                <button class="bg-primary text-white p-2 rounded-full mr-1">
+                    <span class="material-symbols-outlined text-xl">search</span>
+                </button>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button class="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-full relative">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    <span class="absolute top-2.5 right-2.5 size-2 bg-accent rounded-full border-2 border-white"></span>
+                </button>
+                <button class="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-full">
+                    <span class="material-symbols-outlined">person</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative bg-primary min-h-[500px] flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/40 to-primary/80"></div>
+            <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-7xl font-extrabold text-white leading-none mb-8">
+                    Welcome to <br/><span class="text-accent underline decoration-4 underline-offset-8">{{store_name}}</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-slate-100/90 mb-12 max-w-2xl mx-auto font-light">
+                    {{store_description}}
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <button class="bg-accent text-primary px-12 py-4 rounded-lg font-bold hover:brightness-105 transition-all text-lg w-full sm:w-auto">
+                        Shop Now
+                    </button>
+                    <button class="bg-white/10 text-white border border-white/20 px-12 py-4 rounded-lg font-bold hover:bg-white/20 backdrop-blur-md transition-all text-lg w-full sm:w-auto">
+                        Learn More
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div class="max-w-[1440px] mx-auto px-6 py-12">
+            <!-- Categories -->
+            <section class="mb-20">
+                <h2 class="text-3xl font-extrabold text-primary mb-8">Shop by Category</h2>
+                <div class="flex gap-4 overflow-x-auto pb-4">
+                    <div class="flex flex-col items-center gap-3 p-4 rounded-2xl border border-slate-100 bg-white hover:border-primary hover:shadow-md transition-all cursor-pointer min-w-[140px]">
+                        <div class="size-14 rounded-full bg-slate-50 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-3xl">devices</span>
+                        </div>
+                        <span class="text-sm font-bold">Electronics</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-3 p-4 rounded-2xl border border-slate-100 bg-white hover:border-primary hover:shadow-md transition-all cursor-pointer min-w-[140px]">
+                        <div class="size-14 rounded-full bg-slate-50 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-3xl">apparel</span>
+                        </div>
+                        <span class="text-sm font-bold">Fashion</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-3 p-4 rounded-2xl border border-slate-100 bg-white hover:border-primary hover:shadow-md transition-all cursor-pointer min-w-[140px]">
+                        <div class="size-14 rounded-full bg-slate-50 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-3xl">chair</span>
+                        </div>
+                        <span class="text-sm font-bold">Furniture</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Products -->
+            <section class="mb-20">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-3xl font-extrabold text-primary">Featured Products</h2>
+                    <a href="/products" class="text-primary font-semibold hover:underline">View All</a>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="featured-products">
+                    <!-- Products will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white pt-16 pb-8">
+        <div class="max-w-[1440px] mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="size-8 bg-accent text-primary rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-lg font-bold">shopping_bag</span>
+                        </div>
+                        <span class="text-xl font-extrabold text-white uppercase">{{store_name}}</span>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        {{store_description}}
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-accent text-lg mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="/products" class="hover:text-white transition-colors">Products</a></li>
+                        <li><a href="/about" class="hover:text-white transition-colors">About</a></li>
+                        <li><a href="/contact" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-accent text-lg mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="/help" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="/shipping" class="hover:text-white transition-colors">Shipping Info</a></li>
+                        <li><a href="/returns" class="hover:text-white transition-colors">Returns</a></li>
+                        <li><a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-accent text-lg mb-4">Connect</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-accent transition-colors">
+                            <span class="material-symbols-outlined text-sm">public</span>
+                        </a>
+                        <a href="#" class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-accent transition-colors">
+                            <span class="material-symbols-outlined text-sm">alternate_email</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-white/10 text-center">
+                <p class="text-xs text-slate-500">© 2024 {{store_name}}. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Load featured products
+        fetch('/api/products/featured')
+            .then(response => response.json())
+            .then(products => {
+                const container = document.getElementById('featured-products');
+                container.innerHTML = products.map(product => `
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow">
+                        <div class="aspect-square bg-gray-200">
+                            <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-slate-800 mb-2">${product.name}</h3>
+                            <p class="text-primary font-black text-lg">₦${product.price}</p>
+                            <button class="w-full mt-3 bg-primary text-white py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+    </script>
+</body>
+</html>
