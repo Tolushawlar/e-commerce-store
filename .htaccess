@@ -1,0 +1,18 @@
+# Security - Deny access to sensitive directories
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redirect HTTP to HTTPS (uncomment when SSL is configured on production)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Redirect root to app
+    RewriteCond %{REQUEST_URI} ^/$
+    RewriteRule ^(.*)$ /app/ [L]
+</IfModule>
+
+# Deny direct access to sensitive directories
+RedirectMatch 403 ^/backend/
+RedirectMatch 403 ^/vendor/
+RedirectMatch 403 ^/md-docs/
+RedirectMatch 403 ^/store-templates/

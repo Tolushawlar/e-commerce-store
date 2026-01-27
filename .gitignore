@@ -1,4 +1,35 @@
+# Environment
 .env
+.env.local
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Generated stores
+/api/stores/*
+!/api/stores/.gitkeep
+
+# Uploads
+/uploads/*
+!/uploads/.gitkeep
+
+# Logs
+*.log
+error_log
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Backup
+*-backup/
 
 /vendor
 /composer.lock

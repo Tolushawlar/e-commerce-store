@@ -41,7 +41,7 @@ class StoreGeneratorService
         file_put_contents("{$storeDir}/config.json", json_encode($config, JSON_PRETTY_PRINT));
 
         // Copy store.js to the store directory
-        $storeJsSource = dirname(__DIR__, 2) . '/frontend/assets/js/store.js';
+        $storeJsSource = dirname(__DIR__, 2) . '/app/assets/js/store.js';
         $storeJsDest = "{$storeDir}/store.js";
         if (file_exists($storeJsSource)) {
             copy($storeJsSource, $storeJsDest);
