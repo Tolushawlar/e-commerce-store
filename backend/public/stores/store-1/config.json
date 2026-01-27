@@ -1,0 +1,17 @@
+{
+    "store_id": 1,
+    "store_name": "Prodevx Tech Shop",
+    "store_slug": "prodevx-tech-hub",
+    "colors": {
+        "primary": "#b18443",
+        "accent": "#196dae"
+    },
+    "settings": {
+        "font_family": "Plus Jakarta Sans",
+        "button_style": "square",
+        "product_grid_columns": 3,
+        "show_search": true,
+        "show_cart": true,
+        "show_wishlist": false
+    }
+}

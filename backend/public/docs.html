@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - LivePetal E-Commerce Platform</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.10.5/swagger-ui.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .topbar {
+            display: none;
+        }
+        .swagger-ui .info .title {
+            color: #064E3B;
+        }
+        .swagger-ui .scheme-container {
+            background: #064E3B;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,.15);
+        }
+        .swagger-ui .btn.authorize {
+            background-color: #BEF264;
+            color: #064E3B;
+            border-color: #BEF264;
+        }
+        .swagger-ui .btn.authorize:hover {
+            background-color: #a3e635;
+        }
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.10.5/swagger-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.10.5/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: "/openapi.json",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout",
+                persistAuthorization: true,
+                tryItOutEnabled: true,
+                displayRequestDuration: true,
+                filter: true,
+                syntaxHighlight: {
+                    activate: true,
+                    theme: "monokai"
+                }
+            });
+
+            window.ui = ui;
+        };
+    </script>
+</body>
+</html>
