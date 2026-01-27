@@ -217,17 +217,17 @@ class StoreController extends Controller
             $this->error('Store slug already exists', 409);
         }
 
-        // Set defaults
-        $data['template_id'] = $data['template_id'] ?? 1;
-        $data['primary_color'] = $data['primary_color'] ?? '#064E3B';
-        $data['accent_color'] = $data['accent_color'] ?? '#BEF264';
-        $data['product_grid_columns'] = $data['product_grid_columns'] ?? 4;
-        $data['font_family'] = $data['font_family'] ?? 'Plus Jakarta Sans';
-        $data['button_style'] = $data['button_style'] ?? 'rounded';
-        $data['show_search'] = $data['show_search'] ?? true;
-        $data['show_cart'] = $data['show_cart'] ?? true;
-        $data['show_wishlist'] = $data['show_wishlist'] ?? false;
-        $data['status'] = $data['status'] ?? 'active';
+        // Set defaults and ensure proper types
+        $data['template_id'] = !empty($data['template_id']) ? (int)$data['template_id'] : 1;
+        $data['primary_color'] = !empty($data['primary_color']) ? $data['primary_color'] : '#064E3B';
+        $data['accent_color'] = !empty($data['accent_color']) ? $data['accent_color'] : '#BEF264';
+        $data['product_grid_columns'] = !empty($data['product_grid_columns']) ? (int)$data['product_grid_columns'] : 4;
+        $data['font_family'] = !empty($data['font_family']) ? $data['font_family'] : 'Plus Jakarta Sans';
+        $data['button_style'] = !empty($data['button_style']) ? $data['button_style'] : 'rounded';
+        $data['show_search'] = isset($data['show_search']) ? (bool)$data['show_search'] : 1;
+        $data['show_cart'] = isset($data['show_cart']) ? (bool)$data['show_cart'] : 1;
+        $data['show_wishlist'] = isset($data['show_wishlist']) ? (bool)$data['show_wishlist'] : 0;
+        $data['status'] = !empty($data['status']) ? $data['status'] : 'active';
 
         $storeId = $this->storeModel->create($data);
 
