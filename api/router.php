@@ -10,6 +10,12 @@ if (php_sapi_name() === 'cli-server') {
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $file = __DIR__ . $path;
 
+    // If it's a directory without trailing slash, redirect to add it
+    if (is_dir($file) && substr($path, -1) !== '/') {
+        header("Location: {$path}/");
+        exit;
+    }
+
     // If it's a directory, try to serve index.html
     if (is_dir($file)) {
         $file = rtrim($file, '/') . '/index.html';
@@ -21,6 +27,16 @@ if (php_sapi_name() === 'cli-server') {
 
     // Serve static files if they exist
     if (is_file($file) && in_array($extension, $allowedExtensions)) {
+        // Set proper MIME type for JavaScript files
+        if ($extension === 'js') {
+            header('Content-Type: application/javascript');
+        } elseif ($extension === 'json') {
+            header('Content-Type: application/json');
+        } elseif ($extension === 'css') {
+            header('Content-Type: text/css');
+        } elseif ($extension === 'html') {
+            header('Content-Type: text/html');
+        }
         return false; // Let PHP serve the file
     }
 }

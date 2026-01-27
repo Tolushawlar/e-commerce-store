@@ -34,9 +34,9 @@ return [
     ],
 
     'paths' => [
-        'stores' => __DIR__ . '/../public/stores',
-        'uploads' => __DIR__ . '/../../uploads',
-        'templates' => __DIR__ . '/../../store-templates',
+        'stores' => dirname(__DIR__, 2) . '/api/stores',
+        'uploads' => dirname(__DIR__, 2) . '/uploads',
+        'templates' => dirname(__DIR__, 2) . '/store-templates',
     ],
 
     'security' => [
