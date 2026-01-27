@@ -62,6 +62,7 @@ abstract class Model
     public function create(array $data): ?int
     {
         $data = $this->filterFillable($data);
+        $data = $this->sanitizeData($data);
 
         $columns = array_keys($data);
         $placeholders = array_fill(0, count($columns), '?');
@@ -85,6 +86,7 @@ abstract class Model
     public function update(int $id, array $data): bool
     {
         $data = $this->filterFillable($data);
+        $data = $this->sanitizeData($data);
 
         $setClauses = [];
         foreach (array_keys($data) as $column) {
@@ -177,5 +179,25 @@ abstract class Model
         }
 
         return array_diff_key($data, array_flip($this->hidden));
+    }
+
+    /**
+     * Sanitize data - convert empty strings to null, handle boolean conversions
+     */
+    protected function sanitizeData(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            // Convert empty strings to null
+            if ($value === '') {
+                $data[$key] = null;
+            }
+            // Convert string booleans to actual booleans
+            elseif ($value === 'true' || $value === '1') {
+                $data[$key] = 1;
+            } elseif ($value === 'false' || $value === '0') {
+                $data[$key] = 0;
+            }
+        }
+        return $data;
     }
 }
