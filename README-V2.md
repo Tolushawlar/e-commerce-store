@@ -144,7 +144,265 @@ e-commerce-store/
 - Apache/Nginx with mod_rewrite enabled
 - Composer (optional, for future dependencies)
 
-### Setup Steps
+### MAMP Setup (macOS)
+
+Follow these steps to set up and run the application using MAMP on macOS:
+
+#### 1. Install MAMP
+
+1. Download MAMP from [https://www.mamp.info/en/downloads/](https://www.mamp.info/en/downloads/)
+2. Install MAMP (the free version works fine)
+3. Open MAMP application
+
+#### 2. Configure MAMP
+
+1. **Start MAMP**:
+   - Open MAMP application
+   - Click "Start" to start Apache and MySQL servers
+   - Wait for both servers to turn green
+
+2. **Set Document Root**:
+   - Click "MAMP" → "Preferences" (or press `Cmd + ,`)
+   - Go to "Web Server" tab
+   - Click "Select" next to "Document Root"
+   - Navigate to and select your project folder: `/Users/YourUsername/path/to/e-commerce-store`
+   - Click "OK" to save
+
+3. **Check PHP Version**:
+   - In Preferences, go to "PHP" tab
+   - Ensure PHP 8.0 or higher is selected
+   - Click "OK"
+
+#### 3. Clone/Place the Project
+
+```bash
+# Navigate to your desired location (e.g., Documents)
+cd ~/Documents/LivePetal\ Projects/
+
+# If cloning for the first time
+git clone <repository-url> e-commerce-store
+cd e-commerce-store
+```
+
+#### 4. Setup Database
+
+1. **Access phpMyAdmin**:
+   - Open your browser
+   - Go to `http://localhost:8888/phpMyAdmin/` (default MAMP port)
+   - Default credentials:
+     - Username: `root`
+     - Password: `root`
+
+2. **Create Database**:
+   - Click "New" in the left sidebar
+   - Database name: `ecommerce_platform`
+   - Collation: `utf8mb4_general_ci`
+   - Click "Create"
+
+3. **Import Schema**:
+   - Select `ecommerce_platform` database from the left sidebar
+   - Click "Import" tab
+   - Click "Choose File"
+   - Navigate to `e-commerce-store/backend/database/schema.sql`
+   - Click "Go" at the bottom of the page
+   - Wait for success message
+
+4. **Import Default Templates** (Optional):
+   - Still in the Import tab
+   - Import `backend/database/insert_default_templates.sql`
+   - Click "Go"
+
+#### 5. Configure Application
+
+Edit the database configuration file:
+
+```bash
+# Open config file in your preferred editor
+nano backend/config/config.php
+# or
+open -a "Visual Studio Code" backend/config/config.php
+```
+
+Update the database settings:
+
+```php
+'database' => [
+    'host' => 'localhost',
+    'name' => 'ecommerce_platform',
+    'username' => 'root',
+    'password' => 'root',  // MAMP default password
+    'charset' => 'utf8mb4',
+    'port' => '8889'        // MAMP default MySQL port (or 3306 for some versions)
+],
+```
+
+**Note**: Check your MAMP start page (`http://localhost:8888/MAMP/`) to verify the MySQL port. It's usually `8889` for MAMP but can be `3306`.
+
+#### 6. Set Folder Permissions
+
+```bash
+# Navigate to project root
+cd ~/Documents/LivePetal\ Projects/e-commerce-store
+
+# Set permissions for store files
+chmod -R 755 backend/public/stores/
+
+# Create uploads directory if it doesn't exist
+mkdir -p uploads
+chmod -R 755 uploads/
+```
+
+#### 7. Start the Application
+
+Open **two separate Terminal windows**:
+
+**Terminal 1 - Backend API Server:**
+```bash
+cd ~/Documents/LivePetal\ Projects/e-commerce-store/backend/public
+php -S localhost:8000 router.php
+```
+
+You should see:
+```
+PHP 8.x.x Development Server (http://localhost:8000) started
+```
+
+**Terminal 2 - Frontend Server:**
+```bash
+cd ~/Documents/LivePetal\ Projects/e-commerce-store
+php -S localhost:3000 -t frontend
+```
+
+You should see:
+```
+PHP 8.x.x Development Server (http://localhost:3000) started
+```
+
+**Important**: Keep both terminal windows running while using the application.
+
+#### 8. Access the Application
+
+Open your browser and navigate to:
+
+- **Frontend (Login/Register)**: `http://localhost:3000/auth/login.php`
+- **Admin Dashboard**: `http://localhost:3000/admin/dashboard.php`
+- **Client Dashboard**: `http://localhost:3000/client/dashboard.php`
+- **API Documentation**: `http://localhost:8000/docs.html`
+- **API Base URL**: `http://localhost:8000/api`
+- **Generated Stores**: `http://localhost:8000/stores/store-{id}/`
+
+#### 9. Create Admin User
+
+If no admin user exists, create one via phpMyAdmin:
+
+1. Go to `http://localhost:8888/phpMyAdmin/`
+2. Select `ecommerce_platform` database
+3. Click on `users` table
+4. Click "Insert" tab
+5. Fill in:
+   - `username`: admin
+   - `email`: admin@example.com
+   - `password`: Use this PHP snippet to generate hash:
+     ```bash
+     php -r "echo password_hash('admin123', PASSWORD_BCRYPT);"
+     ```
+   - `role`: super_admin
+   - `is_active`: 1
+6. Click "Go"
+
+Now you can login with:
+- Username: `admin`
+- Password: `admin123`
+
+#### 10. Troubleshooting
+
+**"php: command not found" Error**:
+
+If you get this error, it means PHP is not in your system PATH. MAMP includes its own PHP, so you need to use the full path:
+
+**Option 1: Use MAMP's PHP directly (Recommended)**
+```bash
+# For MAMP (adjust version number to match your MAMP PHP version)
+/Applications/MAMP/bin/php/php8.2.0/bin/php -S localhost:8000 router.php
+
+# To find your exact PHP version in MAMP:
+ls /Applications/MAMP/bin/php/
+```
+
+**Option 2: Add MAMP PHP to PATH temporarily**
+```bash
+# Add to current terminal session only
+export PATH=/Applications/MAMP/bin/php/php8.2.0/bin:$PATH
+
+# Now you can use php command normally
+php -S localhost:8000 router.php
+```
+
+**Option 3: Add MAMP PHP to PATH permanently**
+```bash
+# Open your shell profile
+nano ~/.zshrc  # for zsh (macOS default)
+# or
+nano ~/.bash_profile  # for bash
+
+# Add this line (adjust version to match yours):
+export PATH=/Applications/MAMP/bin/php/php8.2.0/bin:$PATH
+
+# Save and reload
+source ~/.zshrc  # or source ~/.bash_profile
+```
+
+**Database Connection Error**:
+- Verify MAMP MySQL is running (green light in MAMP)
+- Check MySQL port in MAMP start page
+- Update `backend/config/config.php` with correct port
+- Verify database name is `ecommerce_platform`
+
+**Port Already in Use**:
+```bash
+# If port 8000 or 3000 is taken, use different ports:
+php -S localhost:8001 router.php  # Backend
+php -S localhost:3001 -t frontend  # Frontend
+```
+
+**Permission Denied Errors**:
+```bash
+# Reset permissions
+chmod -R 755 backend/public/stores/
+chmod -R 755 uploads/
+```
+
+**White Screen/500 Error**:
+- Check PHP error logs in MAMP: `Applications/MAMP/logs/php_error.log`
+- Enable error display in `backend/config/config.php`:
+  ```php
+  'app' => [
+      'debug' => true,
+      'environment' => 'development',
+  ]
+  ```
+
+**API Not Working**:
+- Ensure backend server is running on port 8000
+- Check `frontend/assets/js/core/api.js` has correct API URL
+- Verify CORS is enabled in `backend/middleware/CorsMiddleware.php`
+
+#### 11. Stopping the Application
+
+To stop the servers:
+
+1. **Stop PHP Development Servers**:
+   - Press `Ctrl + C` in both Terminal windows
+
+2. **Stop MAMP** (Optional):
+   - Open MAMP application
+   - Click "Stop" to stop Apache and MySQL
+
+**Note**: You can keep MAMP running for database access via phpMyAdmin.
+
+### Alternative Setup (Apache/Nginx Virtual Host)
+
+For production or Apache/Nginx virtual host setup, follow these steps:
 
 1. **Clone the repository**
 
