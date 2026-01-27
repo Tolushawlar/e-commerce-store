@@ -14,6 +14,7 @@ Instead of reorganizing files during deployment to cPanel, it's **highly recomme
 ## Before You Start
 
 ### Current Structure
+
 ```
 e-commerce-store/
 ├── backend/
@@ -26,6 +27,7 @@ e-commerce-store/
 ```
 
 ### Target Structure (Production-Ready)
+
 ```
 e-commerce-store/
 ├── api/                 # Public API files (was backend/public/)
@@ -40,12 +42,14 @@ e-commerce-store/
 ### 1. Backup Your Project
 
 **Windows (PowerShell)**:
+
 ```powershell
 cd "C:\Users\Dell\OneDrive\Documents\LivePetal Projects"
 Copy-Item -Path "e-commerce-store" -Destination "e-commerce-store-backup" -Recurse
 ```
 
 **Mac/Linux**:
+
 ```bash
 cp -r e-commerce-store e-commerce-store-backup
 ```
@@ -53,6 +57,7 @@ cp -r e-commerce-store e-commerce-store-backup
 ### 2. Reorganize Folder Structure
 
 **Windows (PowerShell)**:
+
 ```powershell
 cd "C:\Users\Dell\OneDrive\Documents\LivePetal Projects\e-commerce-store"
 
@@ -74,6 +79,7 @@ Remove-Item "frontend" -Force
 ```
 
 **Mac/Linux**:
+
 ```bash
 cd ~/Documents/LivePetal\ Projects/e-commerce-store
 
@@ -240,6 +246,7 @@ desktop.ini
 Ensure empty directories are tracked:
 
 **Windows (PowerShell)**:
+
 ```powershell
 New-Item -ItemType File -Path "api\stores\.gitkeep" -Force
 New-Item -ItemType Directory -Path "uploads" -Force
@@ -247,6 +254,7 @@ New-Item -ItemType File -Path "uploads\.gitkeep" -Force
 ```
 
 **Mac/Linux**:
+
 ```bash
 touch api/stores/.gitkeep
 mkdir -p uploads && touch uploads/.gitkeep
@@ -259,18 +267,21 @@ Update how you start your development servers:
 #### Backend API
 
 **Old command**:
+
 ```bash
 cd backend/public
 php -S localhost:8000 router.php
 ```
 
 **New command**:
+
 ```bash
 cd api
 php -S localhost:8000 router.php
 ```
 
 Or with full path (Windows):
+
 ```powershell
 cd "C:\Users\Dell\OneDrive\Documents\LivePetal Projects\e-commerce-store\api"
 php -S localhost:8000 router.php
@@ -279,16 +290,19 @@ php -S localhost:8000 router.php
 #### Frontend
 
 **Old command**:
+
 ```bash
 php -S localhost:3000 -t frontend
 ```
 
 **New command** (from project root):
+
 ```bash
 php -S localhost:3000 -t app
 ```
 
 Or with full path (Windows):
+
 ```powershell
 cd "C:\Users\Dell\OneDrive\Documents\LivePetal Projects\e-commerce-store"
 php -S localhost:3000 -t app
@@ -301,12 +315,14 @@ php -S localhost:3000 -t app
 Open **two separate terminal windows**:
 
 **Terminal 1 - Backend API**:
+
 ```powershell
 cd "C:\Users\Dell\OneDrive\Documents\LivePetal Projects\e-commerce-store\api"
 php -S localhost:8000 router.php
 ```
 
 **Terminal 2 - Frontend**:
+
 ```powershell
 cd "C:\Users\Dell\OneDrive\Documents\LivePetal Projects\e-commerce-store"
 php -S localhost:3000 -t app
@@ -334,12 +350,14 @@ Visit each URL and verify it works:
 #### Issue: "No such file or directory" errors
 
 **Fix**: Check file paths in updated files:
+
 - `api/index.php` - bootstrap path
 - `backend/services/StoreGeneratorService.php` - stores directory path
 
 #### Issue: Login redirects to wrong URL
 
 **Fix**: Check `app/assets/js/core/api.js`:
+
 ```javascript
 const API_BASE_URL = 'http://localhost:8000/api';
 ```
@@ -347,6 +365,7 @@ const API_BASE_URL = 'http://localhost:8000/api';
 #### Issue: Store generation fails
 
 **Fix**: Verify folder permissions:
+
 ```powershell
 # Windows - ensure api/stores exists and is writable
 icacls "api\stores" /grant Users:F
@@ -405,6 +424,7 @@ chmod 775 api/stores/
 ```
 
 **To update later**:
+
 ```bash
 cd ~/public_html
 git pull origin master
@@ -433,11 +453,13 @@ After uploading to cPanel:
 1. **Configure Database** - Update `backend/config/config.php` with cPanel database credentials
 2. **Import Database** - Use phpMyAdmin to import `backend/database/schema.sql`
 3. **Set Permissions**:
+
    ```bash
    chmod 755 api/
    chmod 775 api/stores/
    chmod 644 backend/config/config.php
    ```
+
 4. **Create Admin User** - Via phpMyAdmin
 5. **Enable SSL** - Through cPanel (recommended)
 6. **Test Your Site**:
@@ -450,6 +472,7 @@ After uploading to cPanel:
 If something goes wrong during restructure, restore your backup:
 
 **Windows**:
+
 ```powershell
 cd "C:\Users\Dell\OneDrive\Documents\LivePetal Projects"
 Remove-Item "e-commerce-store" -Recurse -Force
@@ -458,6 +481,7 @@ cd e-commerce-store
 ```
 
 **Mac/Linux**:
+
 ```bash
 cd ~/Documents/LivePetal\ Projects/
 rm -rf e-commerce-store
