@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{{store_name}} - Classic Ecommerce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "{{primary_color}}",
+                        "accent": "{{accent_color}}",
+                    },
+                    fontFamily: {
+                        "sans": ["Roboto", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900">
+    <!-- Classic Top Bar -->
+    <div class="bg-primary text-white text-xs py-2">
+        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
+            <span>Welcome to {{store_name}} - Free shipping on orders over ₦5,000</span>
+            <div class="flex items-center gap-4">
+                <a href="#" class="hover:underline">Help</a>
+                <a href="#" class="hover:underline">Track Order</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classic Header -->
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between mb-4">
+                <h1 class="text-3xl font-bold text-primary">{{store_name}}</h1>
+                
+                <div class="flex-1 max-w-xl mx-8 hidden md:block">
+                    <div class="flex items-center bg-gray-100 rounded-md overflow-hidden">
+                        <input type="text" placeholder="Search products..." class="flex-1 px-4 py-2 bg-transparent focus:outline-none text-sm">
+                        <button class="px-4 py-2 bg-primary text-white">
+                            <span class="material-symbols-outlined text-sm">search</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button class="flex items-center gap-1 text-gray-700 hover:text-primary">
+                        <span class="material-symbols-outlined">person</span>
+                        <span class="text-sm hidden lg:inline">Account</span>
+                    </button>
+                    <button class="flex items-center gap-1 text-gray-700 hover:text-primary relative">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span class="text-sm hidden lg:inline">Cart</span>
+                        <span class="absolute -top-1 -right-1 bg-accent text-primary text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="flex items-center gap-6 text-sm font-medium border-t border-gray-200 pt-3">
+                <a href="#" class="text-primary font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-lg">menu</span>
+                    All Categories
+                </a>
+                <a href="#" class="text-gray-700 hover:text-primary">New Arrivals</a>
+                <a href="#" class="text-gray-700 hover:text-primary">Best Sellers</a>
+                <a href="#" class="text-gray-700 hover:text-primary">Deals</a>
+                <a href="#" class="text-red-600 font-bold">Sale</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-6">
+        <!-- Breadcrumb -->
+        <div class="text-sm text-gray-600 mb-6">
+            <a href="#" class="hover:text-primary">Home</a> / 
+            <span class="text-gray-900">Products</span>
+        </div>
+
+        <div class="grid grid-cols-12 gap-6">
+            <!-- Sidebar -->
+            <aside class="col-span-12 lg:col-span-3">
+                <div class="bg-white rounded-lg p-4 mb-4">
+                    <h3 class="font-bold text-gray-900 mb-4">Categories</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-700 hover:text-primary flex items-center justify-between">
+                            Electronics <span class="text-gray-400">(45)</span>
+                        </a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary flex items-center justify-between">
+                            Fashion <span class="text-gray-400">(32)</span>
+                        </a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary flex items-center justify-between">
+                            Home & Garden <span class="text-gray-400">(28)</span>
+                        </a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary flex items-center justify-between">
+                            Sports <span class="text-gray-400">(19)</span>
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 mb-4">
+                    <h3 class="font-bold text-gray-900 mb-4">Price Range</h3>
+                    <div class="space-y-2 text-sm">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded">
+                            <span class="text-gray-700">Under ₦1,000</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded">
+                            <span class="text-gray-700">₦1,000 - ₦5,000</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded">
+                            <span class="text-gray-700">Over ₦5,000</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="bg-accent/10 border border-accent rounded-lg p-4">
+                    <h3 class="font-bold text-primary mb-2">Special Offer!</h3>
+                    <p class="text-sm text-gray-700 mb-3">Get 20% off your first purchase</p>
+                    <button class="w-full px-4 py-2 bg-primary text-white rounded font-medium hover:bg-primary/90">
+                        Claim Now
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="col-span-12 lg:col-span-9">
+                <!-- Banner -->
+                <div class="bg-gradient-to-r from-primary to-primary/90 rounded-lg p-8 mb-6 text-white">
+                    <h2 class="text-3xl font-bold mb-2">{{store_name}}</h2>
+                    <p class="text-lg mb-4 opacity-90">{{store_description}}</p>
+                    <button class="px-6 py-2 bg-accent text-primary font-bold rounded hover:brightness-110">
+                        Shop Now
+                    </button>
+                </div>
+
+                <!-- Products Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Featured Products</h2>
+                    <select class="px-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-primary">
+                        <option>Sort by: Featured</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                        <option>Newest</option>
+                    </select>
+                </div>
+
+                <!-- Product Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="products-container">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16 py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">{{store_name}}</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">{{store_description}}</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Customer Service</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-white">Returns</a></li>
+                        <li><a href="#" class="hover:text-white">FAQs</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">My Account</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Sign In</a></li>
+                        <li><a href="#" class="hover:text-white">Order History</a></li>
+                        <li><a href="#" class="hover:text-white">Wishlist</a></li>
+                        <li><a href="#" class="hover:text-white">Track Order</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Newsletter</h4>
+                    <p class="text-sm text-gray-400 mb-3">Subscribe for exclusive deals</p>
+                    <div class="flex gap-2">
+                        <input type="email" placeholder="Email" class="flex-1 px-3 py-2 bg-gray-700 rounded text-sm focus:outline-none">
+                        <button class="px-4 py-2 bg-accent text-primary font-bold rounded">Go</button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
+                <p>© 2024 {{store_name}}. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="store.js"></script>
+    <script>
+        // @ts-nocheck - Template placeholders will be replaced during generation
+        const storeConfig = {
+            storeId: {{store_id}},
+            apiUrl: window.location.origin + '/api',
+            groupByCategory: false,
+            productGridColumns: 3,
+            showCategoryImages: false
+        };
+        
+        if (typeof loadProducts === 'function') {
+            loadProducts(storeConfig);
+        } else {
+            fetch('/api/products/featured')
+                .then(response => response.json())
+                .then(products => {
+                    const container = document.getElementById('featured-products');
+                    container.innerHTML = products.map(product => `
+                        <a href="product.html?id=${product.id}" class="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 group">
+                            <div class="aspect-square bg-gray-100 overflow-hidden">
+                                <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-medium text-gray-900 mb-2 line-clamp-2">${product.name}</h3>
+                                <div class="flex items-center justify-between">
+                                    <p class="text-primary font-bold text-lg">₦${product.price}</p>
+                                    <button onclick="event.preventDefault(); event.stopPropagation();" class="px-3 py-1 bg-primary text-white text-xs rounded hover:bg-primary/90">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </a>
+                    `).join('');
+                });
+        }
+    </script>
+</body>
+</html>

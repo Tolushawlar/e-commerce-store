@@ -112,9 +112,10 @@ include '../shared/header-client.php';
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-bold text-gray-900 mb-2">Category</label>
-                        <input type="text" id="category"
-                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary"
-                            placeholder="Electronics">
+                        <select id="category_id"
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary">
+                            <option value="">Select Category (Optional)</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-900 mb-2">Weight (kg)</label>
@@ -126,11 +127,23 @@ include '../shared/header-client.php';
 
                 <!-- Images -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-900 mb-2">Product Images (URLs)</label>
-                    <input type="url" id="image_url"
-                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary mb-2"
-                        placeholder="https://example.com/image.jpg">
-                    <p class="text-xs text-gray-500">Enter image URLs (comma-separated for multiple)</p>
+                    <label class="block text-sm font-bold text-gray-900 mb-2">Product Images</label>
+
+                    <!-- Upload Button -->
+                    <div class="flex items-center gap-3 mb-3">
+                        <button type="button" onclick="triggerImageUpload()"
+                            class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 font-semibold">
+                            <span class="material-symbols-outlined text-sm">upload</span>
+                            Upload Images
+                        </button>
+                        <input type="file" id="imageFiles" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
+                        <span id="uploadStatus" class="text-sm text-gray-500"></span>
+                    </div>
+
+                    <!-- Image Preview Grid -->
+                    <div id="imagePreviewGrid" class="grid grid-cols-4 gap-3 mb-2"></div>
+
+                    <p class="text-xs text-gray-500">Upload up to 5 product images. First image will be the main product image.</p>
                 </div>
 
                 <!-- Status -->
@@ -163,6 +176,8 @@ include '../shared/header-client.php';
 
 <script src="/assets/js/services/store.service.js"></script>
 <script src="/assets/js/services/product.service.js"></script>
+<script src="/assets/js/services/category.service.js"></script>
+<script src="/assets/js/services/image.service.js"></script>
 
 <script>
     let currentPage = 1;
@@ -170,6 +185,8 @@ include '../shared/header-client.php';
     let currentStatus = '';
     let selectedStoreId = null;
     let userStores = [];
+    let categories = [];
+    let uploadedImages = []; // Track uploaded images with URLs and public_ids
 
     // Load user stores
     async function loadStores() {
@@ -214,12 +231,42 @@ include '../shared/header-client.php';
         }
     }
 
+    // Load categories for selected store
+    async function loadCategories(storeId) {
+        if (!storeId) {
+            const categorySelect = document.getElementById('category_id');
+            categorySelect.innerHTML = '<option value="">Select Category (Optional)</option>';
+            categories = [];
+            return;
+        }
+
+        try {
+            const response = await categoryService.getAll({
+                store_id: storeId,
+                status: 'active'
+            });
+            categories = response.data?.categories || [];
+
+            const categorySelect = document.getElementById('category_id');
+            let options = '<option value="">Select Category (Optional)</option>';
+
+            categories.forEach(cat => {
+                options += `<option value="${cat.id}">${cat.name}</option>`;
+            });
+
+            categorySelect.innerHTML = options;
+        } catch (error) {
+            console.error('Error loading categories:', error);
+        }
+    }
+
     // Store filter change handler
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('storeFilter').addEventListener('change', function() {
             selectedStoreId = this.value || null;
             updateAddButtonState();
             loadProducts(1);
+            loadCategories(selectedStoreId);
         });
     });
 
@@ -309,7 +356,9 @@ include '../shared/header-client.php';
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                                ${product.image_url ? 
+                                ${product.images && product.images.length > 0 ? 
+                                    `<img src="${product.images.find(img => img.is_primary)?.image_url || product.images[0].image_url}" alt="${product.name}" class="w-full h-full object-cover">` :
+                                    product.image_url ? 
                                     `<img src="${product.image_url.split(',')[0]}" alt="${product.name}" class="w-full h-full object-cover">` :
                                     '<span class="material-symbols-outlined text-gray-400">inventory_2</span>'
                                 }
@@ -419,6 +468,9 @@ include '../shared/header-client.php';
         document.getElementById('productId').value = '';
         document.getElementById('product_store_id').value = selectedStoreId;
         document.getElementById('storeSelectContainer').style.display = 'block';
+        uploadedImages = []; // Clear uploaded images
+        displayImagePreviews();
+        loadCategories(selectedStoreId);
         document.getElementById('productModal').classList.remove('hidden');
     }
 
@@ -435,11 +487,33 @@ include '../shared/header-client.php';
             document.getElementById('sku').value = product.sku || '';
             document.getElementById('description').value = product.description;
             document.getElementById('price').value = product.price;
-            document.getElementById('stock_quantity').value = product.stock_quantity;
-            document.getElementById('category').value = product.category || '';
-            document.getElementById('weight').value = product.weight || '';
-            document.getElementById('image_url').value = product.image_url || '';
+            document.getElementById('stock_quantity').value = product.stock_quantity || 0;
             document.getElementById('status').value = product.status;
+
+            // Load existing images
+            uploadedImages = [];
+            if (product.images && Array.isArray(product.images)) {
+                // New format: images array from product_images table
+                uploadedImages = product.images.map(img => ({
+                    url: img.image_url,
+                    public_id: img.public_id || null
+                }));
+            } else if (product.image_url) {
+                // Legacy format: comma-separated string (backward compatibility)
+                const imageUrls = product.image_url.split(',')
+                    .map(url => url.trim())
+                    .filter(url => url.length > 0);
+                uploadedImages = imageUrls.map(url => ({
+                    url: url,
+                    public_id: null
+                }));
+            }
+            displayImagePreviews();
+            document.getElementById('status').value = product.status;
+
+            // Load categories and set selected
+            await loadCategories(product.store_id);
+            document.getElementById('category_id').value = product.category_id || '';
 
             document.getElementById('storeSelectContainer').style.display = 'none';
             document.getElementById('productModal').classList.remove('hidden');
@@ -459,6 +533,11 @@ include '../shared/header-client.php';
         submitBtn.textContent = 'Saving...';
 
         const productId = document.getElementById('productId').value;
+        const categoryId = document.getElementById('category_id').value;
+
+        // Prepare images array from uploadedImages
+        const images = uploadedImages.map(img => img.url);
+
         const data = {
             store_id: document.getElementById('product_store_id').value,
             name: document.getElementById('name').value,
@@ -466,9 +545,9 @@ include '../shared/header-client.php';
             description: document.getElementById('description').value,
             price: parseFloat(document.getElementById('price').value),
             stock_quantity: parseInt(document.getElementById('stock_quantity').value),
-            category: document.getElementById('category').value || null,
+            category_id: categoryId ? parseInt(categoryId) : null,
             weight: parseFloat(document.getElementById('weight').value) || null,
-            image_url: document.getElementById('image_url').value || null,
+            images: images, // Send as array instead of comma-separated string
             status: document.getElementById('status').value
         };
 
@@ -507,10 +586,215 @@ include '../shared/header-client.php';
         }
     }
 
+    // Trigger image upload
+    function triggerImageUpload() {
+        if (uploadedImages.length >= 5) {
+            utils.toast('Maximum 5 images allowed', 'warning');
+            return;
+        }
+        document.getElementById('imageFiles').click();
+    }
+
+    // Handle image upload
+    async function handleImageUpload(event) {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        const remainingSlots = 5 - uploadedImages.length;
+        if (files.length > remainingSlots) {
+            utils.toast(`You can only upload ${remainingSlots} more image(s)`, 'warning');
+            return;
+        }
+
+        const uploadStatus = document.getElementById('uploadStatus');
+        const totalFiles = files.length;
+        let uploadedCount = 0;
+        let failedCount = 0;
+
+        // Create progress container
+        uploadStatus.innerHTML = `
+            <div class="space-y-2">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-blue-600 font-medium">Uploading ${totalFiles} image(s)...</span>
+                    <span class="text-gray-600"><span id="uploadProgress">0</span>/${totalFiles}</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="uploadProgressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div id="uploadDetails" class="space-y-1 text-xs"></div>
+            </div>
+        `;
+
+        const progressSpan = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('uploadProgressBar');
+        const detailsDiv = document.getElementById('uploadDetails');
+
+        try {
+            // Upload images sequentially with detailed feedback
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileIndex = i + 1;
+
+                // Add file to details
+                const fileDiv = document.createElement('div');
+                fileDiv.id = `file-${i}`;
+                fileDiv.className = 'flex items-center gap-2';
+                fileDiv.innerHTML = `
+                    <span class="material-symbols-outlined text-sm text-blue-600 animate-spin">progress_activity</span>
+                    <span class="text-gray-600 truncate flex-1">${file.name}</span>
+                    <span class="text-gray-500">Uploading...</span>
+                `;
+                detailsDiv.appendChild(fileDiv);
+
+                try {
+                    // Validate file
+                    const validation = imageService.validateImage(file);
+                    if (!validation.valid) {
+                        fileDiv.innerHTML = `
+                            <span class="material-symbols-outlined text-sm text-red-600">error</span>
+                            <span class="text-gray-600 truncate flex-1">${file.name}</span>
+                            <span class="text-red-600">Invalid</span>
+                        `;
+                        failedCount++;
+                        continue;
+                    }
+
+                    // Upload single image
+                    const result = await imageService.uploadImage(file, {
+                        folder: `products/store-${selectedStoreId}`
+                    });
+
+                    // Handle response structure
+                    const imageData = result.data || result;
+
+                    uploadedImages.push({
+                        url: imageData.url,
+                        public_id: imageData.public_id
+                    });
+
+                    // Update file status
+                    fileDiv.innerHTML = `
+                        <span class="material-symbols-outlined text-sm text-green-600">check_circle</span>
+                        <span class="text-gray-600 truncate flex-1">${file.name}</span>
+                        <span class="text-green-600">Done</span>
+                    `;
+
+                    uploadedCount++;
+
+                } catch (error) {
+                    console.error(`Upload error for ${file.name}:`, error);
+                    fileDiv.innerHTML = `
+                        <span class="material-symbols-outlined text-sm text-red-600">error</span>
+                        <span class="text-gray-600 truncate flex-1">${file.name}</span>
+                        <span class="text-red-600">Failed</span>
+                    `;
+                    failedCount++;
+                }
+
+                // Update progress
+                const progress = ((uploadedCount + failedCount) / totalFiles) * 100;
+                progressSpan.textContent = uploadedCount + failedCount;
+                progressBar.style.width = `${progress}%`;
+
+                // Update progress bar color based on status
+                if (failedCount > 0) {
+                    progressBar.classList.remove('bg-blue-600');
+                    progressBar.classList.add('bg-yellow-600');
+                }
+            }
+
+            // Display previews
+            displayImagePreviews();
+
+            // Show final status
+            setTimeout(() => {
+                if (failedCount === 0) {
+                    uploadStatus.innerHTML = `<span class="text-green-600 font-medium">✓ ${uploadedCount} image(s) uploaded successfully!</span>`;
+                    progressBar.classList.remove('bg-yellow-600');
+                    progressBar.classList.add('bg-green-600');
+                } else {
+                    uploadStatus.innerHTML = `<span class="text-yellow-600 font-medium">⚠ ${uploadedCount} uploaded, ${failedCount} failed</span>`;
+                }
+
+                setTimeout(() => {
+                    uploadStatus.innerHTML = '';
+                }, 3000);
+            }, 1000);
+
+            // Reset file input
+            event.target.value = '';
+
+        } catch (error) {
+            console.error('Upload error:', error);
+            uploadStatus.innerHTML = '<span class="text-red-600">Upload failed</span>';
+            utils.toast('Failed to upload images: ' + error.message, 'error');
+        }
+    }
+
+    // Display image previews
+    function displayImagePreviews() {
+        const grid = document.getElementById('imagePreviewGrid');
+
+        if (uploadedImages.length === 0) {
+            grid.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+        uploadedImages.forEach((img, index) => {
+            html += `
+                <div class="relative group border-2 ${index === 0 ? 'border-blue-500' : 'border-gray-200'} rounded-lg overflow-hidden">
+                    <img src="${img.url}" alt="Product image ${index + 1}" 
+                         class="w-full h-24 object-cover">
+                    ${index === 0 ? '<div class="absolute top-0 left-0 bg-blue-500 text-white text-xs px-2 py-1">Main</div>' : ''}
+                    <button type="button" onclick="removeImage(${index})"
+                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                    ${index > 0 ? `
+                        <button type="button" onclick="setMainImage(${index})"
+                            class="absolute bottom-1 right-1 bg-blue-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                            Set Main
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+        });
+
+        grid.innerHTML = html;
+    }
+
+    // Remove image
+    async function removeImage(index) {
+        const image = uploadedImages[index];
+
+        // Try to delete from Cloudinary if we have public_id
+        if (image.public_id) {
+            try {
+                await imageService.deleteImage(image.public_id);
+            } catch (error) {
+                console.error('Failed to delete image from Cloudinary:', error);
+                // Continue anyway as we still want to remove it from the list
+            }
+        }
+
+        uploadedImages.splice(index, 1);
+        displayImagePreviews();
+    }
+
+    // Set main image
+    function setMainImage(index) {
+        const image = uploadedImages.splice(index, 1)[0];
+        uploadedImages.unshift(image);
+        displayImagePreviews();
+    }
+
     // Close modal
     function closeModal() {
         document.getElementById('productModal').classList.add('hidden');
         document.getElementById('productForm').reset();
+        uploadedImages = [];
+        displayImagePreviews();
     }
 
     // Initialize

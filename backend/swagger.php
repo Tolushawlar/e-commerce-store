@@ -1,7 +1,5 @@
 <?php
 
-namespace App;
-
 /**
  * @OA\Info(
  *   version="2.0.0",
@@ -143,7 +141,3 @@ namespace App;
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2026-01-26T11:00:00Z")
  * )
  */
-// class OpenApiDocumentation
-// {
-//     // Placeholder class to hold OpenAPI annotations
-// }

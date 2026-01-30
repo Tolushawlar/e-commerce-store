@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{{store_name}} - Luxury Collection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "{{primary_color}}",
+                        "accent": "{{accent_color}}",
+                    },
+                    fontFamily: {
+                        "serif": ["Playfair Display", "serif"],
+                        "sans": ["Lato", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-neutral-50 text-gray-900 antialiased">
+    <!-- Elegant Header -->
+    <header class="bg-primary text-white">
+        <div class="max-w-[1400px] mx-auto px-8">
+            <div class="flex items-center justify-between h-24">
+                <nav class="hidden lg:flex items-center gap-8 text-sm tracking-widest font-light">
+                    <a href="#" class="hover:text-accent transition-colors">COLLECTIONS</a>
+                    <a href="#" class="hover:text-accent transition-colors">NEW ARRIVALS</a>
+                </nav>
+                
+                <div class="flex-1 flex justify-center">
+                    <h1 class="text-3xl font-serif font-light tracking-wider">{{store_name}}</h1>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <button class="hover:text-accent transition-colors">
+                        <span class="material-symbols-outlined">search</span>
+                    </button>
+                    <button class="hover:text-accent transition-colors">
+                        <span class="material-symbols-outlined">person_outline</span>
+                    </button>
+                    <button class="hover:text-accent transition-colors">
+                        <span class="material-symbols-outlined">shopping_bag</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative h-[600px] bg-primary flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary/50 to-primary"></div>
+            <div class="relative z-10 text-center text-white px-6 max-w-4xl">
+                <p class="text-sm tracking-[0.3em] font-light mb-6 text-accent uppercase">Introducing</p>
+                <h2 class="text-6xl md:text-7xl font-serif mb-8 leading-tight font-light">
+                    {{store_name}}
+                </h2>
+                <p class="text-xl font-light mb-12 max-w-2xl mx-auto leading-relaxed opacity-90">
+                    {{store_description}}
+                </p>
+                <button class="px-12 py-4 bg-white text-primary font-light tracking-widest hover:bg-accent hover:text-primary transition-all">
+                    EXPLORE COLLECTION
+                </button>
+            </div>
+            
+            <!-- Decorative Elements -->
+            <div class="absolute top-20 left-20 w-32 h-32 border border-white/20 rotate-45"></div>
+            <div class="absolute bottom-20 right-20 w-24 h-24 border border-accent/30"></div>
+        </section>
+
+        <!-- Featured Section -->
+        <section class="py-24">
+            <div class="max-w-[1400px] mx-auto px-8">
+                <div class="text-center mb-16">
+                    <p class="text-sm tracking-[0.3em] font-light mb-4 text-primary uppercase">Curated Selection</p>
+                    <h3 class="text-4xl font-serif font-light text-gray-900 mb-4">Featured Collection</h3>
+                    <div class="w-24 h-px bg-accent mx-auto"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="products-container">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Values Section -->
+        <section class="bg-white py-20">
+            <div class="max-w-[1400px] mx-auto px-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
+                    <div class="group">
+                        <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center border border-primary rounded-full group-hover:bg-primary group-hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-2xl">workspace_premium</span>
+                        </div>
+                        <h4 class="text-lg font-serif mb-3 text-gray-900">Exceptional Quality</h4>
+                        <p class="text-sm font-light text-gray-600 leading-relaxed">Handpicked luxury items crafted to perfection</p>
+                    </div>
+                    <div class="group">
+                        <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center border border-primary rounded-full group-hover:bg-primary group-hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-2xl">local_shipping</span>
+                        </div>
+                        <h4 class="text-lg font-serif mb-3 text-gray-900">Complimentary Delivery</h4>
+                        <p class="text-sm font-light text-gray-600 leading-relaxed">White-glove service on all orders</p>
+                    </div>
+                    <div class="group">
+                        <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center border border-primary rounded-full group-hover:bg-primary group-hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-2xl">support_agent</span>
+                        </div>
+                        <h4 class="text-lg font-serif mb-3 text-gray-900">Personal Concierge</h4>
+                        <p class="text-sm font-light text-gray-600 leading-relaxed">Dedicated assistance for your needs</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="bg-primary text-white py-16">
+            <div class="max-w-2xl mx-auto px-8 text-center">
+                <h3 class="text-3xl font-serif font-light mb-4">Join Our Circle</h3>
+                <p class="text-sm font-light mb-8 opacity-90 tracking-wide">Receive exclusive invitations and previews</p>
+                <div class="flex gap-4 max-w-md mx-auto">
+                    <input type="email" placeholder="Your email address" class="flex-1 px-6 py-3 bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:border-accent backdrop-blur-sm">
+                    <button class="px-8 py-3 bg-accent text-primary font-light tracking-wider hover:bg-white transition-all">
+                        SUBSCRIBE
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Elegant Footer -->
+    <footer class="bg-neutral-900 text-white py-16">
+        <div class="max-w-[1400px] mx-auto px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <h3 class="text-2xl font-serif font-light mb-6">{{store_name}}</h3>
+                    <p class="text-sm font-light text-gray-400 leading-relaxed">
+                        {{store_description}}
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-sm tracking-widest mb-6 text-accent">CUSTOMER CARE</h4>
+                    <ul class="space-y-3 text-sm font-light text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Shipping & Returns</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Size Guide</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Care Instructions</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm tracking-widest mb-6 text-accent">ABOUT</h4>
+                    <ul class="space-y-3 text-sm font-light text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Our Story</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Craftsmanship</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Sustainability</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Press</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm tracking-widest mb-6 text-accent">FOLLOW US</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 border border-white/20 flex items-center justify-center hover:border-accent hover:text-accent transition-all">
+                            <span class="material-symbols-outlined text-sm">tag</span>
+                        </a>
+                        <a href="#" class="w-10 h-10 border border-white/20 flex items-center justify-center hover:border-accent hover:text-accent transition-all">
+                            <span class="material-symbols-outlined text-sm">language</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 flex items-center justify-between text-xs font-light text-gray-500">
+                <p>© 2024 {{store_name}}. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="store.js"></script>
+    <script>
+        // @ts-nocheck - Template placeholders will be replaced during generation
+        const storeConfig = {
+            storeId: {{store_id}},
+            apiUrl: window.location.origin + '/api',
+            groupByCategory: false,
+            productGridColumns: 3,
+            showCategoryImages: false
+        };
+        
+        if (typeof loadProducts === 'function') {
+            loadProducts(storeConfig);
+        } else {
+            fetch('/api/products/featured')
+                .then(response => response.json())
+                .then(products => {
+                    const container = document.getElementById('featured-products');
+                    container.innerHTML = products.map(product => `
+                        <a href="product.html?id=${product.id}" class="group block">
+                            <div class="aspect-[3/4] bg-neutral-100 mb-6 overflow-hidden">
+                                <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            </div>
+                            <h3 class="text-lg font-serif font-light text-gray-900 mb-2">${product.name}</h3>
+                            <p class="text-primary font-light tracking-wider">₦${product.price}</p>
+                        </a>
+                    `).join('');
+                });
+        }
+    </script>
+</body>
+</html>

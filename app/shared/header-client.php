@@ -57,9 +57,9 @@
                     <span class="material-symbols-outlined">inventory_2</span>
                     <span class="font-semibold">Products</span>
                 </a>
-                <a href="/client/orders.php" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-gray-700 hover:text-primary mb-1">
-                    <span class="material-symbols-outlined">shopping_cart</span>
-                    <span class="font-semibold">Orders</span>
+                <a href="/client/store-settings.php" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-gray-700 hover:text-primary mb-1">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="font-semibold">Store Settings</span>
                 </a>
             </nav>
 

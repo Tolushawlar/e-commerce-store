@@ -17,6 +17,7 @@ class Product extends Model
         'description',
         'price',
         'category',
+        'category_id',
         'image_url',
         'stock_quantity',
         'status'
@@ -27,27 +28,36 @@ class Product extends Model
      */
     public function getByStore(int $storeId, array $filters = []): array
     {
-        $query = "SELECT * FROM {$this->table} WHERE store_id = ?";
+        $query = "SELECT p.*, c.name as category_name, c.slug as category_slug 
+                  FROM {$this->table} p
+                  LEFT JOIN categories c ON p.category_id = c.id
+                  WHERE p.store_id = ?";
         $params = [$storeId];
 
+        // Support both old 'category' string and new 'category_id' filters
         if (isset($filters['category'])) {
-            $query .= " AND category = ?";
+            $query .= " AND p.category = ?";
             $params[] = $filters['category'];
         }
 
+        if (isset($filters['category_id'])) {
+            $query .= " AND p.category_id = ?";
+            $params[] = $filters['category_id'];
+        }
+
         if (isset($filters['status'])) {
-            $query .= " AND status = ?";
+            $query .= " AND p.status = ?";
             $params[] = $filters['status'];
         }
 
         if (isset($filters['search'])) {
-            $query .= " AND (name LIKE ? OR description LIKE ?)";
+            $query .= " AND (p.name LIKE ? OR p.description LIKE ?)";
             $searchTerm = "%{$filters['search']}%";
             $params[] = $searchTerm;
             $params[] = $searchTerm;
         }
 
-        $query .= " ORDER BY created_at DESC";
+        $query .= " ORDER BY p.created_at DESC";
 
         if (isset($filters['limit'])) {
             $query .= " LIMIT ?";
@@ -69,6 +79,19 @@ class Product extends Model
 
         if (!$product) {
             return null;
+        }
+
+        // Get category info if category_id is set
+        if (!empty($product['category_id'])) {
+            $stmt = $this->db->prepare("
+                SELECT name, slug FROM categories WHERE id = ?
+            ");
+            $stmt->execute([$product['category_id']]);
+            $category = $stmt->fetch();
+            if ($category) {
+                $product['category_name'] = $category['name'];
+                $product['category_slug'] = $category['slug'];
+            }
         }
 
         $stmt = $this->db->prepare("
@@ -104,9 +127,15 @@ class Product extends Model
         $query = "SELECT COUNT(*) as count FROM {$this->table} WHERE store_id = ?";
         $params = [$storeId];
 
+        // Support both old 'category' string and new 'category_id' filters
         if (isset($filters['category'])) {
             $query .= " AND category = ?";
             $params[] = $filters['category'];
+        }
+
+        if (isset($filters['category_id'])) {
+            $query .= " AND category_id = ?";
+            $params[] = $filters['category_id'];
         }
 
         if (isset($filters['status'])) {
@@ -140,5 +169,71 @@ class Product extends Model
 
         $stmt->execute([$storeId, $threshold]);
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Add product images
+     * @param int $productId Product ID
+     * @param array $imageUrls Array of image URLs
+     * @param int $primaryIndex Index of the primary image (default: 0)
+     * @return bool
+     */
+    public function addImages(int $productId, array $imageUrls, int $primaryIndex = 0): bool
+    {
+        if (empty($imageUrls)) {
+            return true;
+        }
+
+        try {
+            $this->db->beginTransaction();
+
+            // Delete existing images
+            $stmt = $this->db->prepare("DELETE FROM product_images WHERE product_id = ?");
+            $stmt->execute([$productId]);
+
+            // Insert new images
+            $stmt = $this->db->prepare("
+                INSERT INTO product_images (product_id, image_url, is_primary) 
+                VALUES (?, ?, ?)
+            ");
+
+            foreach ($imageUrls as $index => $url) {
+                $isPrimary = ($index === $primaryIndex) ? 1 : 0;
+                $stmt->execute([$productId, $url, $isPrimary]);
+            }
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Get product images
+     * @param int $productId Product ID
+     * @return array
+     */
+    public function getImages(int $productId): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT * FROM product_images 
+            WHERE product_id = ? 
+            ORDER BY is_primary DESC, id ASC
+        ");
+        $stmt->execute([$productId]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Delete product images
+     * @param int $productId Product ID
+     * @return bool
+     */
+    public function deleteImages(int $productId): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM product_images WHERE product_id = ?");
+        return $stmt->execute([$productId]);
     }
 }

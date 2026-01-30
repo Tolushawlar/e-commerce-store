@@ -34,9 +34,16 @@ class ProductController extends Controller
      *     @OA\Parameter(
      *         name="category",
      *         in="query",
-     *         description="Filter by category",
+     *         description="Filter by category (legacy string-based)",
      *         required=false,
      *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="category_id",
+     *         in="query",
+     *         description="Filter by category ID",
+     *         required=false,
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Parameter(
      *         name="status",
@@ -87,6 +94,7 @@ class ProductController extends Controller
 
         $filters = [
             'category' => $this->query('category'),
+            'category_id' => $this->query('category_id'),
             'status' => $this->query('status'),
             'search' => $this->query('search'),
             'limit' => $limit
@@ -94,6 +102,11 @@ class ProductController extends Controller
 
         $products = $this->productModel->getByStore((int)$storeId, $filters);
         $total = $this->productModel->countByStore((int)$storeId, $filters);
+
+        // Add images to each product
+        foreach ($products as &$product) {
+            $product['images'] = $this->productModel->getImages($product['id']);
+        }
 
         $this->success([
             'products' => $products,
@@ -199,10 +212,24 @@ class ProductController extends Controller
         $data['status'] = $data['status'] ?? 'active';
         $data['stock_quantity'] = $data['stock_quantity'] ?? 0;
 
+        // Extract images data (don't save in products table)
+        $images = [];
+        if (!empty($data['images']) && is_array($data['images'])) {
+            $images = $data['images'];
+            unset($data['images']);
+        }
+        // Remove image_url if it exists (legacy support)
+        unset($data['image_url']);
+
         $productId = $this->productModel->create($data);
 
         if ($productId) {
-            $product = $this->productModel->find($productId);
+            // Save images to product_images table
+            if (!empty($images)) {
+                $this->productModel->addImages($productId, $images);
+            }
+
+            $product = $this->productModel->withImages($productId);
             $this->success($product, 'Product created successfully', 201);
         } else {
             $this->error('Failed to create product', 500);
@@ -272,8 +299,22 @@ class ProductController extends Controller
             $this->error('Validation failed', 422, $errors);
         }
 
+        // Extract images data (don't save in products table)
+        $images = null;
+        if (isset($data['images']) && is_array($data['images'])) {
+            $images = $data['images'];
+            unset($data['images']);
+        }
+        // Remove image_url if it exists (legacy support)
+        unset($data['image_url']);
+
         if ($this->productModel->update($productId, $data)) {
-            $product = $this->productModel->find($productId);
+            // Update images if provided
+            if ($images !== null) {
+                $this->productModel->addImages($productId, $images);
+            }
+
+            $product = $this->productModel->withImages($productId);
             $this->success($product, 'Product updated successfully');
         } else {
             $this->error('Failed to update product', 500);

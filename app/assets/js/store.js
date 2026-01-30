@@ -9,17 +9,17 @@ const API_BASE_URL = window.location.origin;
 /**
  * Load products for a store
  */
-async function loadProducts(storeId) {
-  const productsGrid = document.getElementById("products-grid");
+async function loadProducts(config) {
+  const productsContainer = document.getElementById("products-container");
 
-  if (!productsGrid) {
-    console.error("Products grid element not found");
+  if (!productsContainer) {
+    console.error("Products container element not found");
     return;
   }
 
   // Show loading state
-  productsGrid.innerHTML = `
-        <div class="col-span-full flex items-center justify-center py-12">
+  productsContainer.innerHTML = `
+        <div class="flex items-center justify-center py-12">
             <div class="text-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
                 <p class="text-gray-600">Loading products...</p>
@@ -28,9 +28,14 @@ async function loadProducts(storeId) {
     `;
 
   try {
+    const storeId = typeof config === "object" ? config.storeId : config;
+    const groupByCategory = config.groupByCategory || false;
+    const productGridColumns = config.productGridColumns || 4;
+    const showCategoryImages = config.showCategoryImages !== false;
+
     // Fetch products from API
     const response = await fetch(
-      `${API_BASE_URL}/api/products?store_id=${storeId}&limit=12&status=active`,
+      `${API_BASE_URL}/api/products?store_id=${storeId}&limit=100&status=active`,
     );
 
     if (!response.ok) {
@@ -40,7 +45,18 @@ async function loadProducts(storeId) {
     const data = await response.json();
 
     if (data.success && data.data && data.data.products) {
-      displayProducts(data.data.products);
+      if (groupByCategory) {
+        // Fetch categories and group products
+        await displayProductsByCategory(
+          storeId,
+          data.data.products,
+          productGridColumns,
+          showCategoryImages,
+        );
+      } else {
+        // Display products in simple grid
+        displayProductsGrid(data.data.products, productGridColumns);
+      }
     } else {
       showEmptyState();
     }
@@ -51,65 +67,184 @@ async function loadProducts(storeId) {
 }
 
 /**
- * Display products in the grid
+ * Display products in simple grid
  */
-function displayProducts(products) {
-  const productsGrid = document.getElementById("products-grid");
+function displayProductsGrid(products, gridColumns = 4) {
+  const productsContainer = document.getElementById("products-container");
 
   if (!products || products.length === 0) {
     showEmptyState();
     return;
   }
 
-  let html = "";
+  let html = `<div class="grid grid-cols-${gridColumns} gap-6">`;
 
   products.forEach((product) => {
-    const image = product.image_url ? product.image_url.split(",")[0] : "";
-    const price = formatCurrency(product.price);
-    const inStock = product.stock_quantity > 0;
-
-    html += `
-            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                <div class="aspect-square bg-gray-100 relative">
-                    ${
-                      image
-                        ? `<img src="${image}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover">`
-                        : `<div class="w-full h-full flex items-center justify-center">
-                            <span class="material-symbols-outlined text-6xl text-gray-400">inventory_2</span>
-                        </div>`
-                    }
-                    ${!inStock ? '<div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">Out of Stock</div>' : ""}
-                </div>
-                <div class="p-4">
-                    <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${escapeHtml(product.name)}</h3>
-                    ${product.category ? `<p class="text-xs text-gray-500 mb-2">${escapeHtml(product.category)}</p>` : ""}
-                    <div class="flex items-center justify-between">
-                        <span class="text-lg font-bold" style="color: var(--primary);">${price}</span>
-                        ${
-                          inStock
-                            ? `<button onclick="addToCart(${product.id})" class="px-4 py-2 text-sm font-semibold rounded-lg text-white" style="background-color: var(--primary);">
-                                Add to Cart
-                            </button>`
-                            : `<button disabled class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
-                                Unavailable
-                            </button>`
-                        }
-                    </div>
-                </div>
-            </div>
-        `;
+    html += renderProductCard(product);
   });
 
-  productsGrid.innerHTML = html;
+  html += "</div>";
+  productsContainer.innerHTML = html;
+}
+
+/**
+ * Display products grouped by categories
+ */
+async function displayProductsByCategory(
+  storeId,
+  products,
+  gridColumns = 4,
+  showCategoryImages = true,
+) {
+  const productsContainer = document.getElementById("products-container");
+
+  if (!products || products.length === 0) {
+    showEmptyState();
+    return;
+  }
+
+  try {
+    // Fetch categories
+    const response = await fetch(
+      `${API_BASE_URL}/api/categories?store_id=${storeId}&status=active`,
+    );
+    const categoryData = await response.json();
+
+    if (!categoryData.success) {
+      // Fallback to simple grid if categories fail to load
+      displayProductsGrid(products, gridColumns);
+      return;
+    }
+
+    const categories = categoryData.data.categories;
+
+    // Group products by category
+    const productsByCategory = {};
+    const uncategorized = [];
+
+    products.forEach((product) => {
+      if (product.category_id) {
+        if (!productsByCategory[product.category_id]) {
+          productsByCategory[product.category_id] = [];
+        }
+        productsByCategory[product.category_id].push(product);
+      } else {
+        uncategorized.push(product);
+      }
+    });
+
+    let html = "";
+
+    // Render each category section
+    categories.forEach((category) => {
+      const categoryProducts = productsByCategory[category.id];
+      if (categoryProducts && categoryProducts.length > 0) {
+        html += `
+          <div class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+              ${showCategoryImages && category.icon ? `<span class="material-symbols-outlined text-3xl" style="color: ${category.color || "var(--primary)"};">${escapeHtml(category.icon)}</span>` : ""}
+              <div>
+                <h3 class="text-2xl font-bold" style="color: var(--primary);">${escapeHtml(category.name)}</h3>
+                ${category.description ? `<p class="text-gray-600 text-sm">${escapeHtml(category.description)}</p>` : ""}
+              </div>
+            </div>
+            <div class="grid grid-cols-${gridColumns} gap-6">
+        `;
+
+        categoryProducts.forEach((product) => {
+          html += renderProductCard(product);
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    // Render uncategorized products if any
+    if (uncategorized.length > 0) {
+      html += `
+        <div class="mb-12">
+          <h3 class="text-2xl font-bold mb-6" style="color: var(--primary);">Other Products</h3>
+          <div class="grid grid-cols-${gridColumns} gap-6">
+      `;
+
+      uncategorized.forEach((product) => {
+        html += renderProductCard(product);
+      });
+
+      html += `
+          </div>
+        </div>
+      `;
+    }
+
+    productsContainer.innerHTML = html;
+  } catch (error) {
+    console.error("Error grouping products by category:", error);
+    // Fallback to simple grid
+    displayProductsGrid(products, gridColumns);
+  }
+}
+
+/**
+ * Render a single product card
+ */
+function renderProductCard(product) {
+  const image = product.image_url
+    ? product.image_url.split(",")[0]
+    : product.images?.find((img) => img.is_primary)?.image_url ||
+      product.images?.[0]?.image_url;
+  const price = formatCurrency(product.price);
+  const inStock = product.stock_quantity > 0;
+
+  return `
+    <a href="product.html?id=${product.id}" class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow block">
+        <div class="aspect-square bg-gray-100 relative">
+            ${
+              image
+                ? `<img src="${image}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover">`
+                : `<div class="w-full h-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-6xl text-gray-400">inventory_2</span>
+                </div>`
+            }
+            ${!inStock ? '<div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">Out of Stock</div>' : ""}
+        </div>
+        <div class="p-4">
+            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${escapeHtml(product.name)}</h3>
+            ${product.category_name ? `<p class="text-xs text-gray-500 mb-2">${escapeHtml(product.category_name)}</p>` : ""}
+            <div class="flex items-center justify-between">
+                <span class="text-lg font-bold" style="color: var(--primary);">${price}</span>
+                ${
+                  inStock
+                    ? `<button onclick="event.preventDefault(); addToCart(${product.id})" class="px-4 py-2 text-sm font-semibold rounded-lg text-white" style="background-color: var(--primary);">
+                        Add to Cart
+                    </button>`
+                    : `<button disabled class="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+                        Unavailable
+                    </button>`
+                }
+            </div>
+        </div>
+    </a>
+  `;
+}
+
+/**
+ * Display products in the grid (legacy - keeping for backwards compatibility)
+ */
+function displayProducts(products) {
+  displayProductsGrid(products, 4);
 }
 
 /**
  * Show empty state
  */
 function showEmptyState() {
-  const productsGrid = document.getElementById("products-grid");
-  productsGrid.innerHTML = `
-        <div class="col-span-full flex items-center justify-center py-12">
+  const productsContainer = document.getElementById("products-container");
+  productsContainer.innerHTML = `
+        <div class="flex items-center justify-center py-12">
             <div class="text-center">
                 <span class="material-symbols-outlined text-6xl text-gray-400 mb-4">inventory_2</span>
                 <p class="text-gray-600 text-lg">No products available yet</p>
@@ -123,9 +258,9 @@ function showEmptyState() {
  * Show error state
  */
 function showErrorState() {
-  const productsGrid = document.getElementById("products-grid");
-  productsGrid.innerHTML = `
-        <div class="col-span-full flex items-center justify-center py-12">
+  const productsContainer = document.getElementById("products-container");
+  productsContainer.innerHTML = `
+        <div class="flex items-center justify-center py-12">
             <div class="text-center">
                 <span class="material-symbols-outlined text-6xl text-red-400 mb-4">error</span>
                 <p class="text-gray-600 text-lg">Failed to load products</p>

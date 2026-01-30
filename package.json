@@ -9,7 +9,8 @@
     "start": "npm run dev",
     "api:prod": "cd api && php -S 0.0.0.0:8000 router.php",
     "app:prod": "php -S 0.0.0.0:3000 -t app",
-    "test": "echo \"No tests configured yet\" && exit 0"
+    "test": "echo \"No tests configured yet\" && exit 0",
+    "openapi": "php api/generate-openapi.php > api/openapi.json"
   },
   "repository": {
     "type": "git",

@@ -35,7 +35,9 @@ class Store extends Model
         'social_instagram',
         'social_twitter',
         'custom_css',
-        'status'
+        'status',
+        'group_by_category',
+        'show_category_images'
     ];
 
     /**

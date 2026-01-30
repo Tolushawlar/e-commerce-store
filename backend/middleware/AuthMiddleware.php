@@ -71,6 +71,8 @@ class AuthMiddleware
         self::checkRole('admin');
     }
 
+    
+
     /**
      * Check if user is client
      */

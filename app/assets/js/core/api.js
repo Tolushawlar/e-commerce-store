@@ -176,6 +176,121 @@ class APIClient {
       method: "DELETE",
     });
   }
+
+  /**
+   * Upload file(s) with automatic token refresh
+   * @param {string} endpoint - API endpoint
+   * @param {FormData} formData - FormData object containing files
+   * @param {number} retryCount - Internal retry counter
+   * @returns {Promise<Object>} Upload result
+   */
+  async uploadFile(endpoint, formData, retryCount = 0) {
+    const url = `${this.baseURL}${endpoint}`;
+
+    try {
+      // Get current token
+      const token = localStorage.getItem("auth_token");
+      const headers = {};
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      // Handle token expiration (401 Unauthorized)
+      if (response.status === 401 && retryCount === 0) {
+        const refreshToken = localStorage.getItem("refresh_token");
+
+        if (refreshToken) {
+          // If already refreshing, queue this request
+          if (this.isRefreshing) {
+            return new Promise((resolve, reject) => {
+              this.failedQueue.push({ resolve, reject });
+            })
+              .then(() => {
+                return this.uploadFile(endpoint, formData, retryCount + 1);
+              })
+              .catch((err) => {
+                throw err;
+              });
+          }
+
+          this.isRefreshing = true;
+
+          try {
+            // Attempt to refresh token
+            const refreshResponse = await fetch(
+              `${this.baseURL}/api/auth/refresh`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ refresh_token: refreshToken }),
+              },
+            );
+
+            const refreshData = await refreshResponse.json();
+
+            if (refreshResponse.ok && refreshData.success) {
+              // Save new token
+              localStorage.setItem("auth_token", refreshData.data.token);
+              this.processQueue(null, refreshData.data.token);
+              this.isRefreshing = false;
+
+              // Retry upload with new token
+              return this.uploadFile(endpoint, formData, retryCount + 1);
+            } else {
+              throw new Error("Token refresh failed");
+            }
+          } catch (refreshError) {
+            this.processQueue(refreshError, null);
+            this.isRefreshing = false;
+
+            // Clear auth data and redirect to login
+            localStorage.removeItem("auth_token");
+            localStorage.removeItem("auth_user");
+            localStorage.removeItem("refresh_token");
+
+            const loginUrl = window.location.pathname.includes("/admin/")
+              ? "/auth/login.php"
+              : "/auth/login.php";
+
+            window.location.href = `${loginUrl}?expired=1&message=${encodeURIComponent("Session expired. Please login again.")}`;
+            throw new Error("Session expired");
+          }
+        } else {
+          // No refresh token, redirect to login
+          localStorage.removeItem("auth_token");
+          localStorage.removeItem("auth_user");
+          localStorage.removeItem("refresh_token");
+
+          const loginUrl = window.location.pathname.includes("/admin/")
+            ? "/auth/login.php"
+            : "/auth/login.php";
+
+          window.location.href = `${loginUrl}?expired=1&message=${encodeURIComponent(data.message || "Session expired. Please login again.")}`;
+          throw new Error(data.message || "Session expired");
+        }
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || "Upload failed");
+      }
+
+      return data;
+    } catch (error) {
+      if (error.message.includes("Failed to fetch")) {
+        throw new Error("Unable to connect to server");
+      }
+      throw error;
+    }
+  }
 }
 
 // Create global api instance

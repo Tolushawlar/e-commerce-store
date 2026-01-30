@@ -7,6 +7,8 @@
 
 require_once __DIR__ . '/../backend/bootstrap.php';
 
+\Sentry\captureMessage('Test message from PHP', \Sentry\Severity::info());
+
 use App\Core\Router;
 use App\Controllers\AuthController;
 use App\Controllers\ClientController;
@@ -14,6 +16,8 @@ use App\Controllers\StoreController;
 use App\Controllers\ProductController;
 use App\Controllers\OrderController;
 use App\Controllers\TemplateController;
+use App\Controllers\CategoryController;
+use App\Controllers\ImageController;
 use App\Middleware\AuthMiddleware;
 
 $router = new Router();
@@ -66,6 +70,18 @@ $router->put('/api/templates/{id}', [TemplateController::class, 'update'])
 $router->delete('/api/templates/{id}', [TemplateController::class, 'delete'])
     ->middleware([AuthMiddleware::class, 'adminOnly']);
 
+// Category Routes (Public listing for stores, Protected for management)
+$router->get('/api/categories', [CategoryController::class, 'index']); // Public for store display
+$router->get('/api/categories/{id}', [CategoryController::class, 'show']); // Public for store display
+$router->get('/api/categories/slug/{slug}', [CategoryController::class, 'getBySlug']); // Public
+$router->get('/api/categories/popular', [CategoryController::class, 'popular']); // Public
+$router->post('/api/categories', [CategoryController::class, 'store'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->put('/api/categories/{id}', [CategoryController::class, 'update'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->delete('/api/categories/{id}', [CategoryController::class, 'destroy'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+
 // Product Routes (Public listing for stores, Protected for management)
 $router->get('/api/products', [ProductController::class, 'index']); // Public for store display
 $router->get('/api/products/{id}', [ProductController::class, 'show']); // Public for store display
@@ -88,6 +104,20 @@ $router->post('/api/orders', [OrderController::class, 'store'])
 $router->put('/api/orders/{id}/status', [OrderController::class, 'updateStatus'])
     ->middleware([AuthMiddleware::class, 'handle']);
 $router->get('/api/orders/stats', [OrderController::class, 'stats'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+
+// Image Upload Routes (Protected)
+$router->post('/api/images/upload', [ImageController::class, 'upload'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/api/images/upload-multiple', [ImageController::class, 'uploadMultiple'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/api/images/upload-from-url', [ImageController::class, 'uploadFromUrl'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->delete('/api/images/{publicId}', [ImageController::class, 'delete'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/images/{publicId}/details', [ImageController::class, 'getDetails'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/api/images/transform', [ImageController::class, 'transform'])
     ->middleware([AuthMiddleware::class, 'handle']);
 
 // API Documentation Routes

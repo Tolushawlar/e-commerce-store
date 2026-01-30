@@ -87,14 +87,16 @@ if (!$storeId) {
                         <label class="block text-sm font-bold text-gray-900 mb-2">Logo URL</label>
                         <input type="url" id="logo_url"
                             class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary"
-                            placeholder="https://example.com/logo.png">
+                            placeholder="https://example.com/logo.png"
+                            oninput="updatePreview()">
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-900 mb-2">Hero Background URL</label>
                         <input type="url" id="hero_background_url"
                             class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary"
-                            placeholder="https://example.com/hero.jpg">
+                            placeholder="https://example.com/hero.jpg"
+                            oninput="updatePreview()">
                     </div>
                 </div>
 
@@ -105,7 +107,7 @@ if (!$storeId) {
                             <label class="block text-sm font-bold text-gray-900 mb-2">Primary Color</label>
                             <div class="flex gap-2">
                                 <input type="color" id="primary_color" value="#064E3B"
-                                    class="h-10 w-16 border border-gray-200 rounded cursor-pointer"
+                                    class="h-12 w-20 border border-gray-200 rounded-lg cursor-pointer"
                                     oninput="updatePreview()">
                                 <input type="text" id="primary_color_hex" value="#064E3B"
                                     class="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary"
@@ -116,7 +118,7 @@ if (!$storeId) {
                             <label class="block text-sm font-bold text-gray-900 mb-2">Accent Color</label>
                             <div class="flex gap-2">
                                 <input type="color" id="accent_color" value="#BEF264"
-                                    class="h-10 w-16 border border-gray-200 rounded cursor-pointer"
+                                    class="h-12 w-20 border border-gray-200 rounded-lg cursor-pointer"
                                     oninput="updatePreview()">
                                 <input type="text" id="accent_color_hex" value="#BEF264"
                                     class="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary"
@@ -326,6 +328,8 @@ if (!$storeId) {
         const name = document.getElementById('store_name').value || 'Store Name';
         const tagline = document.getElementById('tagline').value || 'Your premium marketplace';
         const description = document.getElementById('description').value || 'Welcome to our amazing store';
+        const logoUrl = document.getElementById('logo_url').value;
+        const heroBackgroundUrl = document.getElementById('hero_background_url').value;
         const primaryColor = document.getElementById('primary_color').value;
         const accentColor = document.getElementById('accent_color').value;
         const fontFamily = document.getElementById('font_family').value;
@@ -358,7 +362,8 @@ if (!$storeId) {
                 <header class="sticky top-0 z-50 bg-white border-b border-gray-200">
                     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 ${buttonClass} flex items-center justify-center text-white" style="background-color: ${primaryColor};">
+                            ${logoUrl ? `<img src="${logoUrl}" alt="${name}" class="h-10 w-auto object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />` : ''}
+                            <div class="w-8 h-8 ${buttonClass} flex items-center justify-center text-white" style="background-color: ${primaryColor}; ${logoUrl ? 'display: none;' : ''}">
                                 <span class="material-symbols-outlined text-lg">shopping_bag</span>
                             </div>
                             <span class="text-xl font-bold" style="color: ${primaryColor};">${name}</span>
@@ -371,8 +376,9 @@ if (!$storeId) {
                     </div>
                 </header>
 
-                <section class="py-20 text-center text-white" style="background: linear-gradient(135deg, ${primaryColor}, ${primaryColor}dd);">
-                    <div class="max-w-4xl mx-auto px-6">
+                <section class="py-20 text-center text-white relative overflow-hidden" style="background: linear-gradient(135deg, ${primaryColor}, ${primaryColor}dd);">
+                    ${heroBackgroundUrl ? `<div class="absolute inset-0 z-0"><img src="${heroBackgroundUrl}" class="w-full h-full object-cover opacity-30" alt="Hero Background" /></div>` : ''}
+                    <div class="max-w-4xl mx-auto px-6 relative z-10">
                         <h1 class="text-5xl font-bold mb-4">Welcome to ${name}</h1>
                         <p class="text-xl mb-8 opacity-90">${tagline}</p>
                         <p class="text-lg mb-8 opacity-80">${description}</p>

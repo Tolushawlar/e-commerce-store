@@ -319,6 +319,24 @@ class StoreController extends Controller
 
         if ($this->storeModel->update($storeId, $data)) {
             $store = $this->storeModel->find($storeId);
+
+            // Regenerate store if template or customization changed
+            $shouldRegenerate = isset($data['template_id']) ||
+                isset($data['primary_color']) ||
+                isset($data['accent_color']) ||
+                isset($data['store_name']) ||
+                isset($data['description']);
+
+            if ($shouldRegenerate) {
+                try {
+                    $storeWithCustomization = $this->storeModel->withCustomization($storeId);
+                    $this->generator->generate($storeWithCustomization);
+                } catch (\Exception $e) {
+                    // Log error but don't fail the update
+                    error_log("Failed to regenerate store {$storeId}: " . $e->getMessage());
+                }
+            }
+
             $this->success($store, 'Store updated successfully');
         } else {
             $this->error('Failed to update store', 500);
