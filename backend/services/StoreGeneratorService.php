@@ -27,7 +27,8 @@ class StoreGeneratorService
     public function generate(array $store): array
     {
         $storeId = $store['id'];
-        $storeDir = $this->storesPath . "/store-{$storeId}";
+        $storeSlug = $store['store_slug'];
+        $storeDir = $this->storesPath . "/{$storeSlug}";
 
         // Create store directory
         if (!file_exists($storeDir)) {
@@ -71,10 +72,36 @@ class StoreGeneratorService
             copy($productJsSource, $productJsDest);
         }
 
+        // Copy cart.js to the store directory
+        $cartJsSource = dirname(__DIR__, 2) . '/app/assets/js/cart.js';
+        $cartJsDest = "{$storeDir}/cart.js";
+        if (file_exists($cartJsSource)) {
+            copy($cartJsSource, $cartJsDest);
+        }
+
+        // Copy checkout.js to the store directory
+        $checkoutJsSource = dirname(__DIR__, 2) . '/app/assets/js/checkout.js';
+        $checkoutJsDest = "{$storeDir}/checkout.js";
+        if (file_exists($checkoutJsSource)) {
+            copy($checkoutJsSource, $checkoutJsDest);
+        }
+
+        // Generate cart.html from template
+        $cartHtml = $this->generateCartHTML($store);
+        file_put_contents("{$storeDir}/cart.html", $cartHtml);
+
+        // Generate checkout.html from template
+        $checkoutHtml = $this->generateCheckoutHTML($store);
+        file_put_contents("{$storeDir}/checkout.html", $checkoutHtml);
+
+        // Generate order-success.html from template
+        $successHtml = $this->generateOrderSuccessHTML($store);
+        file_put_contents("{$storeDir}/order-success.html", $successHtml);
+
         return [
             'store_id' => $storeId,
-            'store_url' => "/stores/store-{$storeId}/",
-            'files_generated' => ['index.html', 'config.json', 'store.js', 'product.html', 'product-detail.js'],
+            'store_url' => "/stores/{$storeSlug}/",
+            'files_generated' => ['index.html', 'config.json', 'store.js', 'product.html', 'product-detail.js', 'cart.js', 'checkout.js', 'cart.html', 'checkout.html', 'order-success.html'],
             'template_used' => $template['name'] ?? 'Default'
         ];
     }
@@ -204,16 +231,19 @@ class StoreGeneratorService
 
     " . ($store['footer_text'] ? $this->generateFooter($store) : '') . "
     
+    <script src=\"cart.js\"></script>
     <script src=\"store.js\"></script>
     <script>
         // Initialize store
         const storeConfig = {
             storeId: {$store['id']},
+            store_id: {$store['id']},
             apiUrl: window.location.origin + '/api',
             groupByCategory: " . ($store['group_by_category'] ? 'true' : 'false') . ",
             productGridColumns: {$productGrid},
             showCategoryImages: " . (isset($store['show_category_images']) && $store['show_category_images'] ? 'true' : 'false') . "
         };
+        window.storeConfig = storeConfig;
         loadProducts(storeConfig);
     </script>
 </body>
@@ -336,10 +366,10 @@ class StoreGeneratorService
                     <span class=\"material-symbols-outlined\">arrow_back</span>
                     <span class=\"hidden sm:inline\">Back to Store</span>
                 </a>
-                <button class=\"p-2 text-gray-600 hover:text-gray-900 relative\">
+                <a href=\"cart.html\" class=\"p-2 text-gray-600 hover:text-gray-900 relative\">
                     <span class=\"material-symbols-outlined\">shopping_cart</span>
                     <span id=\"cart-badge\" class=\"absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden\">0</span>
-                </button>
+                </a>
             </div>
         </div>
     </header>
@@ -510,10 +540,52 @@ class StoreGeneratorService
     <!-- Swiper JS -->
     <script src=\"https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js\"></script>
     
+    <!-- Cart Service -->
+    <script src=\"cart.js\"></script>
+    
     <!-- Product Detail Script -->
     <script src=\"product-detail.js\"></script>
 </body>
 </html>";
+    }
+
+    /**
+     * Generate cart.html from template
+     */
+    private function generateCartHTML(array $store): string
+    {
+        $templatePath = $this->templatesPath . '/cart.html';
+        if (file_exists($templatePath)) {
+            $html = file_get_contents($templatePath);
+            return $this->replacePlaceholders($html, $store);
+        }
+        return '';
+    }
+
+    /**
+     * Generate checkout.html from template
+     */
+    private function generateCheckoutHTML(array $store): string
+    {
+        $templatePath = $this->templatesPath . '/checkout.html';
+        if (file_exists($templatePath)) {
+            $html = file_get_contents($templatePath);
+            return $this->replacePlaceholders($html, $store);
+        }
+        return '';
+    }
+
+    /**
+     * Generate order-success.html from template
+     */
+    private function generateOrderSuccessHTML(array $store): string
+    {
+        $templatePath = $this->templatesPath . '/order-success.html';
+        if (file_exists($templatePath)) {
+            $html = file_get_contents($templatePath);
+            return $this->replacePlaceholders($html, $store);
+        }
+        return '';
     }
 
     /**

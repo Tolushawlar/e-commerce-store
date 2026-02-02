@@ -77,7 +77,17 @@ function displayProductsGrid(products, gridColumns = 4) {
     return;
   }
 
-  let html = `<div class="grid grid-cols-${gridColumns} gap-6">`;
+  // Map grid columns to responsive classes
+  const gridClasses = {
+    1: "grid-cols-1",
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+  };
+
+  const gridClass = gridClasses[gridColumns] || gridClasses[4];
+
+  let html = `<div class="grid ${gridClass} gap-4 md:gap-6">`;
 
   products.forEach((product) => {
     html += renderProductCard(product);
@@ -135,6 +145,15 @@ async function displayProductsByCategory(
 
     let html = "";
 
+    // Map grid columns to responsive classes
+    const gridClasses = {
+      1: "grid-cols-1",
+      2: "grid-cols-1 sm:grid-cols-2",
+      3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+      4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+    };
+    const gridClass = gridClasses[gridColumns] || gridClasses[4];
+
     // Render each category section
     categories.forEach((category) => {
       const categoryProducts = productsByCategory[category.id];
@@ -148,7 +167,7 @@ async function displayProductsByCategory(
                 ${category.description ? `<p class="text-gray-600 text-sm">${escapeHtml(category.description)}</p>` : ""}
               </div>
             </div>
-            <div class="grid grid-cols-${gridColumns} gap-6">
+            <div class="grid ${gridClass} gap-4 md:gap-6">
         `;
 
         categoryProducts.forEach((product) => {
@@ -167,7 +186,7 @@ async function displayProductsByCategory(
       html += `
         <div class="mb-12">
           <h3 class="text-2xl font-bold mb-6" style="color: var(--primary);">Other Products</h3>
-          <div class="grid grid-cols-${gridColumns} gap-6">
+          <div class="grid ${gridClass} gap-4 md:gap-6">
       `;
 
       uncategorized.forEach((product) => {
@@ -296,29 +315,54 @@ function escapeHtml(text) {
 }
 
 /**
- * Add to cart (placeholder function)
+ * Add to cart (integrated with CartService)
  */
 function addToCart(productId) {
-  // Get existing cart from localStorage
-  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-  // Check if product already in cart
-  const existingItem = cart.find((item) => item.productId === productId);
-
-  if (existingItem) {
-    existingItem.quantity += 1;
+  // Use CartService if available
+  if (window.CartService) {
+    CartService.addItem(productId, 1);
+    showToast("Product added to cart!");
   } else {
-    cart.push({
-      productId: productId,
-      quantity: 1,
-    });
+    // Fallback to localStorage
+    const storeId = window.storeConfig?.store_id || window.storeConfig?.storeId;
+    const key = storeId ? `cart_${storeId}` : "cart";
+    let cart = JSON.parse(localStorage.getItem(key) || "[]");
+    const existingItem = cart.find((item) => item.productId === productId);
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({
+        productId: productId,
+        quantity: 1,
+      });
+    }
+
+    localStorage.setItem(key, JSON.stringify(cart));
+    showToast("Product added to cart!");
+
+    // Update cart badge manually if CartService not available
+    updateCartBadgeManual();
   }
+}
 
-  // Save cart
-  localStorage.setItem("cart", JSON.stringify(cart));
-
-  // Show success message
-  showToast("Product added to cart!");
+/**
+ * Update cart badge manually (fallback if CartService not loaded)
+ */
+function updateCartBadgeManual() {
+  const badge = document.getElementById("cart-badge");
+  if (badge) {
+    const storeId = window.storeConfig?.store_id || window.storeConfig?.storeId;
+    const key = storeId ? `cart_${storeId}` : "cart";
+    const cart = JSON.parse(localStorage.getItem(key) || "[]");
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    badge.textContent = count;
+    if (count > 0) {
+      badge.classList.remove("hidden");
+    } else {
+      badge.classList.add("hidden");
+    }
+  }
 }
 
 /**

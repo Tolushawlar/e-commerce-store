@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer System Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Customer System Test</h1>
+
+        <!-- Registration -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">1. Register Customer</h2>
+            <div class="space-y-3">
+                <input type="text" id="reg-email" placeholder="Email" class="w-full border p-2 rounded">
+                <input type="password" id="reg-password" placeholder="Password" class="w-full border p-2 rounded">
+                <input type="text" id="reg-firstname" placeholder="First Name" class="w-full border p-2 rounded">
+                <input type="text" id="reg-lastname" placeholder="Last Name" class="w-full border p-2 rounded">
+                <button onclick="register()" class="bg-blue-500 text-white px-4 py-2 rounded">Register</button>
+            </div>
+            <pre id="reg-result" class="mt-4 bg-gray-100 p-3 rounded text-sm"></pre>
+        </div>
+
+        <!-- Login -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">2. Login</h2>
+            <div class="space-y-3">
+                <input type="text" id="login-email" placeholder="Email" class="w-full border p-2 rounded">
+                <input type="password" id="login-password" placeholder="Password" class="w-full border p-2 rounded">
+                <button onclick="login()" class="bg-green-500 text-white px-4 py-2 rounded">Login</button>
+            </div>
+            <pre id="login-result" class="mt-4 bg-gray-100 p-3 rounded text-sm"></pre>
+        </div>
+
+        <!-- Get Profile -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">3. Get Profile</h2>
+            <button onclick="getProfile()" class="bg-purple-500 text-white px-4 py-2 rounded">Get My Profile</button>
+            <pre id="profile-result" class="mt-4 bg-gray-100 p-3 rounded text-sm"></pre>
+        </div>
+
+        <!-- Add to Cart -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">4. Add to Cart</h2>
+            <div class="space-y-3">
+                <input type="number" id="product-id" placeholder="Product ID" class="w-full border p-2 rounded">
+                <input type="number" id="quantity" placeholder="Quantity" value="1" class="w-full border p-2 rounded">
+                <button onclick="addToCart()" class="bg-orange-500 text-white px-4 py-2 rounded">Add to Cart</button>
+            </div>
+            <pre id="cart-result" class="mt-4 bg-gray-100 p-3 rounded text-sm"></pre>
+        </div>
+
+        <!-- Get Cart -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">5. View Cart</h2>
+            <button onclick="getCart()" class="bg-teal-500 text-white px-4 py-2 rounded">Get Cart</button>
+            <pre id="view-cart-result" class="mt-4 bg-gray-100 p-3 rounded text-sm"></pre>
+        </div>
+
+        <!-- Token Display -->
+        <div class="bg-yellow-100 p-4 rounded-lg">
+            <p class="font-semibold">Current Token:</p>
+            <p id="current-token" class="text-xs break-all mt-2">No token</p>
+        </div>
+    </div>
+
+    <script>
+        const STORE_ID = 1; // Change this to your store ID
+        const API_BASE = 'http://localhost:8000';
+
+        let token = localStorage.getItem('customer_token');
+        updateTokenDisplay();
+
+        function updateTokenDisplay() {
+            document.getElementById('current-token').textContent = token || 'No token';
+        }
+
+        async function register() {
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const firstName = document.getElementById('reg-firstname').value;
+            const lastName = document.getElementById('reg-lastname').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/stores/${STORE_ID}/customers/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        first_name: firstName,
+                        last_name: lastName
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById('reg-result').textContent = JSON.stringify(data, null, 2);
+
+                if (data.success) {
+                    token = data.data.token;
+                    localStorage.setItem('customer_token', token);
+                    updateTokenDisplay();
+                    alert('Registration successful!');
+                }
+            } catch (error) {
+                document.getElementById('reg-result').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/stores/${STORE_ID}/customers/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                document.getElementById('login-result').textContent = JSON.stringify(data, null, 2);
+
+                if (data.success) {
+                    token = data.data.token;
+                    localStorage.setItem('customer_token', token);
+                    updateTokenDisplay();
+                    alert('Login successful!');
+                }
+            } catch (error) {
+                document.getElementById('login-result').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getProfile() {
+            if (!token) {
+                alert('Please login first!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/stores/${STORE_ID}/customers/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                document.getElementById('profile-result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('profile-result').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function addToCart() {
+            if (!token) {
+                alert('Please login first!');
+                return;
+            }
+
+            const productId = document.getElementById('product-id').value;
+            const quantity = document.getElementById('quantity').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/stores/${STORE_ID}/cart`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        product_id: parseInt(productId),
+                        quantity: parseInt(quantity)
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById('cart-result').textContent = JSON.stringify(data, null, 2);
+
+                if (data.success) {
+                    alert('Added to cart!');
+                }
+            } catch (error) {
+                document.getElementById('cart-result').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getCart() {
+            if (!token) {
+                alert('Please login first!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/stores/${STORE_ID}/cart`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                document.getElementById('view-cart-result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('view-cart-result').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -236,4 +236,24 @@ class Product extends Model
         $stmt = $this->db->prepare("DELETE FROM product_images WHERE product_id = ?");
         return $stmt->execute([$productId]);
     }
+
+    /**
+     * Restore stock for order items (used when order is cancelled)
+     */
+    public function restoreStockForItems(array $items): bool
+    {
+        try {
+            foreach ($items as $item) {
+                $stmt = $this->db->prepare("
+                    UPDATE products 
+                    SET stock_quantity = stock_quantity + ? 
+                    WHERE id = ?
+                ");
+                $stmt->execute([$item['quantity'], $item['product_id']]);
+            }
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 }

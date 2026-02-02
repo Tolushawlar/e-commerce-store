@@ -1,7 +1,9 @@
 // Load configuration
 let storeConfig = {};
 let mainSwiper, thumbnailSwiper;
-const API_BASE_URL = window.location.origin;
+if (typeof API_BASE_URL === "undefined") {
+  var API_BASE_URL = window.location.origin;
+}
 
 // Initialize page
 document.addEventListener("DOMContentLoaded", async () => {
