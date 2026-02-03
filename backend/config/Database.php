@@ -37,8 +37,17 @@ class Database
                     $dbConfig['options']
                 );
             } catch (PDOException $e) {
+                // Log to Sentry if available
+                if (class_exists('\App\Helpers\Logger')) {
+                    \App\Helpers\Logger::exception($e, [
+                        'host' => $dbConfig['host'],
+                        'database' => $dbConfig['name'],
+                        'context' => 'database_connection',
+                    ]);
+                }
+
                 error_log("Database Connection Error: " . $e->getMessage());
-                throw new PDOException("Could not connect to database");
+                throw new PDOException("Could not connect to database", 0, $e);
             }
         }
 

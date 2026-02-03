@@ -4,11 +4,14 @@
     "type": "project",
     "require": {
         "php": "^8.0",
-        "ext-pdo": "*",
         "ext-json": "*",
+        "ext-pdo": "*",
+        "cloudinary/cloudinary_php": "^2.14",
+        "sentry/sentry": "^4.19",
         "zircote/swagger-php": "^4.7"
     },
     "require-dev": {
+        "doctrine/annotations": "^2.0",
         "phpunit/phpunit": "^10.0"
     },
     "autoload": {

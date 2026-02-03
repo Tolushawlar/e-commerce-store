@@ -36,6 +36,23 @@ abstract class Controller
      */
     protected function error(string $message, int $statusCode = 400, $errors = null): void
     {
+        // Log errors to Sentry (except validation errors)
+        if (class_exists('\App\Helpers\Logger')) {
+            if ($statusCode >= 500) {
+                \App\Helpers\Logger::error($message, [
+                    'code' => $statusCode,
+                    'errors' => $errors,
+                    'request_uri' => $_SERVER['REQUEST_URI'] ?? '',
+                    'request_method' => $_SERVER['REQUEST_METHOD'] ?? '',
+                ]);
+            } elseif ($statusCode >= 400 && $statusCode < 500 && $statusCode !== 422) {
+                \App\Helpers\Logger::warning($message, [
+                    'code' => $statusCode,
+                    'errors' => $errors,
+                ]);
+            }
+        }
+
         $response = [
             'success' => false,
             'message' => $message

@@ -10,6 +10,17 @@ A modern, scalable multi-tenant e-commerce platform built with PHP MVC architect
 - **[Setup Guide](md-docs/SETUP-GUIDE.md)** - Detailed setup instructions
 - **[Architecture Diagram](md-docs/ARCHITECTURE-DIAGRAM.md)** - System architecture overview
 - **[How to Create Store](md-docs/HOW-TO-CREATE-STORE.md)** - Store creation guide
+- **[Sentry Error Monitoring](md-docs/SENTRY-SETUP.md)** - Error tracking and monitoring
+- **[Production Deployment](md-docs/RESTRUCTURE-FOR-PRODUCTION.md)** - Deploy to cPanel
+
+## ✨ Features
+
+- 🔐 **JWT Authentication** - Secure token-based authentication
+- 🏪 **Multi-tenant Stores** - Create and manage multiple stores
+- 📊 **Real-time Error Monitoring** - Sentry integration for production
+- 🎨 **Customizable Templates** - Flexible store templates
+- 📱 **RESTful API** - Complete API documentation with Swagger
+- 🚀 **Production Ready** - Environment-based configuration
 
 ## 🏗️ Architecture
 

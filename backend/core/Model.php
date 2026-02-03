@@ -23,6 +23,15 @@ abstract class Model
     }
 
     /**
+     * Get database connection
+     * Allows controllers to access the database when needed
+     */
+    public function getDb(): PDO
+    {
+        return $this->db;
+    }
+
+    /**
      * Find record by ID
      */
     public function find(int $id): ?array

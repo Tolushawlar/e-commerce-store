@@ -141,6 +141,17 @@ class OrderController extends Controller
             $this->error('Order not found', 404);
         }
 
+        // Verify ownership - user can only view their own orders (unless admin)
+        $authUser = $_REQUEST['auth_user'] ?? null;
+
+        if (!$authUser) {
+            $this->error('Authentication required', 401);
+        }
+
+        if ($authUser['role'] !== 'admin' && $order['customer_id'] != $authUser['id']) {
+            $this->error('Unauthorized to view this order', 403);
+        }
+
         $this->success($order);
     }
 
@@ -183,6 +194,12 @@ class OrderController extends Controller
     public function store(): void
     {
         $data = $this->input();
+        $authUser = $_REQUEST['auth_user'] ?? null;
+
+        // Link order to authenticated customer
+        if ($authUser && $authUser['role'] === 'customer') {
+            $data['customer_id'] = $authUser['id'];
+        }
 
         // Validation
         $errors = $this->validate($data, [
@@ -197,11 +214,21 @@ class OrderController extends Controller
         }
 
         $data['status'] = $data['status'] ?? 'pending';
+        $data['payment_status'] = $data['payment_status'] ?? 'pending';
 
-        $orderId = $this->orderModel->create($data);
+        // Extract items from payload
+        $items = $data['items'] ?? [];
+        unset($data['items']);
+
+        // Create order with items if provided
+        if (!empty($items)) {
+            $orderId = $this->orderModel->createWithItems($data, $items);
+        } else {
+            $orderId = $this->orderModel->create($data);
+        }
 
         if ($orderId) {
-            $order = $this->orderModel->find($orderId);
+            $order = $this->orderModel->withItems($orderId);
             $this->success($order, 'Order created successfully', 201);
         } else {
             $this->error('Failed to create order', 500);
