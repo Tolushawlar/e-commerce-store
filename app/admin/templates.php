@@ -4,32 +4,8 @@ $pageDescription = 'Manage store design templates and themes';
 include '../shared/header-admin.php';
 ?>
 
-<!-- Header Actions -->
-<div class="flex items-center justify-between mb-6">
-    <div class="flex items-center gap-4">
-        <input type="text" id="searchInput" placeholder="Search templates..."
-            class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            oninput="handleSearch()">
-    </div>
-    <button onclick="openAddTemplateModal()"
-        class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-semibold">
-        <span class="material-symbols-outlined">add</span>
-        Add Template
-    </button>
-</div>
-
-<!-- Templates Grid -->
-<div id="templatesGrid">
-    <div class="flex items-center justify-center p-12">
-        <span class="material-symbols-outlined animate-spin text-4xl text-primary">refresh</span>
-    </div>
-</div>
-
-<!-- Pagination -->
-<div id="pagination" class="mt-6"></div>
-
 <!-- Template Stats -->
-<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <div class="bg-white rounded-xl border border-gray-200 p-6">
         <div class="flex items-center justify-between mb-4">
             <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -60,6 +36,30 @@ include '../shared/header-admin.php';
         <p class="text-sm text-gray-500">Stores Using Templates</p>
     </div>
 </div>
+
+<!-- Header Actions -->
+<div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+        <input type="text" id="searchInput" placeholder="Search templates..."
+            class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            oninput="handleSearch()">
+    </div>
+    <button onclick="openAddTemplateModal()"
+        class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-semibold">
+        <span class="material-symbols-outlined">add</span>
+        Add Template
+    </button>
+</div>
+
+<!-- Templates Grid -->
+<div id="templatesGrid">
+    <div class="flex items-center justify-center p-12">
+        <span class="material-symbols-outlined animate-spin text-4xl text-primary">refresh</span>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div id="pagination" class="mt-6"></div>
 
 <!-- Add/Edit Template Modal -->
 <div id="templateModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
