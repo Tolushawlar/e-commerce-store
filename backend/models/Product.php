@@ -28,9 +28,12 @@ class Product extends Model
      */
     public function getByStore(int $storeId, array $filters = []): array
     {
-        $query = "SELECT p.*, c.name as category_name, c.slug as category_slug 
+        $query = "SELECT p.*, c.name as category_name, c.slug as category_slug,
+                  COALESCE(SUM(oi.quantity), 0) as sales_count
                   FROM {$this->table} p
                   LEFT JOIN categories c ON p.category_id = c.id
+                  LEFT JOIN order_items oi ON p.id = oi.product_id
+                  LEFT JOIN orders o ON oi.order_id = o.id AND o.status != 'cancelled'
                   WHERE p.store_id = ?";
         $params = [$storeId];
 
@@ -57,6 +60,7 @@ class Product extends Model
             $params[] = $searchTerm;
         }
 
+        $query .= " GROUP BY p.id, p.store_id, p.category_id, p.name, p.description, p.price, p.category, p.image_url, p.stock_quantity, p.status, p.created_at, c.name, c.slug";
         $query .= " ORDER BY p.created_at DESC";
 
         if (isset($filters['limit'])) {
