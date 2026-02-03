@@ -4,26 +4,113 @@ $pageDescription = 'Manage your online stores';
 include '../shared/header-client.php';
 ?>
 
-<!-- Header Actions -->
-<div class="flex items-center justify-between mb-6">
-    <div class="flex items-center gap-4">
-        <input type="text" id="searchInput" placeholder="Search stores..."
-            class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            oninput="handleSearch()">
-        <select id="statusFilter" class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary"
-            onchange="loadStores()">
-            <option value="">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="suspended">Suspended</option>
-        </select>
+<!-- Page Heading & Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">My Stores</h1>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Manage and monitor all your online stores from one place.</p>
+    </div>
+    <div class="flex gap-3">
+        <!-- Refresh Button -->
+        <button onclick="loadStores(currentPage)"
+            class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm text-gray-900 dark:text-white">
+            <span class="material-symbols-outlined text-lg">refresh</span>
+        </button>
+
+        <!-- Dark Mode Toggle -->
+        <button onclick="toggleDarkMode()"
+            class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm text-gray-900 dark:text-white">
+            <span class="material-symbols-outlined text-lg dark-mode-icon">dark_mode</span>
+            <span class="material-symbols-outlined text-lg light-mode-icon hidden">light_mode</span>
+        </button>
+    </div>
+</div>
+
+<!-- Filters Section -->
+<div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Stores</label>
+            <input type="text" id="searchInput" placeholder="Search stores..."
+                class="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                oninput="handleSearch()">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Status</label>
+            <select id="statusFilter" class="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary"
+                onchange="loadStores()">
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="suspended">Suspended</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div id="statsCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Stores -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-lg transition-all">
+        <div class="flex items-start justify-between mb-3">
+            <div class="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">store</span>
+            </div>
+        </div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Total Stores</div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white" id="totalStores">0</div>
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-green-100 dark:bg-green-900 rounded-full opacity-20 group-hover:scale-110 transition-transform"></div>
+    </div>
+
+    <!-- Active Stores -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-lg transition-all">
+        <div class="flex items-start justify-between mb-3">
+            <div class="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">storefront</span>
+            </div>
+        </div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Active Stores</div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white" id="activeStores">0</div>
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-blue-100 dark:bg-blue-900 rounded-full opacity-20 group-hover:scale-110 transition-transform"></div>
+    </div>
+
+    <!-- Total Products -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-lg transition-all">
+        <div class="flex items-start justify-between mb-3">
+            <div class="p-2 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">inventory_2</span>
+            </div>
+        </div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Total Products</div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white" id="totalProducts">0</div>
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-orange-100 dark:bg-orange-900 rounded-full opacity-20 group-hover:scale-110 transition-transform"></div>
+    </div>
+
+    <!-- Total Orders -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-lg transition-all">
+        <div class="flex items-start justify-between mb-3">
+            <div class="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">receipt_long</span>
+            </div>
+        </div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Total Orders</div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white" id="totalOrders">0</div>
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-100 dark:bg-purple-900 rounded-full opacity-20 group-hover:scale-110 transition-transform"></div>
     </div>
 </div>
 
 <!-- Stores Grid -->
-<div id="storesGrid">
-    <div class="flex items-center justify-center p-12">
-        <span class="material-symbols-outlined animate-spin text-4xl text-primary">refresh</span>
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/30">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-gray-600 dark:text-gray-400">store</span>
+            <h3 class="font-semibold text-gray-900 dark:text-white" id="storeCount">Loading...</h3>
+        </div>
+    </div>
+    <div id="storesGrid" class="p-6">
+        <div class="flex items-center justify-center p-12">
+            <span class="material-symbols-outlined animate-spin text-4xl text-primary">refresh</span>
+        </div>
     </div>
 </div>
 
@@ -32,10 +119,10 @@ include '../shared/header-client.php';
 
 <!-- Store Details Modal -->
 <div id="storeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-auto">
-        <div class="p-6 border-b flex items-center justify-between">
-            <h2 class="text-2xl font-bold text-gray-900" id="modalTitle">Store Details</h2>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-auto shadow-2xl">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white" id="modalTitle">Store Details</h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -44,11 +131,11 @@ include '../shared/header-client.php';
                 <!-- Store details will be loaded here -->
             </div>
         </div>
-        <div class="p-6 border-t bg-gray-50 flex gap-3 justify-end">
-            <button onclick="closeModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 font-semibold">
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex gap-3 justify-end">
+            <button onclick="closeModal()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold text-gray-900 dark:text-white">
                 Close
             </button>
-            <button onclick="visitStore()" id="visitStoreBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-semibold">
+            <button onclick="visitStore()" id="visitStoreBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-semibold shadow-sm">
                 <span class="material-symbols-outlined inline-block align-middle text-sm">open_in_new</span>
                 Visit Store
             </button>
@@ -57,6 +144,22 @@ include '../shared/header-client.php';
 </div>
 
 <?php include '../shared/footer-client.php'; ?>
+
+<style>
+    /* Dark mode icons toggle */
+    html.dark .dark-mode-icon {
+        display: none;
+    }
+
+    html.dark .light-mode-icon {
+        display: inline-block !important;
+    }
+
+    /* Smooth transitions */
+    * {
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+</style>
 
 <script src="/assets/js/services/store.service.js"></script>
 <script src="/assets/js/services/product.service.js"></script>
@@ -67,11 +170,43 @@ include '../shared/header-client.php';
     let currentSearch = '';
     let currentStatus = '';
     let selectedStore = null;
+    let storesStats = {
+        total: 0,
+        active: 0,
+        products: 0,
+        orders: 0
+    };
+
+    // Dark Mode Management
+    function toggleDarkMode() {
+        const html = document.documentElement;
+        const isDark = html.classList.contains('dark');
+
+        if (isDark) {
+            html.classList.remove('dark');
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            html.classList.add('dark');
+            localStorage.setItem('darkMode', 'true');
+        }
+    }
+
+    // Initialize dark mode from localStorage
+    function initDarkMode() {
+        const darkMode = localStorage.getItem('darkMode');
+        if (darkMode === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+    }
 
     // Load stores
     async function loadStores(page = 1) {
         try {
             currentPage = page;
+            // Reset aggregated stats
+            storesStats.products = 0;
+            storesStats.orders = 0;
+
             const user = auth.getUser();
             const params = {
                 client_id: user.id,
@@ -86,6 +221,11 @@ include '../shared/header-client.php';
             const stores = response.data?.stores || [];
             const pagination = response.data?.pagination || {};
 
+            // Calculate stats
+            storesStats.total = pagination.total || 0;
+            storesStats.active = stores.filter(s => s.status === 'active').length;
+            updateStatsCards();
+
             displayStores(stores);
             displayPagination(pagination);
 
@@ -98,6 +238,9 @@ include '../shared/header-client.php';
     // Display stores in grid
     function displayStores(stores) {
         const container = document.getElementById('storesGrid');
+        const countElement = document.getElementById('storeCount');
+
+        countElement.textContent = `${stores.length} store${stores.length !== 1 ? 's' : ''}`;
 
         if (stores.length === 0) {
             container.innerHTML = components.emptyState(
@@ -111,7 +254,7 @@ include '../shared/header-client.php';
 
         stores.forEach(store => {
             html += `
-                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow">
                     <!-- Store Header -->
                     <div class="h-32 bg-gradient-to-br from-primary to-primary/80 relative">
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -124,7 +267,7 @@ include '../shared/header-client.php';
 
                     <!-- Store Content -->
                     <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">${store.store_name}</h3>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">${store.store_name}</h3>
                         <p class="text-sm text-gray-500 mb-4">
                             <span class="material-symbols-outlined text-xs align-middle">link</span>
                             ${store.domain || store.store_slug}
@@ -205,6 +348,11 @@ include '../shared/header-client.php';
 
             if (productsEl) productsEl.textContent = productsCount;
             if (ordersEl) ordersEl.textContent = ordersCount;
+
+            // Aggregate for stats cards
+            storesStats.products += productsCount;
+            storesStats.orders += ordersCount;
+            updateStatsCards();
 
         } catch (error) {
             console.error(`Error loading stats for store ${storeId}:`, error);
@@ -375,6 +523,17 @@ include '../shared/header-client.php';
         window.location.href = `/client/products.php?store_id=${storeId}`;
     }
 
+    // Update stats cards
+    function updateStatsCards() {
+        document.getElementById('totalStores').textContent = storesStats.total.toLocaleString();
+        document.getElementById('activeStores').textContent = storesStats.active.toLocaleString();
+        document.getElementById('totalProducts').textContent = storesStats.products.toLocaleString();
+        document.getElementById('totalOrders').textContent = storesStats.orders.toLocaleString();
+    }
+
     // Initialize
-    loadStores();
+    document.addEventListener('DOMContentLoaded', () => {
+        initDarkMode();
+        loadStores();
+    });
 </script>

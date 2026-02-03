@@ -499,6 +499,11 @@ include '../shared/header-client.php';
     // Update trend badge
     function updateTrendBadge(selector, trend) {
         const badge = document.querySelector(selector);
+        if (!badge) {
+            console.warn('Trend badge not found:', selector);
+            return;
+        }
+
         const isPositive = trend >= 0;
 
         badge.className = `px-2 py-1 rounded-full text-xs font-semibold ${

@@ -4,76 +4,146 @@ $pageDescription = 'Manage your store categories';
 include '../shared/header-client.php';
 ?>
 
-<div class="flex items-center justify-between mb-6">
+<!-- Page Heading & Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
     <div>
-        <h1 class="text-2xl font-bold text-gray-900">Categories</h1>
-        <p class="text-gray-600">Organize your products with categories</p>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">Categories</h1>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Organize your products with custom categories and hierarchies.</p>
     </div>
-    <button onclick="openCreateModal()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-semibold">
-        <span class="material-symbols-outlined inline-block align-middle">add</span>
-        Add Category
-    </button>
+    <div class="flex gap-3">
+        <button onclick="openCreateModal()" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm font-semibold">
+            <span class="material-symbols-outlined text-lg">add</span>
+            Add Category
+        </button>
+
+        <!-- Dark Mode Toggle -->
+        <button onclick="toggleDarkMode()"
+            class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm text-gray-900 dark:text-white">
+            <span class="material-symbols-outlined text-lg dark-mode-icon">dark_mode</span>
+            <span class="material-symbols-outlined text-lg light-mode-icon hidden">light_mode</span>
+        </button>
+    </div>
 </div>
 
-<!-- Store Selector -->
-<div class="bg-white rounded-xl p-4 border border-gray-200 mb-6">
+<!-- Filters Section -->
+<div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Select Store</label>
-            <select id="currentStoreFilter" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary" onchange="loadCategories()">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Store</label>
+            <select id="currentStoreFilter" class="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary" onchange="loadCategories()">
                 <option value="">All My Stores</option>
             </select>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select id="filterStatus" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary" onchange="loadCategories()">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Status</label>
+            <select id="filterStatus" class="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary" onchange="loadCategories()">
                 <option value="">All Status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Categories</label>
             <input type="text" id="filterSearch" placeholder="Search categories..."
-                class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary"
+                class="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary"
                 onkeyup="if(event.key === 'Enter') loadCategories()">
         </div>
     </div>
 </div>
 
-<!-- Categories List -->
-<div class="bg-white rounded-xl border border-gray-200">
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Categories -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-lg transition-all">
+        <div class="flex items-start justify-between mb-3">
+            <div class="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">category</span>
+            </div>
+        </div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Total Categories</div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white" id="totalCategories">0</div>
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-100 dark:bg-purple-900 rounded-full opacity-20 group-hover:scale-110 transition-transform"></div>
+    </div>
+
+    <!-- Active Categories -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-lg transition-all">
+        <div class="flex items-start justify-between mb-3">
+            <div class="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">check_circle</span>
+            </div>
+        </div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Active Categories</div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white" id="activeCategories">0</div>
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-green-100 dark:bg-green-900 rounded-full opacity-20 group-hover:scale-110 transition-transform"></div>
+    </div>
+
+    <!-- Parent Categories -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-lg transition-all">
+        <div class="flex items-start justify-between mb-3">
+            <div class="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">account_tree</span>
+            </div>
+        </div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Parent Categories</div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white" id="parentCategories">0</div>
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-blue-100 dark:bg-blue-900 rounded-full opacity-20 group-hover:scale-110 transition-transform"></div>
+    </div>
+
+    <!-- Subcategories -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-lg transition-all">
+        <div class="flex items-start justify-between mb-3">
+            <div class="p-2 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">subdirectory_arrow_right</span>
+            </div>
+        </div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Subcategories</div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white" id="subCategories">0</div>
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-orange-100 dark:bg-orange-900 rounded-full opacity-20 group-hover:scale-110 transition-transform"></div>
+    </div>
+</div>
+
+<!-- Categories Table -->
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/30">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-gray-600 dark:text-gray-400">category</span>
+            <h3 class="font-semibold text-gray-900 dark:text-white" id="categoryCount">Loading...</h3>
+        </div>
+    </div>
     <div class="overflow-x-auto">
         <table class="w-full">
-            <thead class="bg-gray-50 border-b border-gray-200">
+            <thead class="bg-gray-50/50 dark:bg-gray-900/30 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase">Category</th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase">Store</th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase">Parent</th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase">Products</th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase">Order</th>
-                    <th class="px-6 py-3 text-right text-xs font-bold text-gray-900 uppercase">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Store</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Parent</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Products</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody id="categoriesTable" class="divide-y divide-gray-200">
+            <tbody id="categoriesTable" class="divide-y divide-gray-200 dark:divide-gray-700">
                 <!-- Rows will be inserted here -->
             </tbody>
         </table>
     </div>
     <div id="emptyState" class="hidden p-12 text-center">
-        <span class="material-symbols-outlined text-6xl text-gray-300">category</span>
-        <h3 class="mt-4 text-lg font-medium text-gray-900">No categories found</h3>
-        <p class="mt-2 text-gray-500">Get started by creating your first category</p>
+        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4 block">category</span>
+        <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No categories found</h3>
+        <p class="mt-2 text-gray-500 dark:text-gray-400">Get started by creating your first category</p>
+        <button onclick="openCreateModal()" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+            <span class="material-symbols-outlined text-sm">add</span>
+            Create Category
+        </button>
     </div>
 </div>
 
 <!-- Create/Edit Modal -->
-<div id="categoryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-    <div class="bg-white rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+<div id="categoryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900" id="modalTitle">Add Category</h2>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white" id="modalTitle">Add Category</h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -170,18 +240,18 @@ include '../shared/header-client.php';
 </div>
 
 <!-- Icon Picker Modal -->
-<div id="iconPickerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-    <div class="bg-white rounded-2xl p-8 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+<div id="iconPickerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto shadow-2xl">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Select Icon</h2>
-            <button onclick="closeIconPicker()" class="text-gray-400 hover:text-gray-600">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Select Icon</h2>
+            <button onclick="closeIconPicker()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
 
         <div class="mb-6">
             <input type="text" id="iconSearch" placeholder="Search icons..."
-                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary"
+                class="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary"
                 oninput="filterIcons()">
         </div>
 
@@ -193,13 +263,57 @@ include '../shared/header-client.php';
 
 <?php include '../shared/footer-client.php'; ?>
 
+<style>
+    /* Dark mode icons toggle */
+    html.dark .dark-mode-icon {
+        display: none;
+    }
+
+    html.dark .light-mode-icon {
+        display: inline-block !important;
+    }
+
+    /* Smooth transitions */
+    * {
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+</style>
+
 <script src="/assets/js/services/category.service.js"></script>
 <script src="/assets/js/services/store.service.js"></script>
 
 <script>
     let categories = [];
     let clientStores = [];
-    const clientId = parseInt(localStorage.getItem('clientId'));
+    let currentUser = null;
+    let categoryStats = {
+        total: 0,
+        active: 0,
+        parents: 0,
+        subcategories: 0
+    };
+
+    // Dark Mode Management
+    function toggleDarkMode() {
+        const html = document.documentElement;
+        const isDark = html.classList.contains('dark');
+
+        if (isDark) {
+            html.classList.remove('dark');
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            html.classList.add('dark');
+            localStorage.setItem('darkMode', 'true');
+        }
+    }
+
+    // Initialize dark mode from localStorage
+    function initDarkMode() {
+        const darkMode = localStorage.getItem('darkMode');
+        if (darkMode === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+    }
 
     // Popular category icons
     const categoryIcons = [
@@ -230,8 +344,15 @@ include '../shared/header-client.php';
     // Load client's stores
     async function loadClientStores() {
         try {
+            currentUser = auth.getUser();
+            if (!currentUser || !currentUser.id) {
+                console.error('No user found, redirecting to login');
+                window.location.href = '/auth/login.php';
+                return;
+            }
+
             const response = await storeService.getAll({
-                client_id: clientId,
+                client_id: currentUser.id,
                 limit: 1000
             });
             if (response.success) {
@@ -267,25 +388,33 @@ include '../shared/header-client.php';
     async function loadCategories() {
         try {
             const storeId = document.getElementById('currentStoreFilter').value;
-            const filters = {};
-
-            if (storeId) {
-                filters.store_id = storeId;
-            } else if (clientStores.length > 0) {
-                // Filter by all client's store IDs
-                filters.store_ids = clientStores.map(s => s.id).join(',');
-            }
-
             const status = document.getElementById('filterStatus').value;
             const search = document.getElementById('filterSearch').value;
 
+            // Get client's store IDs for filtering
+            const clientStoreIds = clientStores.map(s => s.id);
+
+            // Fetch all categories (backend filtering not working, will filter client-side)
+            const filters = {};
             if (status) filters.status = status;
             if (search) filters.search = search;
 
             const response = await categoryService.getAll(filters);
 
             if (response.success) {
-                categories = response.data.categories || [];
+                let allCategories = response.data.categories || [];
+
+                // Client-side filtering by store ownership
+                categories = allCategories.filter(cat => {
+                    // Only show categories from client's stores
+                    const belongsToClient = clientStoreIds.includes(cat.store_id);
+
+                    // Apply store filter if selected
+                    const matchesStoreFilter = !storeId || cat.store_id == storeId;
+
+                    return belongsToClient && matchesStoreFilter;
+                });
+
                 renderCategories();
             }
         } catch (error) {
@@ -298,6 +427,19 @@ include '../shared/header-client.php';
     function renderCategories() {
         const tbody = document.getElementById('categoriesTable');
         const emptyState = document.getElementById('emptyState');
+        const countElement = document.getElementById('categoryCount');
+
+        // Update count with null check
+        if (countElement) {
+            countElement.textContent = `${categories.length} categor${categories.length !== 1 ? 'ies' : 'y'}`;
+        }
+
+        // Calculate stats
+        categoryStats.total = categories.length;
+        categoryStats.active = categories.filter(c => c.status === 'active').length;
+        categoryStats.parents = categories.filter(c => !c.parent_id).length;
+        categoryStats.subcategories = categories.filter(c => c.parent_id).length;
+        updateStatsCards();
 
         if (categories.length === 0) {
             tbody.innerHTML = '';
@@ -308,34 +450,33 @@ include '../shared/header-client.php';
         emptyState.classList.add('hidden');
 
         tbody.innerHTML = categories.map(cat => `
-            <tr class="hover:bg-gray-50">
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                 <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
                         ${cat.icon ? `<span class="material-symbols-outlined" style="color: ${cat.color}">${cat.icon}</span>` : ''}
                         <div>
-                            <div class="font-semibold text-gray-900">${cat.name}</div>
-                            <div class="text-sm text-gray-500">${cat.slug}</div>
+                            <div class="font-semibold text-gray-900 dark:text-white">${cat.name}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">${cat.slug}</div>
                         </div>
                     </div>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-600">${cat.store_name || getStoreName(cat.store_id)}</td>
-                <td class="px-6 py-4 text-sm text-gray-600">${cat.parent_name || '-'}</td>
+                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">${cat.store_name || getStoreName(cat.store_id)}</td>
+                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">${cat.parent_name || '-'}</td>
                 <td class="px-6 py-4">
-                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+                    <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-semibold">
                         ${cat.product_count || 0}
                     </span>
                 </td>
                 <td class="px-6 py-4">
-                    <span class="px-2 py-1 ${cat.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'} rounded-full text-xs font-semibold">
+                    <span class="px-2 py-1 ${cat.status === 'active' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'} rounded-full text-xs font-semibold">
                         ${cat.status}
                     </span>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-600">${cat.display_order}</td>
                 <td class="px-6 py-4 text-right">
                     <button onclick="editCategory(${cat.id})" class="text-primary hover:text-primary/80 mr-3">
                         <span class="material-symbols-outlined">edit</span>
                     </button>
-                    <button onclick="deleteCategory(${cat.id})" class="text-red-600 hover:text-red-800">
+                    <button onclick="deleteCategory(${cat.id})" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
                         <span class="material-symbols-outlined">delete</span>
                     </button>
                 </td>
@@ -346,6 +487,14 @@ include '../shared/header-client.php';
     function getStoreName(storeId) {
         const store = clientStores.find(s => s.id === storeId);
         return store ? store.store_name : 'Unknown';
+    }
+
+    // Update stats cards
+    function updateStatsCards() {
+        document.getElementById('totalCategories').textContent = categoryStats.total.toLocaleString();
+        document.getElementById('activeCategories').textContent = categoryStats.active.toLocaleString();
+        document.getElementById('parentCategories').textContent = categoryStats.parents.toLocaleString();
+        document.getElementById('subCategories').textContent = categoryStats.subcategories.toLocaleString();
     }
 
     // Open create modal
@@ -543,5 +692,8 @@ include '../shared/header-client.php';
     });
 
     // Initialize
-    loadClientStores();
+    document.addEventListener('DOMContentLoaded', () => {
+        initDarkMode();
+        loadClientStores();
+    });
 </script>
