@@ -40,7 +40,12 @@ class Store extends Model
         'show_category_images',
         'paystack_public_key',
         'paystack_secret_key',
-        'payment_enabled'
+        'payment_enabled',
+        'bank_transfer_enabled',
+        'bank_name',
+        'account_number',
+        'account_name',
+        'cod_enabled'
     ];
 
     /**

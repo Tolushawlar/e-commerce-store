@@ -6195,6 +6195,143 @@
                 ]
             }
         },
+        "/api/payment/initialize": {
+            "post": {
+                "tags": [
+                    "Payment"
+                ],
+                "summary": "Initialize Paystack payment",
+                "description": "Initialize payment for an order\nPOST /api/payment/initialize",
+                "operationId": "c4a25fbe29c63e6161ce1ec2f68b90d4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "order_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "type": "integer",
+                                        "example": 123
+                                    },
+                                    "callback_url": {
+                                        "type": "string",
+                                        "example": "https://store.com/payment/callback"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment initialized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "authorization_url": {
+                                                    "type": "string"
+                                                },
+                                                "access_code": {
+                                                    "type": "string"
+                                                },
+                                                "reference": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payment/verify": {
+            "post": {
+                "tags": [
+                    "Payment"
+                ],
+                "summary": "Verify Paystack payment",
+                "description": "Verify payment\nPOST /api/payment/verify",
+                "operationId": "7e0f88206f733b8ade65fdb245f7f13a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reference"
+                                ],
+                                "properties": {
+                                    "reference": {
+                                        "type": "string",
+                                        "example": "PS_1234567890_abcdef"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "success"
+                                                },
+                                                "amount": {
+                                                    "type": "number"
+                                                },
+                                                "order_id": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/products": {
             "get": {
                 "tags": [
@@ -8366,6 +8503,10 @@
         {
             "name": "Orders",
             "description": "Orders"
+        },
+        {
+            "name": "Payment",
+            "description": "Payment"
         },
         {
             "name": "Products",

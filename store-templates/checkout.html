@@ -59,7 +59,7 @@
             <div class="lg:col-span-2">
                 <form id="checkout-form" class="space-y-6">
                     <!-- Step 1: Contact Information -->
-                    <div id="contact-step" class="bg-white rounded-lg shadow-sm p-6">
+                    <div id="contact-step" class="bg-white rounded-lg shadow-sm p-6" style="display: block;">
                         <h2 class="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -89,7 +89,7 @@
                     </div>
 
                     <!-- Step 2: Shipping Address -->
-                    <div id="shipping-step" class="bg-white rounded-lg shadow-sm p-6 hidden">
+                    <div id="shipping-step" class="bg-white rounded-lg shadow-sm p-6" style="display: none;">
                         <h2 class="text-2xl font-bold text-gray-900 mb-6">Shipping Address</h2>
                         <div class="space-y-4">
                             <div>
@@ -146,34 +146,39 @@
                     </div>
 
                     <!-- Step 3: Payment -->
-                    <div id="payment-step" class="bg-white rounded-lg shadow-sm p-6 hidden">
+                    <div id="payment-step" class="bg-white rounded-lg shadow-sm p-6" style="display: none;">
                         <h2 class="text-2xl font-bold text-gray-900 mb-6">Payment Method</h2>
-                        <div class="space-y-4">
-                            <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300">
-                                <input type="radio" name="payment" value="card" checked class="w-5 h-5">
-                                <span class="material-symbols-outlined" style="color: var(--primary);">credit_card</span>
-                                <div class="flex-1">
-                                    <p class="font-semibold text-gray-900">Debit/Credit Card</p>
-                                    <p class="text-sm text-gray-500">Pay securely with your card</p>
-                                </div>
-                            </label>
-                            <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300">
-                                <input type="radio" name="payment" value="transfer" class="w-5 h-5">
-                                <span class="material-symbols-outlined" style="color: var(--primary);">account_balance</span>
-                                <div class="flex-1">
-                                    <p class="font-semibold text-gray-900">Bank Transfer</p>
-                                    <p class="text-sm text-gray-500">Transfer to our account</p>
-                                </div>
-                            </label>
-                            <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300">
-                                <input type="radio" name="payment" value="cod" class="w-5 h-5">
-                                <span class="material-symbols-outlined" style="color: var(--primary);">local_shipping</span>
-                                <div class="flex-1">
-                                    <p class="font-semibold text-gray-900">Cash on Delivery</p>
-                                    <p class="text-sm text-gray-500">Pay when you receive</p>
-                                </div>
-                            </label>
+                        <div id="payment-options" class="space-y-4">
+                            <!-- Payment options will be dynamically loaded -->
                         </div>
+
+                        <!-- Bank Transfer Details (shown when bank transfer is selected) -->
+                        <div id="bank-transfer-details" class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+                            <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-600">account_balance</span>
+                                Bank Transfer Details
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Bank Name:</span>
+                                    <span id="bank-name" class="font-semibold text-gray-900">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Account Number:</span>
+                                    <span id="account-number" class="font-semibold text-gray-900">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Account Name:</span>
+                                    <span id="account-name" class="font-semibold text-gray-900">-</span>
+                                </div>
+                                <div class="mt-3 p-2 bg-white rounded border border-blue-300">
+                                    <p class="text-xs text-gray-600">
+                                        <strong>Note:</strong> After making the transfer, your order will be processed once payment is confirmed.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="mt-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Order Notes (Optional)</label>
                             <textarea id="notes" name="notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-opacity-50" placeholder="Any special instructions for your order?" style="focus:ring-color: var(--primary);"></textarea>
@@ -247,10 +252,128 @@
         let orderData = {
             contact: {},
             shipping: {},
-            payment: { method: 'card' },
+            payment: { method: null },
             items: [],
             totals: {}
         };
+        let paymentConfig = null;
+
+        // Load payment options based on store configuration
+        async function loadPaymentOptions() {
+            try {
+                const storeId = window.storeConfig.store_id;
+                const apiBase = window.API_BASE_URL + '/api';
+                const response = await fetch(`${apiBase}/stores/${storeId}/payment/config`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error('Failed to load payment configuration');
+                }
+                
+                paymentConfig = data.data;
+                const paymentContainer = document.getElementById('payment-options');
+                let paymentHTML = '';
+                let firstEnabled = null;
+
+                // Card/Paystack option
+                if (paymentConfig.paystack && paymentConfig.paystack.enabled) {
+                    paymentHTML += `
+                        <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 payment-option">
+                            <input type="radio" name="payment" value="card" class="w-5 h-5" ${!firstEnabled ? 'checked' : ''}>
+                            <span class="material-symbols-outlined" style="color: var(--primary);">credit_card</span>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-900">Debit/Credit Card</p>
+                                <p class="text-sm text-gray-500">Pay securely with your card</p>
+                            </div>
+                        </label>
+                    `;
+                    firstEnabled = firstEnabled || 'card';
+                }
+
+                // Bank Transfer option
+                if (paymentConfig.bank_transfer && paymentConfig.bank_transfer.enabled) {
+                    paymentHTML += `
+                        <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 payment-option">
+                            <input type="radio" name="payment" value="transfer" class="w-5 h-5" ${!firstEnabled ? 'checked' : ''}>
+                            <span class="material-symbols-outlined" style="color: var(--primary);">account_balance</span>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-900">Bank Transfer</p>
+                                <p class="text-sm text-gray-500">Transfer to our account</p>
+                            </div>
+                        </label>
+                    `;
+                    firstEnabled = firstEnabled || 'transfer';
+                }
+
+                // Cash on Delivery option
+                if (paymentConfig.cod && paymentConfig.cod.enabled) {
+                    paymentHTML += `
+                        <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 payment-option">
+                            <input type="radio" name="payment" value="cod" class="w-5 h-5" ${!firstEnabled ? 'checked' : ''}>
+                            <span class="material-symbols-outlined" style="color: var(--primary);">local_shipping</span>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-900">Cash on Delivery</p>
+                                <p class="text-sm text-gray-500">Pay when you receive</p>
+                            </div>
+                        </label>
+                    `;
+                    firstEnabled = firstEnabled || 'cod';
+                }
+
+                if (!paymentHTML) {
+                    paymentHTML = `
+                        <div class="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
+                            <p class="text-red-800">No payment methods configured. Please contact store support.</p>
+                        </div>
+                    `;
+                }
+
+                paymentContainer.innerHTML = paymentHTML;
+                orderData.payment.method = firstEnabled;
+
+                // Add event listeners to payment options
+                document.querySelectorAll('input[name="payment"]').forEach(radio => {
+                    radio.addEventListener('change', handlePaymentMethodChange);
+                });
+
+                // If bank transfer is selected by default, show details
+                if (firstEnabled === 'transfer') {
+                    showBankTransferDetails();
+                }
+
+            } catch (error) {
+                console.error('Error loading payment options:', error);
+                const paymentContainer = document.getElementById('payment-options');
+                paymentContainer.innerHTML = `
+                    <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <p class="text-red-800">Failed to load payment options. Please refresh the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle payment method change
+        function handlePaymentMethodChange(event) {
+            const method = event.target.value;
+            orderData.payment.method = method;
+
+            // Show/hide bank transfer details
+            if (method === 'transfer') {
+                showBankTransferDetails();
+            } else {
+                document.getElementById('bank-transfer-details').classList.add('hidden');
+            }
+        }
+
+        // Show bank transfer details
+        function showBankTransferDetails() {
+            if (paymentConfig && paymentConfig.bank_transfer) {
+                document.getElementById('bank-name').textContent = paymentConfig.bank_transfer.bank_name || '-';
+                document.getElementById('account-number').textContent = paymentConfig.bank_transfer.account_number || '-';
+                document.getElementById('account-name').textContent = paymentConfig.bank_transfer.account_name || '-';
+                document.getElementById('bank-transfer-details').classList.remove('hidden');
+            }
+        }
 
         // Auto-fill customer data on page load
         async function autoFillCustomerData() {
@@ -363,30 +486,45 @@
             currentStep = step;
 
             // Hide all steps
-            document.getElementById('contact-step').classList.add('hidden');
-            document.getElementById('shipping-step').classList.add('hidden');
-            document.getElementById('payment-step').classList.add('hidden');
+            document.getElementById('contact-step').style.display = 'none';
+            document.getElementById('shipping-step').style.display = 'none';
+            document.getElementById('payment-step').style.display = 'none';
 
             // Show current step
-            if (step === 1) document.getElementById('contact-step').classList.remove('hidden');
-            if (step === 2) document.getElementById('shipping-step').classList.remove('hidden');
-            if (step === 3) document.getElementById('payment-step').classList.remove('hidden');
+            if (step === 1) document.getElementById('contact-step').style.display = 'block';
+            if (step === 2) document.getElementById('shipping-step').style.display = 'block';
+            if (step === 3) document.getElementById('payment-step').style.display = 'block';
 
             // Update progress indicators
             updateProgress(step);
+            
+            // Scroll to top of form
+            document.getElementById('checkout-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function updateProgress(step) {
             for (let i = 1; i <= 3; i++) {
                 const stepEl = document.getElementById(`step-${i}`);
+                const circle = stepEl.querySelector('.w-10.h-10');
+                
                 if (i < step) {
+                    // Completed step
                     stepEl.classList.add('step-complete');
-                    stepEl.classList.remove('step-active');
+                    stepEl.classList.remove('step-active', 'text-gray-400');
+                    circle.classList.remove('border-gray-300');
+                    circle.innerHTML = '<span class="material-symbols-outlined text-sm">check</span>';
                 } else if (i === step) {
+                    // Current active step
                     stepEl.classList.add('step-active');
-                    stepEl.classList.remove('step-complete');
+                    stepEl.classList.remove('step-complete', 'text-gray-400');
+                    circle.classList.remove('border-gray-300');
+                    circle.textContent = i;
                 } else {
+                    // Future step
                     stepEl.classList.remove('step-active', 'step-complete');
+                    stepEl.classList.add('text-gray-400');
+                    circle.classList.add('border-gray-300');
+                    circle.textContent = i;
                 }
             }
         }
@@ -446,38 +584,50 @@
             const result = await CheckoutService.placeOrder(orderData);
 
             if (result.success) {
-                // Process payment with Paystack
-                const customer = CheckoutService.getCustomer();
-                const email = customer?.email || orderData.contact.email;
+                // Check if payment is configured
+                const paymentEnabled = await CheckoutService.isPaymentEnabled();
                 
-                // Get total amount from cart
-                const cartItems = JSON.parse(localStorage.getItem('cart_items') || '[]');
-                const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                if (paymentEnabled && orderData.payment.method === 'card') {
+                    // Process payment with Paystack
+                    const customer = CheckoutService.getCustomer();
+                    const email = customer?.email || orderData.contact.email;
+                    const customerName = `${orderData.contact.firstName} ${orderData.contact.lastName}`;
+                    
+                    // Use the order total from the created order
+                    const totalAmount = parseFloat(result.order.total_amount);
 
-                // Process payment
-                const payment = await CheckoutService.processPayment(
-                    result.order.id,
-                    totalAmount,
-                    email,
-                    // Success callback
-                    function(order) {
-                        // Clear cart after successful payment
-                        localStorage.removeItem('cart_items');
-                        // Redirect to success page
-                        window.location.href = `order-success.html?order=${order.id}`;
-                    },
-                    // Close callback
-                    function() {
-                        // User closed the popup
+                    // Process payment
+                    const payment = await CheckoutService.processPayment(
+                        result.order.id,
+                        totalAmount,
+                        email,
+                        customerName,
+                        // Success callback
+                        function(order) {
+                            // Clear cart after successful payment
+                            localStorage.removeItem('cart_items');
+                            // Redirect to success page
+                            window.location.href = `order-success.html?order=${order.id}`;
+                        },
+                        // Close callback
+                        function() {
+                            // User closed the popup
+                            btn.disabled = false;
+                            btn.innerHTML = '<span class="material-symbols-outlined">shopping_bag</span> <span>Place Order</span>';
+                        }
+                    );
+
+                    if (!payment.success) {
+                        // Payment initialization failed - show error
                         btn.disabled = false;
                         btn.innerHTML = '<span class="material-symbols-outlined">shopping_bag</span> <span>Place Order</span>';
+                        alert(payment.error || 'Payment initialization failed. Please try again.');
                     }
-                );
-
-                if (!payment.success) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<span class="material-symbols-outlined">shopping_bag</span> <span>Place Order</span>';
-                    alert(payment.error || 'Payment initialization failed. Please try again.');
+                    // If payment.success is true, the popup is open and we wait for user action
+                } else {
+                    // No payment gateway or non-card payment - proceed to success page
+                    localStorage.removeItem('cart_items');
+                    window.location.href = `order-success.html?order=${result.order.id}`;
                 }
             } else {
                 btn.disabled = false;
@@ -488,6 +638,7 @@
 
         // Initialize
         async function init() {
+            await loadPaymentOptions();
             await autoFillCustomerData();
             await loadOrderSummary();
         }

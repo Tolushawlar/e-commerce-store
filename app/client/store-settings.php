@@ -95,6 +95,69 @@ include '../shared/header-client.php';
                 </div>
             </div>
 
+            <!-- Bank Transfer Payment -->
+            <div class="border-b border-gray-200 pb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">account_balance</span>
+                    Bank Transfer Payment
+                </h3>
+                <p class="text-gray-600 text-sm mb-4">Allow customers to pay via bank transfer. You'll need to manually verify payments.</p>
+
+                <!-- Enable Bank Transfer -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <label for="bankTransferEnabled" class="font-medium text-gray-900">Enable Bank Transfer</label>
+                        <p class="text-gray-600 text-sm">Show bank transfer as a payment option</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer ml-4">
+                        <input type="checkbox" id="bankTransferEnabled" class="sr-only peer">
+                        <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+
+                <!-- Bank Details -->
+                <div class="space-y-3">
+                    <div>
+                        <label for="bankName" class="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
+                        <input type="text" id="bankName"
+                            placeholder="e.g., First Bank of Nigeria"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="accountNumber" class="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
+                        <input type="text" id="accountNumber"
+                            placeholder="e.g., 1234567890"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="accountName" class="block text-sm font-medium text-gray-700 mb-1">Account Name</label>
+                        <input type="text" id="accountName"
+                            placeholder="e.g., LivePetal Hub Limited"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cash on Delivery -->
+            <div class="border-b border-gray-200 pb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    Cash on Delivery (COD)
+                </h3>
+                <p class="text-gray-600 text-sm mb-4">Allow customers to pay when they receive their order.</p>
+
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <label for="codEnabled" class="font-medium text-gray-900">Enable Cash on Delivery</label>
+                        <p class="text-gray-600 text-sm">Customer pays cash when order is delivered</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer ml-4">
+                        <input type="checkbox" id="codEnabled" class="sr-only peer" checked>
+                        <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+            </div>
+
             <!-- Save Button -->
             <div class="flex justify-end pt-4">
                 <button type="submit" id="saveBtn"
@@ -192,6 +255,15 @@ include '../shared/header-client.php';
             document.getElementById('paystackPublicKey').value = store.paystack_public_key || '';
             document.getElementById('paystackSecretKey').value = store.paystack_secret_key || '';
 
+            // Load Bank Transfer settings
+            document.getElementById('bankTransferEnabled').checked = store.bank_transfer_enabled || false;
+            document.getElementById('bankName').value = store.bank_name || '';
+            document.getElementById('accountNumber').value = store.account_number || '';
+            document.getElementById('accountName').value = store.account_name || '';
+
+            // Load COD settings
+            document.getElementById('codEnabled').checked = store.cod_enabled !== false; // Default true
+
             document.getElementById('settingsContainer').classList.remove('hidden');
             document.getElementById('emptyState').classList.add('hidden');
         } catch (error) {
@@ -214,7 +286,12 @@ include '../shared/header-client.php';
             show_category_images: document.getElementById('showCategoryImages').checked,
             payment_enabled: document.getElementById('paymentEnabled').checked,
             paystack_public_key: document.getElementById('paystackPublicKey').value.trim(),
-            paystack_secret_key: document.getElementById('paystackSecretKey').value.trim()
+            paystack_secret_key: document.getElementById('paystackSecretKey').value.trim(),
+            bank_transfer_enabled: document.getElementById('bankTransferEnabled').checked,
+            bank_name: document.getElementById('bankName').value.trim(),
+            account_number: document.getElementById('accountNumber').value.trim(),
+            account_name: document.getElementById('accountName').value.trim(),
+            cod_enabled: document.getElementById('codEnabled').checked
         };
 
         try {
