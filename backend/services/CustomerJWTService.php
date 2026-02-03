@@ -16,11 +16,11 @@ class CustomerJWTService
     public static function generate(array $customer, int $storeId): string
     {
         $payload = [
-            'customer_id' => $customer['id'],
+            'id' => $customer['id'],
+            'role' => 'customer',
             'store_id' => $storeId,
             'email' => $customer['email'],
             'is_guest' => $customer['is_guest'] ?? false,
-            'type' => 'store_customer',
             'iat' => time(),
             'exp' => time() + (7 * 24 * 60 * 60) // 7 days for customers
         ];
@@ -37,7 +37,7 @@ class CustomerJWTService
             $payload = JWT::decode($token);
 
             // Verify it's a customer token
-            if (!isset($payload['type']) || $payload['type'] !== 'store_customer') {
+            if (!isset($payload['role']) || $payload['role'] !== 'customer') {
                 return null;
             }
 
@@ -65,7 +65,7 @@ class CustomerJWTService
 
         // Generate new token with same data but new expiration
         return self::generate([
-            'id' => $payload['customer_id'],
+            'id' => $payload['id'],
             'email' => $payload['email'],
             'is_guest' => $payload['is_guest']
         ], $payload['store_id']);

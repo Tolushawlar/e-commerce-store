@@ -283,18 +283,19 @@ class CustomerController extends Controller
      */
     public function me(int $storeId): void
     {
-        $customerPayload = CustomerJWTService::getCustomerFromRequest();
+        // Get authenticated user from middleware
+        $authUser = $_REQUEST['auth_user'] ?? null;
 
-        if (!$customerPayload) {
+        if (!$authUser || $authUser['role'] !== 'customer') {
             $this->error('Unauthorized', 401);
         }
 
         // Verify store matches
-        if ($customerPayload['store_id'] != $storeId) {
+        if ($authUser['store_id'] != $storeId) {
             $this->error('Invalid store', 403);
         }
 
-        $customer = $this->customerModel->findWithAddresses($customerPayload['customer_id']);
+        $customer = $this->customerModel->findWithAddresses($authUser['id']);
 
         if (!$customer) {
             $this->error('Customer not found', 404);
@@ -349,29 +350,59 @@ class CustomerController extends Controller
      */
     public function updateProfile(int $storeId): void
     {
-        $customerPayload = CustomerJWTService::getCustomerFromRequest();
+        // Get authenticated user from middleware
+        $authUser = $_REQUEST['auth_user'] ?? null;
 
-        if (!$customerPayload) {
+        if (!$authUser || $authUser['role'] !== 'customer') {
             $this->error('Unauthorized', 401);
+        }
+
+        // Verify store matches
+        if ($authUser['store_id'] != $storeId) {
+            $this->error('Invalid store', 403);
         }
 
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Only allow updating certain fields
-        $allowedFields = ['first_name', 'last_name', 'phone'];
-        $updateData = array_intersect_key($data, array_flip($allowedFields));
+        // Separate customer fields from address fields
+        $customerFields = ['first_name', 'last_name', 'phone'];
+        $addressFields = ['address', 'street_address', 'city', 'state', 'postal_code', 'country'];
 
-        if (empty($updateData)) {
-            $this->error('No valid fields to update', 400);
+        $customerData = array_intersect_key($data, array_flip($customerFields));
+        $addressData = array_intersect_key($data, array_flip($addressFields));
+
+        // Normalize address field
+        if (isset($addressData['address'])) {
+            $addressData['street_address'] = $addressData['address'];
+            unset($addressData['address']);
         }
 
-        $success = $this->customerModel->update($customerPayload['customer_id'], $updateData);
-
-        if (!$success) {
-            $this->error('Failed to update profile', 500);
+        // Update customer profile if there's customer data
+        if (!empty($customerData)) {
+            $success = $this->customerModel->update($authUser['id'], $customerData);
+            if (!$success) {
+                $this->error('Failed to update profile', 500);
+            }
         }
 
-        $customer = $this->customerModel->find($customerPayload['customer_id']);
+        // Update or create address if there's address data
+        if (!empty($addressData)) {
+            // Check if customer has an existing address
+            $existingAddresses = $this->addressModel->getByCustomer($authUser['id']);
+
+            if (!empty($existingAddresses)) {
+                // Update first address
+                $this->addressModel->update($existingAddresses[0]['id'], $addressData);
+            } else {
+                // Create new address
+                $addressData['customer_id'] = $authUser['id'];
+                $addressData['is_default'] = true;
+                $this->addressModel->create($addressData);
+            }
+        }
+
+        // Return updated customer data
+        $customer = $this->customerModel->findWithAddresses($authUser['id']);
         $this->success($customer, 'Profile updated successfully');
     }
 
@@ -416,13 +447,19 @@ class CustomerController extends Controller
      */
     public function changePassword(int $storeId): void
     {
-        $customerPayload = CustomerJWTService::getCustomerFromRequest();
+        // Get authenticated user from middleware
+        $authUser = $_REQUEST['auth_user'] ?? null;
 
-        if (!$customerPayload) {
+        if (!$authUser || $authUser['role'] !== 'customer') {
             $this->error('Unauthorized', 401);
         }
 
-        if ($customerPayload['is_guest']) {
+        // Verify store matches
+        if ($authUser['store_id'] != $storeId) {
+            $this->error('Invalid store', 403);
+        }
+
+        if ($authUser['is_guest']) {
             $this->error('Guest accounts cannot change password', 400);
         }
 
@@ -438,7 +475,7 @@ class CustomerController extends Controller
         }
 
         // Get customer
-        $customer = $this->customerModel->find($customerPayload['customer_id']);
+        $customer = $this->customerModel->find($authUser['id']);
 
         // Verify current password
         if (!$this->customerModel->verifyPassword($customer, $data['current_password'])) {

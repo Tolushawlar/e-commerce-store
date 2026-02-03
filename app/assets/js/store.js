@@ -3,8 +3,9 @@
  * Handles product loading and display for generated stores
  */
 
-// API base URL - adjust based on your environment
-const API_BASE_URL = window.location.origin;
+if (typeof API_BASE_URL === "undefined") {
+  var API_BASE_URL = window.location.origin;
+}
 
 /**
  * Load products for a store
@@ -318,6 +319,15 @@ function escapeHtml(text) {
  * Add to cart (integrated with CartService)
  */
 function addToCart(productId) {
+  // Check authentication first
+  if (window.CustomerAuth && !window.CustomerAuth.isAuthenticated()) {
+    showToast("Please login to add items to cart", "warning");
+    setTimeout(() => {
+      window.location.href = `login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+    }, 1500);
+    return;
+  }
+
   // Use CartService if available
   if (window.CartService) {
     CartService.addItem(productId, 1);
@@ -368,10 +378,10 @@ function updateCartBadgeManual() {
 /**
  * Show toast notification
  */
-function showToast(message) {
+function showToast(message, type = "success") {
   const toast = document.createElement("div");
-  toast.className =
-    "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300";
+  const bgColor = type === "warning" ? "bg-orange-500" : "bg-green-500";
+  toast.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300`;
   toast.textContent = message;
 
   document.body.appendChild(toast);

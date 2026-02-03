@@ -86,6 +86,20 @@ class StoreGeneratorService
             copy($checkoutJsSource, $checkoutJsDest);
         }
 
+        // Copy customer-auth.js to the store directory
+        $customerAuthJsSource = dirname(__DIR__, 2) . '/app/assets/js/customer-auth.js';
+        $customerAuthJsDest = "{$storeDir}/customer-auth.js";
+        if (file_exists($customerAuthJsSource)) {
+            copy($customerAuthJsSource, $customerAuthJsDest);
+        }
+
+        // Copy profile-header.js to the store directory
+        $profileHeaderJsSource = dirname(__DIR__, 2) . '/app/assets/js/profile-header.js';
+        $profileHeaderJsDest = "{$storeDir}/profile-header.js";
+        if (file_exists($profileHeaderJsSource)) {
+            copy($profileHeaderJsSource, $profileHeaderJsDest);
+        }
+
         // Generate cart.html from template
         $cartHtml = $this->generateCartHTML($store);
         file_put_contents("{$storeDir}/cart.html", $cartHtml);
@@ -94,6 +108,18 @@ class StoreGeneratorService
         $checkoutHtml = $this->generateCheckoutHTML($store);
         file_put_contents("{$storeDir}/checkout.html", $checkoutHtml);
 
+        // Generate login.html from template
+        $loginHtml = $this->generateLoginHTML($store);
+        file_put_contents("{$storeDir}/login.html", $loginHtml);
+
+        // Generate profile.html from template
+        $profileHtml = $this->generateProfileHTML($store);
+        file_put_contents("{$storeDir}/profile.html", $profileHtml);
+
+        // Generate orders.html from template
+        $ordersHtml = $this->generateOrdersHTML($store);
+        file_put_contents("{$storeDir}/orders.html", $ordersHtml);
+
         // Generate order-success.html from template
         $successHtml = $this->generateOrderSuccessHTML($store);
         file_put_contents("{$storeDir}/order-success.html", $successHtml);
@@ -101,7 +127,7 @@ class StoreGeneratorService
         return [
             'store_id' => $storeId,
             'store_url' => "/stores/{$storeSlug}/",
-            'files_generated' => ['index.html', 'config.json', 'store.js', 'product.html', 'product-detail.js', 'cart.js', 'checkout.js', 'cart.html', 'checkout.html', 'order-success.html'],
+            'files_generated' => ['index.html', 'config.json', 'store.js', 'product.html', 'product-detail.js', 'cart.js', 'checkout.js', 'customer-auth.js', 'profile-header.js', 'cart.html', 'checkout.html', 'login.html', 'profile.html', 'orders.html', 'order-success.html'],
             'template_used' => $template['name'] ?? 'Default'
         ];
     }
@@ -581,6 +607,45 @@ class StoreGeneratorService
     private function generateOrderSuccessHTML(array $store): string
     {
         $templatePath = $this->templatesPath . '/order-success.html';
+        if (file_exists($templatePath)) {
+            $html = file_get_contents($templatePath);
+            return $this->replacePlaceholders($html, $store);
+        }
+        return '';
+    }
+
+    /**
+     * Generate login.html from template
+     */
+    private function generateLoginHTML(array $store): string
+    {
+        $templatePath = $this->templatesPath . '/login.html';
+        if (file_exists($templatePath)) {
+            $html = file_get_contents($templatePath);
+            return $this->replacePlaceholders($html, $store);
+        }
+        return '';
+    }
+
+    /**
+     * Generate profile.html from template
+     */
+    private function generateProfileHTML(array $store): string
+    {
+        $templatePath = $this->templatesPath . '/profile.html';
+        if (file_exists($templatePath)) {
+            $html = file_get_contents($templatePath);
+            return $this->replacePlaceholders($html, $store);
+        }
+        return '';
+    }
+
+    /**
+     * Generate orders.html from template
+     */
+    private function generateOrdersHTML(array $store): string
+    {
+        $templatePath = $this->templatesPath . '/orders.html';
         if (file_exists($templatePath)) {
             $html = file_get_contents($templatePath);
             return $this->replacePlaceholders($html, $store);

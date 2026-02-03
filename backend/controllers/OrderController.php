@@ -142,7 +142,12 @@ class OrderController extends Controller
         }
 
         // Verify ownership - user can only view their own orders (unless admin)
-        $authUser = $this->request['auth_user'] ?? null;
+        $authUser = $_REQUEST['auth_user'] ?? null;
+
+        if (!$authUser) {
+            $this->error('Authentication required', 401);
+        }
+
         if ($authUser['role'] !== 'admin' && $order['customer_id'] != $authUser['id']) {
             $this->error('Unauthorized to view this order', 403);
         }
@@ -189,7 +194,7 @@ class OrderController extends Controller
     public function store(): void
     {
         $data = $this->input();
-        $authUser = $this->request['auth_user'] ?? null;
+        $authUser = $_REQUEST['auth_user'] ?? null;
 
         // Link order to authenticated customer
         if ($authUser && $authUser['role'] === 'customer') {

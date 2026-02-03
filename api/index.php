@@ -136,9 +136,12 @@ $router->post('/api/stores/{store_id}/customers/login', [CustomerController::cla
 $router->post('/api/stores/{store_id}/customers/logout', [CustomerController::class, 'logout']);
 
 // Customer Profile (Requires Customer Token)
-$router->get('/api/stores/{store_id}/customers/me', [CustomerController::class, 'me']);
-$router->put('/api/stores/{store_id}/customers/me', [CustomerController::class, 'updateProfile']);
-$router->post('/api/stores/{store_id}/customers/change-password', [CustomerController::class, 'changePassword']);
+$router->get('/api/stores/{store_id}/customers/me', [CustomerController::class, 'me'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->put('/api/stores/{store_id}/customers/me', [CustomerController::class, 'updateProfile'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/api/stores/{store_id}/customers/change-password', [CustomerController::class, 'changePassword'])
+    ->middleware([AuthMiddleware::class, 'handle']);
 
 // Shopping Cart Routes (Public/Customer Token)
 $router->get('/api/stores/{store_id}/cart', [CartController::class, 'index']);

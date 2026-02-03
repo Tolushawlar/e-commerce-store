@@ -38,7 +38,7 @@ class StoreCustomer extends Model
         $stmt->execute([$email, $storeId]);
         $result = $stmt->fetch();
 
-        return $result ? $this->filterHidden($result) : null;
+        return $result ?: null;
     }
 
     /**

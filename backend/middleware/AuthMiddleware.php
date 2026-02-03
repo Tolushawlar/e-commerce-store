@@ -6,7 +6,7 @@ use App\Helpers\JWT;
 
 /**
  * Authentication Middleware
- * Handles JWT token validation
+ * Handles JWT token validation for admin, client, and customer tokens
  */
 class AuthMiddleware
 {
@@ -71,7 +71,7 @@ class AuthMiddleware
         self::checkRole('admin');
     }
 
-    
+
 
     /**
      * Check if user is client

@@ -123,6 +123,18 @@
                                 <p class="text-red-500 text-sm mt-1 hidden" id="postalCode-error"></p>
                             </div>
                         </div>
+                        
+                        <!-- Save Details Checkbox -->
+                        <div id="save-details-container" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" id="saveDetails" name="saveDetails" class="mt-1 w-4 h-4 rounded" style="color: var(--primary);">
+                                <div class="flex-1">
+                                    <span class="font-medium text-gray-900">Save my details for next time</span>
+                                    <p class="text-sm text-gray-600 mt-1">We'll securely save your contact and shipping information to make future checkouts faster.</p>
+                                </div>
+                            </label>
+                        </div>
+                        
                         <div class="flex gap-4 mt-6">
                             <button type="button" onclick="prevStep(2)" class="px-8 py-3 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50">
                                 Back
@@ -213,7 +225,14 @@
 
     <script src="cart.js"></script>
     <script src="checkout.js"></script>
+    <script src="customer-auth.js"></script>
     <script>
+        // Check authentication first
+        if (typeof CustomerAuth !== 'undefined' && !CustomerAuth.isAuthenticated()) {
+            alert('Please login to proceed with checkout');
+            window.location.href = `login.html?redirect=${encodeURIComponent('checkout.html')}`;
+        }
+
         const storeConfig = {
             store_id: {{store_id}},
             apiUrl: window.location.origin + '/api'
@@ -229,6 +248,27 @@
             items: [],
             totals: {}
         };
+
+        // Auto-fill customer data on page load
+        async function autoFillCustomerData() {
+            try {
+                const profile = await CheckoutService.fetchCustomerProfile();
+                if (profile) {
+                    // Auto-fill form
+                    const filled = CheckoutService.autoFillForm(profile);
+                    
+                    // Show save checkbox if profile is incomplete
+                    const showSave = CheckoutService.shouldShowSaveOption(profile);
+                    const saveContainer = document.getElementById('save-details-container');
+                    
+                    if (showSave && saveContainer) {
+                        saveContainer.classList.remove('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error auto-filling customer data:', error);
+            }
+        }
 
         // Load cart and display order summary
         async function loadOrderSummary() {
@@ -377,6 +417,28 @@
             orderData.payment.method = document.querySelector('input[name="payment"]:checked').value;
             orderData.notes = document.getElementById('notes').value;
 
+            // Check if user wants to save details
+            const saveDetailsCheckbox = document.getElementById('saveDetails');
+            if (saveDetailsCheckbox && saveDetailsCheckbox.checked) {
+                // Save customer details to profile
+                const profileData = {
+                    phone: orderData.contact.phone,
+                    address: orderData.shipping.address,
+                    city: orderData.shipping.city,
+                    state: orderData.shipping.state,
+                    postal_code: orderData.shipping.postalCode
+                };
+                
+                // Save in background (don't block order placement)
+                CheckoutService.saveCustomerDetails(profileData).then(result => {
+                    if (result.success) {
+                        console.log('Customer details saved successfully');
+                    }
+                }).catch(err => {
+                    console.error('Failed to save customer details:', err);
+                });
+            }
+
             // Place order
             const result = await CheckoutService.placeOrder(orderData);
 
@@ -391,7 +453,12 @@
         });
 
         // Initialize
-        loadOrderSummary();
+        async function init() {
+            await autoFillCustomerData();
+            await loadOrderSummary();
+        }
+        
+        init();
     </script>
 </body>
 </html>

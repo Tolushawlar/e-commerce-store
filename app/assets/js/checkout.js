@@ -43,6 +43,169 @@ const CheckoutService = {
   },
 
   /**
+   * Fetch customer profile from API
+   */
+  async fetchCustomerProfile() {
+    try {
+      const storeId = this.getStoreId();
+      const token = this.getAuthToken();
+
+      if (!token || !storeId) {
+        return null;
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/stores/${storeId}/customers/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const result = await response.json();
+      return result.data || result;
+    } catch (error) {
+      console.error("Error fetching customer profile:", error);
+      return null;
+    }
+  },
+
+  /**
+   * Auto-fill form with customer data
+   */
+  autoFillForm(profile) {
+    if (!profile) return false;
+
+    let filled = false;
+
+    // Fill contact information
+    if (profile.first_name) {
+      const firstNameInput = document.getElementById("firstName");
+      if (firstNameInput && !firstNameInput.value) {
+        firstNameInput.value = profile.first_name;
+        filled = true;
+      }
+    }
+
+    if (profile.last_name) {
+      const lastNameInput = document.getElementById("lastName");
+      if (lastNameInput && !lastNameInput.value) {
+        lastNameInput.value = profile.last_name;
+        filled = true;
+      }
+    }
+
+    if (profile.email) {
+      const emailInput = document.getElementById("email");
+      if (emailInput && !emailInput.value) {
+        emailInput.value = profile.email;
+        filled = true;
+      }
+    }
+
+    if (profile.phone) {
+      const phoneInput = document.getElementById("phone");
+      if (phoneInput && !phoneInput.value) {
+        phoneInput.value = profile.phone;
+        filled = true;
+      }
+    }
+
+    // Fill address information from first address or profile fields
+    const address =
+      profile.addresses && profile.addresses.length > 0
+        ? profile.addresses[0]
+        : profile;
+
+    if (address.street_address || address.address) {
+      const addressInput = document.getElementById("address");
+      if (addressInput && !addressInput.value) {
+        addressInput.value = address.street_address || address.address;
+        filled = true;
+      }
+    }
+
+    if (address.city) {
+      const cityInput = document.getElementById("city");
+      if (cityInput && !cityInput.value) {
+        cityInput.value = address.city;
+        filled = true;
+      }
+    }
+
+    if (address.state) {
+      const stateInput = document.getElementById("state");
+      if (stateInput && !stateInput.value) {
+        stateInput.value = address.state;
+        filled = true;
+      }
+    }
+
+    if (address.postal_code) {
+      const postalCodeInput = document.getElementById("postalCode");
+      if (postalCodeInput && !postalCodeInput.value) {
+        postalCodeInput.value = address.postal_code;
+        filled = true;
+      }
+    }
+
+    return filled;
+  },
+
+  /**
+   * Check if profile needs to be saved
+   */
+  shouldShowSaveOption(profile) {
+    // Show save option if customer is authenticated but missing address details
+    if (!profile) return false;
+
+    const hasAddress = profile.addresses && profile.addresses.length > 0;
+    const hasAddressFields = profile.street_address || profile.address;
+
+    return !hasAddress && !hasAddressFields;
+  },
+
+  /**
+   * Update customer profile with shipping details
+   */
+  async saveCustomerDetails(profileData) {
+    try {
+      const storeId = this.getStoreId();
+      const token = this.getAuthToken();
+
+      if (!token || !storeId) {
+        return { success: false, error: "Not authenticated" };
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/stores/${storeId}/customers/me`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(profileData),
+        },
+      );
+
+      const result = await response.json();
+      return {
+        success: response.ok && result.success,
+        data: result.data,
+      };
+    } catch (error) {
+      console.error("Error saving customer details:", error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
    * Get checkout state from localStorage
    */
   getCheckoutState() {

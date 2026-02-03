@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>My Profile - {{store_name}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "{{primary_color}}",
+                        "accent": "{{accent_color}}",
+                    },
+                },
+            },
+        }
+        
+        window.storeConfig = {
+            store_id: {{store_id}},
+            storeId: {{store_id}},
+            storeName: "{{store_name}}",
+            primaryColor: "{{primary_color}}",
+            accentColor: "{{accent_color}}"
+        };
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-xl">store</span>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">{{store_name}}</span>
+                </a>
+                
+                <div class="flex items-center gap-4">
+                    <a href="cart.html" class="p-2 text-gray-600 hover:text-primary transition-colors relative">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"></span>
+                    </a>
+                    <div class="relative" id="profile-dropdown">
+                        <button class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors" id="profile-button">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white text-xl">person</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid lg:grid-cols-4 gap-6">
+            <!-- Sidebar -->
+            <aside class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="text-center mb-6">
+                        <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="material-symbols-outlined text-white text-4xl">person</span>
+                        </div>
+                        <h2 class="text-lg font-bold text-gray-900" id="sidebar-name">Loading...</h2>
+                        <p class="text-sm text-gray-500" id="sidebar-email">Loading...</p>
+                    </div>
+                    
+                    <nav class="space-y-2">
+                        <a href="profile.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-lg font-medium">
+                            <span class="material-symbols-outlined">person</span>
+                            <span>Profile</span>
+                        </a>
+                        <a href="orders.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors">
+                            <span class="material-symbols-outlined">receipt_long</span>
+                            <span>My Orders</span>
+                        </a>
+                        <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Logout</span>
+                        </button>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900 mb-6">My Profile</h1>
+                    
+                    <div id="loading-state" class="flex items-center justify-center py-12">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
+
+                    <div id="profile-content" class="hidden">
+                        <!-- Personal Information -->
+                        <div class="mb-8">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">badge</span>
+                                Personal Information
+                            </h2>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900" id="first-name">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900" id="last-name">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900" id="email">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900" id="phone">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">home</span>
+                                Address Information
+                            </h2>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900" id="address">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900" id="city">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">State/Province</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900" id="state">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900" id="postal-code">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900" id="country">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Status -->
+                        <div class="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center gap-2 text-green-800">
+                                <span class="material-symbols-outlined">check_circle</span>
+                                <span class="font-medium">Account Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="error-state" class="hidden text-center py-12">
+                        <span class="material-symbols-outlined text-red-500 text-6xl mb-4">error</span>
+                        <p class="text-gray-600">Failed to load profile information</p>
+                        <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:brightness-110 transition-all">
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="customer-auth.js"></script>
+    <script>
+        if (typeof API_BASE_URL === "undefined") {
+                var API_BASE_URL = window.location.origin;
+        }
+
+        // Check authentication
+        if (!CustomerAuth.isAuthenticated()) {
+            window.location.href = 'login.html?redirect=profile.html';
+        }
+
+        // Load customer profile
+        async function loadProfile() {
+            try {
+                const token = CustomerAuth.getToken();
+
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+
+                // Fetch customer details from API
+                const response = await fetch(`${API_BASE_URL}/api/stores/${window.storeConfig.store_id}/customers/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const result = await response.json();
+                const profile = result.data || result;
+
+                // Update sidebar
+                document.getElementById('sidebar-name').textContent = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User';
+                document.getElementById('sidebar-email').textContent = profile.email || '';
+
+                // Update profile content
+                document.getElementById('first-name').textContent = profile.first_name || '-';
+                document.getElementById('last-name').textContent = profile.last_name || '-';
+                document.getElementById('email').textContent = profile.email || '-';
+                document.getElementById('phone').textContent = profile.phone || '-';
+                
+                // Update address (from addresses array or profile fields)
+                const address = profile.addresses && profile.addresses.length > 0 ? profile.addresses[0] : {};
+                document.getElementById('address').textContent = address.street_address || address.address || '-';
+                document.getElementById('city').textContent = address.city || '-';
+                document.getElementById('state').textContent = address.state || '-';
+                document.getElementById('postal-code').textContent = address.postal_code || '-';
+                document.getElementById('country').textContent = address.country || '-';
+
+                // Show content
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('profile-content').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('error-state').classList.remove('hidden');
+            }
+        }
+
+        // Logout handler
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                CustomerAuth.logout();
+            }
+        });
+
+        // Load profile on page load
+        loadProfile();
+    </script>
+</body>
+</html>

@@ -70,13 +70,13 @@ const CustomerAuth = {
       }
 
       // Store token and customer data
-      localStorage.setItem("customer_token", data.token);
-      localStorage.setItem("customer_data", JSON.stringify(data.customer));
+      localStorage.setItem("customer_token", data.data.token);
+      localStorage.setItem("customer_data", JSON.stringify(data.data.customer));
 
       return {
         success: true,
-        customer: data.customer,
-        token: data.token,
+        customer: data.data.customer,
+        token: data.data.token,
       };
     } catch (error) {
       console.error("Login error:", error);
@@ -115,13 +115,13 @@ const CustomerAuth = {
       }
 
       // Store token and customer data
-      localStorage.setItem("customer_token", data.token);
-      localStorage.setItem("customer_data", JSON.stringify(data.customer));
+      localStorage.setItem("customer_token", data.data.token);
+      localStorage.setItem("customer_data", JSON.stringify(data.data.customer));
 
       return {
         success: true,
-        customer: data.customer,
-        token: data.token,
+        customer: data.data.customer,
+        token: data.data.token,
       };
     } catch (error) {
       console.error("Registration error:", error);
