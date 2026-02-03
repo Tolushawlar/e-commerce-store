@@ -50,6 +50,51 @@ include '../shared/header-client.php';
                 </div>
             </div>
 
+            <!-- Paystack Payment Integration -->
+            <div class="border-b border-gray-200 pb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">payment</span>
+                    Paystack Payment Integration
+                </h3>
+                <p class="text-gray-600 text-sm mb-4">Configure Paystack payment gateway for your store. Get your API keys from <a href="https://dashboard.paystack.com/#/settings/developers" target="_blank" class="text-primary hover:underline">Paystack Dashboard</a>.</p>
+
+                <!-- Enable Payment -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <label for="paymentEnabled" class="font-medium text-gray-900">Enable Online Payments</label>
+                        <p class="text-gray-600 text-sm">Allow customers to pay for orders using Paystack</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer ml-4">
+                        <input type="checkbox" id="paymentEnabled" class="sr-only peer">
+                        <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+
+                <!-- Paystack Keys -->
+                <div class="space-y-3">
+                    <div>
+                        <label for="paystackPublicKey" class="block text-sm font-medium text-gray-700 mb-1">Public Key</label>
+                        <input type="text" id="paystackPublicKey"
+                            placeholder="pk_test_xxxxxxxxxxxxxxxx or pk_live_xxxxxxxxxxxxxxxx"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Your Paystack public key (used on frontend)</p>
+                    </div>
+                    <div>
+                        <label for="paystackSecretKey" class="block text-sm font-medium text-gray-700 mb-1">Secret Key</label>
+                        <input type="password" id="paystackSecretKey"
+                            placeholder="sk_test_xxxxxxxxxxxxxxxx or sk_live_xxxxxxxxxxxxxxxx"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Your Paystack secret key (kept secure on server)</p>
+                    </div>
+                </div>
+
+                <!-- Test Mode Warning -->
+                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-2">
+                    <span class="material-symbols-outlined text-blue-600 text-sm">info</span>
+                    <p class="text-sm text-blue-800">Use test keys (pk_test_xxx and sk_test_xxx) for testing. Switch to live keys when ready to accept real payments.</p>
+                </div>
+            </div>
+
             <!-- Save Button -->
             <div class="flex justify-end pt-4">
                 <button type="submit" id="saveBtn"
@@ -142,6 +187,11 @@ include '../shared/header-client.php';
             document.getElementById('groupByCategory').checked = store.group_by_category || false;
             document.getElementById('showCategoryImages').checked = store.show_category_images !== false;
 
+            // Load Paystack settings
+            document.getElementById('paymentEnabled').checked = store.payment_enabled || false;
+            document.getElementById('paystackPublicKey').value = store.paystack_public_key || '';
+            document.getElementById('paystackSecretKey').value = store.paystack_secret_key || '';
+
             document.getElementById('settingsContainer').classList.remove('hidden');
             document.getElementById('emptyState').classList.add('hidden');
         } catch (error) {
@@ -161,7 +211,10 @@ include '../shared/header-client.php';
         const storeId = document.getElementById('storeId').value;
         const data = {
             group_by_category: document.getElementById('groupByCategory').checked,
-            show_category_images: document.getElementById('showCategoryImages').checked
+            show_category_images: document.getElementById('showCategoryImages').checked,
+            payment_enabled: document.getElementById('paymentEnabled').checked,
+            paystack_public_key: document.getElementById('paystackPublicKey').value.trim(),
+            paystack_secret_key: document.getElementById('paystackSecretKey').value.trim()
         };
 
         try {

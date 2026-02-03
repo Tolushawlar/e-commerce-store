@@ -37,7 +37,10 @@ class Store extends Model
         'custom_css',
         'status',
         'group_by_category',
-        'show_category_images'
+        'show_category_images',
+        'paystack_public_key',
+        'paystack_secret_key',
+        'payment_enabled'
     ];
 
     /**

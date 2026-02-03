@@ -28,6 +28,9 @@ class Order extends Model
         'shipping_cost',
         'payment_method',
         'payment_status',
+        'payment_reference',
+        'payment_gateway',
+        'payment_verified_at',
         'order_notes',
         'tracking_number',
         'status'
@@ -402,5 +405,20 @@ class Order extends Model
         $stmt->execute([$orderId]);
 
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Find order by payment reference
+     */
+    public function findByPaymentReference(string $reference): ?array
+    {
+        $stmt = $this->db->prepare("
+            SELECT * FROM {$this->table} 
+            WHERE payment_reference = ?
+        ");
+        $stmt->execute([$reference]);
+        $result = $stmt->fetch();
+
+        return $result ?: null;
     }
 }

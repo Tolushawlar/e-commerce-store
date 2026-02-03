@@ -504,7 +504,185 @@ const CheckoutService = {
     };
     return colors[status] || "text-gray-600 bg-gray-50";
   },
-};
 
-// Make available globally
-window.CheckoutService = CheckoutService;
+  /**
+   * Get Paystack configuration for store
+   */
+  async getPaystackConfig() {
+    try {
+      const storeId = this.getStoreId();
+      if (!storeId) {
+        throw new Error("Store ID not found");
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/stores/${storeId}/payment/config`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to load payment configuration");
+      }
+
+      const data = await response.json();
+      return {
+        success: true,
+        publicKey: data.data.public_key,
+        enabled: data.data.enabled,
+      };
+    } catch (error) {
+      console.error("Error loading Paystack config:", error);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  },
+
+  /**
+   * Initialize Paystack payment
+   */
+  async initializePayment(orderId, amount, email) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/payment/initialize`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+          amount: amount,
+          email: email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to initialize payment");
+      }
+
+      return {
+        success: true,
+        authorizationUrl: data.data.authorization_url,
+        reference: data.data.reference,
+      };
+    } catch (error) {
+      console.error("Error initializing payment:", error);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  },
+
+  /**
+   * Verify Paystack payment
+   */
+  async verifyPayment(reference) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/payment/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          reference: reference,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Payment verification failed");
+      }
+
+      return {
+        success: true,
+        order: data.data.order,
+        payment: data.data.payment,
+      };
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  },
+
+  /**
+   * Process payment with Paystack Popup
+   */
+  async processPayment(orderId, amount, email, onSuccess, onClose) {
+    try {
+      // Check if Paystack is loaded
+      if (typeof PaystackPop === "undefined") {
+        throw new Error("Paystack library not loaded");
+      }
+
+      // Get Paystack configuration
+      const config = await this.getPaystackConfig();
+      if (!config.success || !config.enabled) {
+        throw new Error("Payment gateway not configured");
+      }
+
+      // Initialize payment
+      const init = await this.initializePayment(orderId, amount, email);
+      if (!init.success) {
+        throw new Error(init.error);
+      }
+
+      // Open Paystack popup
+      const handler = PaystackPop.setup({
+        key: config.publicKey,
+        email: email,
+        amount: Math.round(amount * 100), // Convert to kobo
+        ref: init.reference,
+        onClose: function () {
+          if (typeof onClose === "function") {
+            onClose();
+          }
+        },
+        callback: async function (response) {
+          // Verify payment on backend
+          const verification = await CheckoutService.verifyPayment(
+            response.reference,
+          );
+
+          if (verification.success && typeof onSuccess === "function") {
+            onSuccess(verification.order);
+          } else {
+            alert(
+              "Payment verification failed. Please contact support with reference: " +
+                response.reference,
+            );
+          }
+        },
+      });
+
+      handler.openIframe();
+
+      return {
+        success: true,
+        reference: init.reference,
+      };
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  },

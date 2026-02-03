@@ -223,6 +223,9 @@
         </div>
     </main>
 
+    <!-- Paystack Popup Library -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+
     <script src="cart.js"></script>
     <script src="checkout.js"></script>
     <script src="customer-auth.js"></script>
@@ -443,8 +446,39 @@
             const result = await CheckoutService.placeOrder(orderData);
 
             if (result.success) {
-                // Redirect to success page
-                window.location.href = `order-success.html?order=${result.order.id}`;
+                // Process payment with Paystack
+                const customer = CheckoutService.getCustomer();
+                const email = customer?.email || orderData.contact.email;
+                
+                // Get total amount from cart
+                const cartItems = JSON.parse(localStorage.getItem('cart_items') || '[]');
+                const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                // Process payment
+                const payment = await CheckoutService.processPayment(
+                    result.order.id,
+                    totalAmount,
+                    email,
+                    // Success callback
+                    function(order) {
+                        // Clear cart after successful payment
+                        localStorage.removeItem('cart_items');
+                        // Redirect to success page
+                        window.location.href = `order-success.html?order=${order.id}`;
+                    },
+                    // Close callback
+                    function() {
+                        // User closed the popup
+                        btn.disabled = false;
+                        btn.innerHTML = '<span class="material-symbols-outlined">shopping_bag</span> <span>Place Order</span>';
+                    }
+                );
+
+                if (!payment.success) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="material-symbols-outlined">shopping_bag</span> <span>Place Order</span>';
+                    alert(payment.error || 'Payment initialization failed. Please try again.');
+                }
             } else {
                 btn.disabled = false;
                 btn.innerHTML = '<span class="material-symbols-outlined">shopping_bag</span> <span>Place Order</span>';

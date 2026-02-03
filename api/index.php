@@ -23,6 +23,7 @@ use App\Controllers\CartController;
 use App\Controllers\AddressController;
 use App\Controllers\CheckoutController;
 use App\Controllers\AdminOrderController;
+use App\Controllers\PaymentController;
 use App\Middleware\AuthMiddleware;
 
 $router = new Router();
@@ -164,6 +165,23 @@ $router->post('/api/stores/{store_id}/checkout', [CheckoutController::class, 'ch
 $router->get('/api/stores/{store_id}/orders', [CheckoutController::class, 'index']); // Requires token
 $router->get('/api/stores/{store_id}/orders/{id}', [CheckoutController::class, 'show']); // Token or email verification
 $router->get('/api/stores/{store_id}/orders/track', [CheckoutController::class, 'track']); // Public with email
+
+// ============================================================================
+// PAYMENT ROUTES (Paystack Integration)
+// Payment initialization, verification, and webhook handling
+// ============================================================================
+
+// Payment Configuration (Public - for frontend)
+$router->get('/api/stores/{store_id}/payment/config', [PaymentController::class, 'getConfig']);
+
+// Payment Processing (Requires Customer Token)
+$router->post('/api/payment/initialize', [PaymentController::class, 'initialize'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/api/payment/verify', [PaymentController::class, 'verify'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+
+// Webhook (Public - Paystack callback, no auth)
+$router->post('/api/payment/webhook/paystack', [PaymentController::class, 'webhook']);
 
 // ============================================================================
 // ADMIN ORDER MANAGEMENT ROUTES (Protected - Admin/Client only)
