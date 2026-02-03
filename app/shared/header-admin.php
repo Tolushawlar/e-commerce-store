@@ -57,21 +57,9 @@
                     <span class="material-symbols-outlined">store</span>
                     <span class="font-semibold">Stores</span>
                 </a>
-                <a href="/admin/products.php" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-gray-700 hover:text-primary mb-1">
-                    <span class="material-symbols-outlined">inventory_2</span>
-                    <span class="font-semibold">Products</span>
-                </a>
-                <a href="/admin/orders.php" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-gray-700 hover:text-primary mb-1">
-                    <span class="material-symbols-outlined">shopping_cart</span>
-                    <span class="font-semibold">Orders</span>
-                </a>
                 <a href="/admin/templates.php" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-gray-700 hover:text-primary mb-1">
                     <span class="material-symbols-outlined">web</span>
                     <span class="font-semibold">Templates</span>
-                </a>
-                <a href="/admin/categories.php" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-gray-700 hover:text-primary mb-1">
-                    <span class="material-symbols-outlined">category</span>
-                    <span class="font-semibold">Categories</span>
                 </a>
             </nav>
 

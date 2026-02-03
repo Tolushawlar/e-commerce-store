@@ -61,6 +61,10 @@
                     <span class="material-symbols-outlined">shopping_bag</span>
                     <span class="font-semibold">Orders</span>
                 </a>
+                <a href="/client/categories.php" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-gray-700 hover:text-primary mb-1">
+                    <span class="material-symbols-outlined">category</span>
+                    <span class="font-semibold">Categories</span>
+                </a>
                 <a href="/client/store-settings.php" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-gray-700 hover:text-primary mb-1">
                     <span class="material-symbols-outlined">settings</span>
                     <span class="font-semibold">Store Settings</span>
