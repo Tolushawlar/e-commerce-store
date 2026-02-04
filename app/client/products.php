@@ -1,40 +1,80 @@
 <?php
-$pageTitle = 'Products';
-$pageDescription = 'Manage your store products';
+$pageTitle = 'Products Manager';
+$pageDescription = '';
 include '../shared/header-client.php';
 ?>
 
-<!-- Header Actions -->
-<div class="flex items-center justify-between mb-6">
-    <div class="flex items-center gap-4">
-        <!-- Store Filter -->
-        <select id="storeFilter" class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary">
-            <option value="">Loading stores...</option>
-        </select>
-
-        <!-- Search -->
-        <input type="text" id="searchInput" placeholder="Search products..."
-            class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            oninput="handleSearch()">
-
-        <!-- Status Filter -->
-        <select id="statusFilter" class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary"
-            onchange="loadProducts()">
-            <option value="">All Status</option>
-            <option value="active">In Stock</option>
-            <option value="out_of_stock">Out of Stock</option>
-        </select>
+<!-- Page Heading & Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">Products</h1>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Manage your inventory, prices, and product visibility across your store.</p>
     </div>
+    <div class="flex gap-3">
+        <button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm text-gray-900 dark:text-white">
+            <span class="material-symbols-outlined" style="font-size: 18px;">upload_file</span>
+            Import CSV
+        </button>
+        <button onclick="openAddProductModal()" id="addProductBtn"
+            class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-[#0d1b18] rounded-lg text-sm font-bold shadow-glow transition-all">
+            <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+            Add Product
+        </button>
 
-    <button onclick="openAddProductModal()" id="addProductBtn"
-        class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-semibold">
-        <span class="material-symbols-outlined">add</span>
-        Add Product
-    </button>
+        <!-- Dark Mode Toggle -->
+        <button onclick="toggleDarkMode()"
+            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
+            aria-label="Toggle dark mode">
+            <span class="material-symbols-outlined dark-mode-icon">dark_mode</span>
+            <span class="material-symbols-outlined light-mode-icon hidden">light_mode</span>
+        </button>
+    </div>
+</div>
+
+<!-- Filters Section -->
+<div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div class="col-span-1 md:col-span-2">
+            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Search Products</label>
+            <div class="flex items-center bg-gray-50 dark:bg-gray-900/50 rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 focus-within:border-primary/50 transition-colors">
+                <span class="material-symbols-outlined text-gray-400" style="font-size: 20px;">search</span>
+                <input type="text" id="searchInput" placeholder="Search by name, SKU..." oninput="handleSearch()"
+                    class="bg-transparent border-none text-sm w-full focus:ring-0 text-gray-900 dark:text-white placeholder-gray-400 ml-2" />
+            </div>
+        </div>
+        <div class="col-span-1">
+            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Store</label>
+            <select id="storeFilter" class="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg text-sm py-2 px-3 text-gray-900 dark:text-white focus:ring-primary focus:border-primary">
+                <option value="">Loading stores...</option>
+            </select>
+        </div>
+        <div class="col-span-1">
+            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Status</label>
+            <select id="statusFilter" onchange="loadProducts()" class="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg text-sm py-2 px-3 text-gray-900 dark:text-white focus:ring-primary focus:border-primary">
+                <option value="">All Status</option>
+                <option value="active">In Stock</option>
+                <option value="out_of_stock">Out of Stock</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="statsCards">
+    <!-- Will be populated by JavaScript -->
 </div>
 
 <!-- Products Table -->
-<div class="bg-white rounded-xl border border-gray-200">
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/30">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-gray-600 dark:text-gray-400">inventory_2</span>
+            <h3 class="text-sm font-bold text-gray-900 dark:text-white">Product Inventory</h3>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-500 dark:text-gray-400" id="productCount">0 products</span>
+        </div>
+    </div>
     <div id="productsTable">
         <div class="flex items-center justify-center p-12">
             <span class="material-symbols-outlined animate-spin text-4xl text-primary">refresh</span>
@@ -174,6 +214,17 @@ include '../shared/header-client.php';
 
 <?php include '../shared/footer-client.php'; ?>
 
+<style>
+    /* Dark mode icons toggle */
+    html.dark .dark-mode-icon {
+        display: none;
+    }
+
+    html.dark .light-mode-icon {
+        display: inline-block !important;
+    }
+</style>
+
 <script src="/assets/js/services/store.service.js"></script>
 <script src="/assets/js/services/product.service.js"></script>
 <script src="/assets/js/services/category.service.js"></script>
@@ -187,6 +238,28 @@ include '../shared/header-client.php';
     let userStores = [];
     let categories = [];
     let uploadedImages = []; // Track uploaded images with URLs and public_ids
+
+    // Dark Mode Management
+    function toggleDarkMode() {
+        const html = document.documentElement;
+        const isDark = html.classList.contains('dark');
+
+        if (isDark) {
+            html.classList.remove('dark');
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            html.classList.add('dark');
+            localStorage.setItem('darkMode', 'true');
+        }
+    }
+
+    // Initialize dark mode from localStorage
+    function initDarkMode() {
+        const darkMode = localStorage.getItem('darkMode');
+        if (darkMode === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+    }
 
     // Load user stores
     async function loadStores() {
@@ -319,43 +392,79 @@ include '../shared/header-client.php';
     // Display products table
     function displayProducts(products) {
         const container = document.getElementById('productsTable');
+        const countElement = document.getElementById('productCount');
+
+        countElement.textContent = `${products.length} product${products.length !== 1 ? 's' : ''}`;
+
+        // Calculate stats
+        const totalProducts = products.length;
+        const activeProducts = products.filter(p => p.status === 'active' && p.stock_quantity > 0).length;
+        const lowStock = products.filter(p => p.stock_quantity < 10 && p.stock_quantity > 0).length;
+        const outOfStock = products.filter(p => p.stock_quantity === 0).length;
+        const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock_quantity), 0);
+
+        // Find top performer by sales
+        const topPerformer = products.reduce((top, p) => {
+            const sales = p.sales_count || 0;
+            return (!top || sales > (top.sales_count || 0)) ? p : top;
+        }, null);
+
+        // Update stats cards
+        updateStatsCards({
+            totalProducts,
+            activeProducts,
+            lowStock,
+            outOfStock,
+            totalValue,
+            topPerformer: topPerformer ? topPerformer.name : 'N/A'
+        });
 
         if (products.length === 0) {
-            container.innerHTML = components.emptyState(
-                currentSearch ? 'No products found' : 'No products yet. Add your first product!',
-                'inventory_2'
-            );
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">inventory_2</span>
+                    <h4 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">${currentSearch ? 'No products found' : 'No products yet'}</h4>
+                    <p class="mt-2 text-gray-500 dark:text-gray-400">${currentSearch ? 'Try adjusting your search or filters' : 'Add your first product to get started'}</p>
+                </div>
+            `;
             return;
         }
 
-        let html = '<table class="min-w-full divide-y divide-gray-200">';
+        let html = '<div class="overflow-x-auto"><table class="w-full">';
 
         // Header
         html += `
-            <thead class="bg-gray-50">
+            <thead class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">Product</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">SKU</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">Category</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">Price</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">Stock</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">Sales</th>
+                    <th class="px-6 py-3 text-right text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
         `;
 
         // Body
-        html += '<tbody class="bg-white divide-y divide-gray-200">';
+        html += '<tbody class="divide-y divide-gray-200 dark:divide-gray-700">';
         products.forEach(product => {
-            const stockStatus = product.stock_quantity === 0 ? 'out_of_stock' : 'active';
-            const stockClass = product.stock_quantity === 0 ? 'text-red-600' :
-                product.stock_quantity < 10 ? 'text-orange-600' : 'text-gray-900';
+            const stockClass = product.stock_quantity === 0 ? 'text-red-600 dark:text-red-400' :
+                product.stock_quantity < 10 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-white';
+
+            const statusBadge = product.stock_quantity === 0 ?
+                '<span class="px-2 py-1 text-xs font-medium rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Out of Stock</span>' :
+                product.stock_quantity < 10 ?
+                '<span class="px-2 py-1 text-xs font-medium rounded bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">Low Stock</span>' :
+                '<span class="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">In Stock</span>';
 
             html += `
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                            <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                                 ${product.images && product.images.length > 0 ? 
                                     `<img src="${product.images.find(img => img.is_primary)?.image_url || product.images[0].image_url}" alt="${product.name}" class="w-full h-full object-cover">` :
                                     product.image_url ? 
@@ -363,24 +472,28 @@ include '../shared/header-client.php';
                                     '<span class="material-symbols-outlined text-gray-400">inventory_2</span>'
                                 }
                             </div>
-                            <div>
-                                <p class="font-semibold text-gray-900">${product.name}</p>
-                                <p class="text-sm text-gray-500">${utils.truncate(product.description, 40)}</p>
+                            <div class="min-w-0 flex-1">
+                                <p class="font-semibold text-gray-900 dark:text-white truncate">${product.name}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${product.description ? product.description.substring(0, 40) + '...' : 'No description'}</p>
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-900">${product.sku || '-'}</td>
-                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">₦${Number(product.price).toLocaleString('en-NG')}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">${product.sku || '-'}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">${product.category_name || 'Uncategorized'}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">₦${Number(product.price).toLocaleString('en-NG')}</td>
                     <td class="px-6 py-4 text-sm font-semibold ${stockClass}">${product.stock_quantity}</td>
-                    <td class="px-6 py-4">${components.statusBadge(product.status)}</td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-6 py-4">${statusBadge}</td>
+                    <td class="px-6 py-4">
+                        <span class="text-sm font-bold text-gray-900 dark:text-white">${product.sales_count || 0}</span>
+                    </td>
+                    <td class="px-6 py-4">
                         <div class="flex items-center justify-end gap-2">
                             <button onclick="editProduct(${product.id})" 
-                                class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg" title="Edit">
+                                class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">
                                 <span class="material-symbols-outlined text-sm">edit</span>
                             </button>
                             <button onclick="deleteProduct(${product.id}, '${product.name.replace(/'/g, "\\'")}')" 
-                                class="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="Delete">
+                                class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete">
                                 <span class="material-symbols-outlined text-sm">delete</span>
                             </button>
                         </div>
@@ -388,9 +501,54 @@ include '../shared/header-client.php';
                 </tr>
             `;
         });
-        html += '</tbody></table>';
+        html += '</tbody></table></div>';
 
         container.innerHTML = html;
+    }
+
+    // Update stats cards
+    function updateStatsCards(stats) {
+        const container = document.getElementById('statsCards');
+
+        container.innerHTML = `
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden group hover:shadow-lg transition-all">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900 dark:to-green-800 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-green-600 dark:text-green-400">inventory_2</span>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">${stats.totalProducts}</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Total Products</p>
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-green-100 dark:bg-green-900 rounded-full opacity-20 group-hover:scale-110 transition-transform"></div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden hover:shadow-lg transition-all">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">check_circle</span>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">${stats.activeProducts}</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">In Stock</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden hover:shadow-lg transition-all">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900 dark:to-orange-800 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-orange-600 dark:text-orange-400">warning</span>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">${stats.lowStock}</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Low Stock</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 relative overflow-hidden hover:shadow-lg transition-all">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-purple-600 dark:text-purple-400">payments</span>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">₦${stats.totalValue.toLocaleString('en-NG')}</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
+            </div>
+        `;
     }
 
     // Display pagination
@@ -406,35 +564,44 @@ include '../shared/header-client.php';
             page,
             pages
         } = pagination;
-        let html = '<div class="flex items-center justify-center gap-2">';
+        let html = '<div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-4 flex items-center justify-between shadow-sm">';
 
         // Previous
         html += `
             <button onclick="loadProducts(${page - 1})" ${page === 1 ? 'disabled' : ''}
-                class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-semibold">
-                <span class="material-symbols-outlined text-sm">chevron_left</span>
+                class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span>
+                Previous
             </button>
         `;
 
         // Pages
+        html += '<div class="flex items-center gap-2">';
         for (let i = 1; i <= pages; i++) {
             if (i === 1 || i === pages || (i >= page - 2 && i <= page + 2)) {
+                const isActive = i === page;
                 html += `
                     <button onclick="loadProducts(${i})"
-                        class="w-10 h-10 rounded-lg font-semibold ${i === page ? 'bg-primary text-white' : 'border border-gray-300 hover:bg-gray-50'}">
+                        class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            isActive 
+                                ? 'bg-primary text-[#0d1b18]' 
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }">
                         ${i}
                     </button>
                 `;
             } else if (i === page - 3 || i === page + 3) {
-                html += '<span class="px-2">...</span>';
+                html += '<span class="text-gray-400">...</span>';
             }
         }
+        html += '</div>';
 
         // Next
         html += `
             <button onclick="loadProducts(${page + 1})" ${page === pages ? 'disabled' : ''}
-                class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-semibold">
-                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+                <span class="material-symbols-outlined" style="font-size: 18px;">chevron_right</span>
             </button>
         `;
 
@@ -799,6 +966,7 @@ include '../shared/header-client.php';
 
     // Initialize
     async function init() {
+        initDarkMode();
         await loadStores();
         loadProducts();
     }

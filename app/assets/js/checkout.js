@@ -356,7 +356,7 @@ const CheckoutService = {
           unit_price: item.product.price,
           total_price: item.product.price * item.quantity,
         })),
-        notes: orderData.notes || "",
+        order_notes: orderData.notes || "",
       };
 
       // Submit order to API with authentication
@@ -527,7 +527,7 @@ const CheckoutService = {
       return {
         success: true,
         publicKey: data.data.public_key,
-        enabled: data.data.enabled,
+        enabled: data.data.payment_enabled,
       };
     } catch (error) {
       console.error("Error loading Paystack config:", error);
@@ -610,8 +610,8 @@ const CheckoutService = {
 
       return {
         success: true,
-        order: data.data.order,
-        payment: data.data.payment,
+        order_id: data.data.order_id,
+        payment: data.data,
       };
     } catch (error) {
       console.error("Error verifying payment:", error);
@@ -623,19 +623,46 @@ const CheckoutService = {
   },
 
   /**
+   * Check if payment gateway is configured
+   */
+  async isPaymentEnabled() {
+    try {
+      const config = await this.getPaystackConfig();
+      return config.success && config.enabled && config.publicKey;
+    } catch (error) {
+      return false;
+    }
+  },
+
+  /**
    * Process payment with Paystack Popup
    */
-  async processPayment(orderId, amount, email, onSuccess, onClose) {
+  async processPayment(
+    orderId,
+    amount,
+    email,
+    customerName,
+    onSuccess,
+    onClose,
+  ) {
     try {
       // Check if Paystack is loaded
       if (typeof PaystackPop === "undefined") {
-        throw new Error("Paystack library not loaded");
+        console.warn("Paystack library not loaded");
+        return {
+          success: false,
+          error: "Paystack library not loaded",
+        };
       }
 
       // Get Paystack configuration
       const config = await this.getPaystackConfig();
       if (!config.success || !config.enabled) {
-        throw new Error("Payment gateway not configured");
+        console.warn("Payment gateway not configured");
+        return {
+          success: false,
+          error: "Payment gateway not configured",
+        };
       }
 
       // Initialize payment
@@ -645,30 +672,47 @@ const CheckoutService = {
       }
 
       // Open Paystack popup
+      const nameParts = customerName
+        ? customerName.trim().split(" ")
+        : ["", ""];
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || nameParts[0] || "";
+
       const handler = PaystackPop.setup({
         key: config.publicKey,
         email: email,
         amount: Math.round(amount * 100), // Convert to kobo
         ref: init.reference,
+        first_name: firstName,
+        last_name: lastName,
         onClose: function () {
           if (typeof onClose === "function") {
             onClose();
           }
         },
-        callback: async function (response) {
-          // Verify payment on backend
-          const verification = await CheckoutService.verifyPayment(
-            response.reference,
-          );
-
-          if (verification.success && typeof onSuccess === "function") {
-            onSuccess(verification.order);
-          } else {
-            alert(
-              "Payment verification failed. Please contact support with reference: " +
-                response.reference,
-            );
-          }
+        callback: function (response) {
+          // Verify payment on backend (handle async inside)
+          CheckoutService.verifyPayment(response.reference)
+            .then(function (verification) {
+              if (verification.success) {
+                // Payment verified successfully
+                if (typeof onSuccess === "function") {
+                  onSuccess({ id: verification.order_id });
+                }
+              } else {
+                alert(
+                  "Payment verification failed. Please contact support with reference: " +
+                    response.reference,
+                );
+              }
+            })
+            .catch(function (error) {
+              console.error("Verification error:", error);
+              alert(
+                "Payment verification error. Please contact support with reference: " +
+                  response.reference,
+              );
+            });
         },
       });
 
@@ -686,3 +730,4 @@ const CheckoutService = {
       };
     }
   },
+};

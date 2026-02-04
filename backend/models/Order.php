@@ -55,12 +55,12 @@ class Order extends Model
         }
 
         if (isset($filters['from_date'])) {
-            $query .= " AND created_at >= ?";
+            $query .= " AND DATE(created_at) >= ?";
             $params[] = $filters['from_date'];
         }
 
         if (isset($filters['to_date'])) {
-            $query .= " AND created_at <= ?";
+            $query .= " AND DATE(created_at) <= ?";
             $params[] = $filters['to_date'];
         }
 
@@ -133,12 +133,12 @@ class Order extends Model
         }
 
         if (isset($filters['from_date'])) {
-            $query .= " AND created_at >= ?";
+            $query .= " AND DATE(created_at) >= ?";
             $params[] = $filters['from_date'];
         }
 
         if (isset($filters['to_date'])) {
-            $query .= " AND created_at <= ?";
+            $query .= " AND DATE(created_at) <= ?";
             $params[] = $filters['to_date'];
         }
 

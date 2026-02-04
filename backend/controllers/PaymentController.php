@@ -37,12 +37,28 @@ class PaymentController extends Controller
             $this->error('Store not found', 404);
         }
 
-        // Only return public information
-        $this->success([
+        // Return all payment method configurations
+        $config = [
+            'paystack' => [
+                'enabled' => (bool) ($store['payment_enabled'] ?? false),
+                'public_key' => $store['paystack_public_key'] ?? null,
+            ],
+            'bank_transfer' => [
+                'enabled' => (bool) ($store['bank_transfer_enabled'] ?? false),
+                'bank_name' => $store['bank_name'] ?? null,
+                'account_number' => $store['account_number'] ?? null,
+                'account_name' => $store['account_name'] ?? null,
+            ],
+            'cod' => [
+                'enabled' => (bool) ($store['cod_enabled'] ?? true), // Default enabled
+            ],
+            // Legacy support for existing integrations
             'payment_enabled' => (bool) ($store['payment_enabled'] ?? false),
             'public_key' => $store['paystack_public_key'] ?? null,
             'gateway' => 'paystack'
-        ]);
+        ];
+
+        $this->success($config);
     }
 
     /**

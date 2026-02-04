@@ -28,26 +28,26 @@ include '../shared/header-admin.php';
         <p class="text-sm text-gray-500">Total Stores</p>
     </div>
 
-    <!-- Total Products -->
+    <!-- Active Stores -->
     <div class="bg-white rounded-xl border border-gray-200 p-6">
         <div class="flex items-center justify-between mb-4">
             <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-purple-600">inventory_2</span>
+                <span class="material-symbols-outlined text-purple-600">check_circle</span>
             </div>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900" id="totalProducts">-</h3>
-        <p class="text-sm text-gray-500">Total Products</p>
+        <h3 class="text-2xl font-bold text-gray-900" id="activeStores">-</h3>
+        <p class="text-sm text-gray-500">Active Stores</p>
     </div>
 
-    <!-- Total Orders -->
+    <!-- Total Templates -->
     <div class="bg-white rounded-xl border border-gray-200 p-6">
         <div class="flex items-center justify-between mb-4">
             <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-orange-600">shopping_cart</span>
+                <span class="material-symbols-outlined text-orange-600">web</span>
             </div>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900" id="totalOrders">-</h3>
-        <p class="text-sm text-gray-500">Total Orders</p>
+        <h3 class="text-2xl font-bold text-gray-900" id="totalTemplates">5</h3>
+        <p class="text-sm text-gray-500">Total Templates</p>
     </div>
 </div>
 
@@ -102,19 +102,9 @@ include '../shared/header-admin.php';
             document.getElementById('totalClients').textContent = clients.data?.pagination?.total || 0;
             document.getElementById('totalStores').textContent = stores.data?.pagination?.total || 0;
 
-            // For products and orders, we'll count across all stores
-            let totalProducts = 0;
-            let totalOrders = 0;
-
-            if (stores.data?.data) {
-                for (const store of stores.data.data) {
-                    // Could add API calls here to get totals per store if needed
-                    // For now, just showing placeholder counts
-                }
-            }
-
-            document.getElementById('totalProducts').textContent = totalProducts;
-            document.getElementById('totalOrders').textContent = totalOrders;
+            // Count active stores
+            const activeStoresCount = stores.data?.stores?.filter(s => s.status === 'active').length || 0;
+            document.getElementById('activeStores').textContent = activeStoresCount;
 
             // Display recent clients
             displayRecentClients(clients.data?.clients || []);

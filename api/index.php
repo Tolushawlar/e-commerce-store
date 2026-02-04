@@ -24,6 +24,7 @@ use App\Controllers\AddressController;
 use App\Controllers\CheckoutController;
 use App\Controllers\AdminOrderController;
 use App\Controllers\PaymentController;
+use App\Controllers\DashboardController;
 use App\Middleware\AuthMiddleware;
 
 $router = new Router();
@@ -182,6 +183,24 @@ $router->post('/api/payment/verify', [PaymentController::class, 'verify'])
 
 // Webhook (Public - Paystack callback, no auth)
 $router->post('/api/payment/webhook/paystack', [PaymentController::class, 'webhook']);
+
+// ============================================================================
+// DASHBOARD ANALYTICS ROUTES (Protected - Client only)
+// Dashboard statistics and charts for store owners
+// ============================================================================
+
+$router->get('/api/stores/{store_id}/dashboard/stats', [DashboardController::class, 'stats'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/stores/{store_id}/dashboard/revenue-chart', [DashboardController::class, 'revenueChart'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/stores/{store_id}/dashboard/order-status', [DashboardController::class, 'orderStatus'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/stores/{store_id}/dashboard/top-products', [DashboardController::class, 'topProducts'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/stores/{store_id}/dashboard/traffic-sources', [DashboardController::class, 'trafficSources'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/stores/{store_id}/dashboard/activities', [DashboardController::class, 'recentActivities'])
+    ->middleware([AuthMiddleware::class, 'handle']);
 
 // ============================================================================
 // ADMIN ORDER MANAGEMENT ROUTES (Protected - Admin/Client only)
