@@ -7,8 +7,6 @@
 
 require_once __DIR__ . '/../backend/bootstrap.php';
 
-\Sentry\captureMessage('Test message from PHP', \Sentry\Severity::info());
-
 use App\Core\Router;
 use App\Controllers\AuthController;
 use App\Controllers\ClientController;
