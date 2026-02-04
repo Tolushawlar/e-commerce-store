@@ -61,6 +61,10 @@
                     <span class="material-symbols-outlined">web</span>
                     <span class="font-semibold">Templates</span>
                 </a>
+                <a href="/admin/notifications.php" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 text-gray-700 hover:text-primary mb-1">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="font-semibold">Notifications</span>
+                </a>
             </nav>
 
             <!-- User Section -->
@@ -94,6 +98,9 @@
                     <?php endif; ?>
                 </div>
                 <div class="flex items-center gap-3">
+                    <!-- Notification Bell -->
+                    <div id="notificationBell"></div>
+
                     <a href="http://localhost:8000/docs.html" target="_blank" class="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 rounded-lg">
                         API Docs
                     </a>
@@ -103,3 +110,22 @@
 
         <!-- Page Content -->
         <div class="p-8">
+            <script src="/assets/js/services/notification.service.js"></script>
+            <script src="/assets/js/notification-bell.js"></script>
+            <script>
+                // Initialize notification bell
+                document.addEventListener('DOMContentLoaded', function() {
+                    new NotificationBell('notificationBell', {
+                        pollInterval: 30000, // Poll every 30 seconds
+                        maxVisible: 5,
+                        onNotificationClick: (notification) => {
+                            // Navigate to notification center or specific page based on type
+                            if (notification.action_url) {
+                                window.location.href = notification.action_url;
+                            } else {
+                                window.location.href = '/admin/notifications.php';
+                            }
+                        }
+                    });
+                });
+            </script>

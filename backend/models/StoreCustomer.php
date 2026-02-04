@@ -108,6 +108,18 @@ class StoreCustomer extends Model
     }
 
     /**
+     * Get email and name by ID
+     */
+    public function getEmailAndName(int $id): ?array
+    {
+        $stmt = $this->db->prepare("SELECT email, CONCAT(first_name, ' ', last_name) as name FROM {$this->table} WHERE id = ?");
+        $stmt->execute([$id]);
+        $result = $stmt->fetch();
+
+        return $result ?: null;
+    }
+
+    /**
      * Get customer with addresses
      */
     public function findWithAddresses(int $id): ?array

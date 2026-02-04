@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\Product;
+use App\Models\Store;
+use App\Services\NotificationService;
 
 /**
  * Product Controller
@@ -11,10 +13,12 @@ use App\Models\Product;
 class ProductController extends Controller
 {
     private Product $productModel;
+    private NotificationService $notificationService;
 
     public function __construct()
     {
         $this->productModel = new Product();
+        $this->notificationService = new NotificationService();
     }
 
     /**
@@ -315,6 +319,47 @@ class ProductController extends Controller
             }
 
             $product = $this->productModel->withImages($productId);
+
+            // Check for low stock and send notification
+            if (isset($data['stock_quantity'])) {
+                try {
+                    $storeModel = new Store();
+                    $store = $storeModel->find($product['store_id']);
+
+                    if ($store && isset($store['client_id'])) {
+                        $lowStockThreshold = 10; // Can be made configurable
+                        $stockQuantity = (int)$data['stock_quantity'];
+
+                        if ($stockQuantity <= $lowStockThreshold && $stockQuantity > 0) {
+                            $this->notificationService->send(
+                                (int)$store['client_id'],
+                                'client',
+                                'product',
+                                'Low Stock Alert',
+                                "Product '{$product['name']}' is running low on stock. Only {$stockQuantity} units remaining.",
+                                null,
+                                "/client/products.php?id={$productId}",
+                                'high'
+                            );
+                        } elseif ($stockQuantity <= 0) {
+                            $this->notificationService->send(
+                                (int)$store['client_id'],
+                                'client',
+                                'product',
+                                'Out of Stock Alert',
+                                "Product '{$product['name']}' is now out of stock!",
+                                null,
+                                "/client/products.php?id={$productId}",
+                                'urgent'
+                            );
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Log error but don't fail the update
+                    error_log("Failed to send low stock notification: " . $e->getMessage());
+                }
+            }
+
             $this->success($product, 'Product updated successfully');
         } else {
             $this->error('Failed to update product', 500);

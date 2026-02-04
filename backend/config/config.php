@@ -78,4 +78,23 @@ return [
         'max_file_size' => 5 * 1024 * 1024, // 5MB
         'allowed_formats' => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'],
     ],
+
+    'email' => [
+        'smtp_host' => getenv('SMTP_HOST') ?: 'smtp.gmail.com',
+        'smtp_port' => getenv('SMTP_PORT') ?: 587,
+        'smtp_username' => getenv('SMTP_USERNAME') ?: '',
+        'smtp_password' => getenv('SMTP_PASSWORD') ?: '',
+        'smtp_encryption' => getenv('SMTP_ENCRYPTION') ?: 'tls', // tls or ssl
+        'from_email' => getenv('SMTP_FROM_EMAIL') ?: 'noreply@ecommerce-platform.com',
+        'from_name' => getenv('SMTP_FROM_NAME') ?: 'E-commerce Platform',
+        'max_retry' => 3,
+        'timeout' => 30,
+    ],
+
+    'notifications' => [
+        'enabled' => getenv('NOTIFICATIONS_ENABLED') !== 'false',
+        'email_enabled' => getenv('EMAIL_NOTIFICATIONS_ENABLED') !== 'false',
+        'channels' => ['database', 'email'], // Available channels
+        'queue_enabled' => getenv('NOTIFICATION_QUEUE_ENABLED') === 'true',
+    ],
 ];

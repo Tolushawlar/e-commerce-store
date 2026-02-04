@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\Order;
+use App\Models\Store;
+use App\Services\NotificationService;
 
 /**
  * Order Controller
@@ -11,10 +13,12 @@ use App\Models\Order;
 class OrderController extends Controller
 {
     private Order $orderModel;
+    private NotificationService $notificationService;
 
     public function __construct()
     {
         $this->orderModel = new Order();
+        $this->notificationService = new NotificationService();
     }
 
     /**
@@ -229,6 +233,29 @@ class OrderController extends Controller
 
         if ($orderId) {
             $order = $this->orderModel->withItems($orderId);
+
+            // Send notification for new order
+            try {
+                $storeModel = new Store();
+                $store = $storeModel->find($data['store_id']);
+
+                if ($store && isset($store['client_id'])) {
+                    $this->notificationService->send(
+                        (int)$store['client_id'],
+                        'client',
+                        'order',
+                        'New Order Received',
+                        "New order #{$orderId} from {$data['customer_name']} - Total: ₦" . number_format($data['total_amount'], 2),
+                        null,
+                        "/client/orders.php?id={$orderId}",
+                        'normal'
+                    );
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the order creation
+                error_log("Failed to send order notification: " . $e->getMessage());
+            }
+
             $this->success($order, 'Order created successfully', 201);
         } else {
             $this->error('Failed to create order', 500);
@@ -287,6 +314,40 @@ class OrderController extends Controller
 
         if ($this->orderModel->updateStatus($orderId, $status)) {
             $order = $this->orderModel->find($orderId);
+
+            // Send notification for order status change
+            try {
+                $storeModel = new Store();
+                $store = $storeModel->find($order['store_id']);
+
+                if ($store && isset($store['client_id'])) {
+                    $statusMessages = [
+                        'pending' => 'is now pending',
+                        'processing' => 'is being processed',
+                        'shipped' => 'has been shipped',
+                        'delivered' => 'has been delivered',
+                        'cancelled' => 'has been cancelled'
+                    ];
+
+                    $message = $statusMessages[$status] ?? "status updated to {$status}";
+                    $priority = in_array($status, ['cancelled', 'delivered']) ? 'high' : 'normal';
+
+                    $this->notificationService->send(
+                        (int)$store['client_id'],
+                        'client',
+                        'order',
+                        'Order Status Updated',
+                        "Order #{$orderId} {$message}",
+                        null,
+                        "/client/orders.php?id={$orderId}",
+                        $priority
+                    );
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the status update
+                error_log("Failed to send order status notification: " . $e->getMessage());
+            }
+
             $this->success($order, 'Order status updated successfully');
         } else {
             $this->error('Invalid status or failed to update', 400);

@@ -36,6 +36,18 @@ class Client extends Model
     }
 
     /**
+     * Get email and name by ID
+     */
+    public function getEmailAndName(int $id): ?array
+    {
+        $stmt = $this->db->prepare("SELECT email, CONCAT(name, '') as name FROM {$this->table} WHERE id = ?");
+        $stmt->execute([$id]);
+        $result = $stmt->fetch();
+
+        return $result ?: null;
+    }
+
+    /**
      * Get client with stores
      */
     public function withStores(int $id): ?array
