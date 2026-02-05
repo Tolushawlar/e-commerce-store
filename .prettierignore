@@ -1,0 +1,8 @@
+# Ignore PHP files with embedded JavaScript to prevent formatting corruption
+**/*.php
+app/client/orders.php
+app/client/*.php
+
+# Ignore vendor and dependencies
+vendor/
+node_modules/

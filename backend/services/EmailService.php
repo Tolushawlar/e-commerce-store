@@ -29,11 +29,12 @@ class EmailService
         return [
             'smtp_host' => getenv('SMTP_HOST') ?: 'smtp.gmail.com',
             'smtp_port' => getenv('SMTP_PORT') ?: 587,
-            'smtp_user' => getenv('SMTP_USER') ?: '',
-            'smtp_pass' => getenv('SMTP_PASS') ?: '',
-            'from_email' => getenv('MAIL_FROM_EMAIL') ?: 'noreply@livepetal.com',
-            'from_name' => getenv('MAIL_FROM_NAME') ?: 'LivePetal',
-            'encryption' => getenv('SMTP_ENCRYPTION') ?: 'tls'
+            'smtp_user' => getenv('SMTP_USERNAME') ?: getenv('SMTP_USER') ?: '',
+            'smtp_pass' => getenv('SMTP_PASSWORD') ?: getenv('SMTP_PASS') ?: '',
+            'from_email' => getenv('SMTP_FROM_EMAIL') ?: getenv('MAIL_FROM_EMAIL') ?: 'noreply@livepetal.com',
+            'from_name' => getenv('SMTP_FROM_NAME') ?: getenv('MAIL_FROM_NAME') ?: 'LivePetal',
+            'encryption' => getenv('SMTP_ENCRYPTION') ?: 'tls',
+            'test_mode' => getenv('APP_ENV') === 'development' && empty(getenv('SMTP_USERNAME'))
         ];
     }
 
@@ -43,6 +44,7 @@ class EmailService
     public function processQueue(int $batchSize = 50): array
     {
         $emails = $this->emailQueue->getPending($batchSize);
+        
         $results = [
             'processed' => 0,
             'sent' => 0,
@@ -77,6 +79,14 @@ class EmailService
     private function sendEmail(array $emailData): bool
     {
         try {
+            // In test mode, just log the email
+            if ($this->config['test_mode']) {
+                error_log("[TEST MODE] Email would be sent to: {$emailData['to_email']}");
+                error_log("[TEST MODE] Subject: {$emailData['subject']}");
+                error_log("[TEST MODE] Body: " . substr(strip_tags($emailData['body_html']), 0, 200));
+                return true; // Pretend it sent successfully
+            }
+
             $mail = new PHPMailer(true);
 
             // Server settings
@@ -89,22 +99,17 @@ class EmailService
             $mail->Port = $this->config['smtp_port'];
 
             // Recipients
-            $mail->setFrom($this->config['from_email'], $this->config['from_name']);
-            $mail->addAddress($emailData['recipient_email'], $emailData['recipient_name']);
+            $mail->setFrom(
+                $emailData['from_email'] ?? $this->config['from_email'],
+                $emailData['from_name'] ?? $this->config['from_name']
+            );
+            $mail->addAddress($emailData['to_email'], $emailData['to_name'] ?? '');
 
             // Content
             $mail->isHTML(true);
             $mail->Subject = $emailData['subject'];
-
-            // Render template
-            $body = $this->renderTemplate(
-                $emailData['template'],
-                $emailData['body'],
-                json_decode($emailData['template_data'], true) ?? []
-            );
-
-            $mail->Body = $body;
-            $mail->AltBody = strip_tags($emailData['body']);
+            $mail->Body = $emailData['body_html'];
+            $mail->AltBody = $emailData['body_text'] ?? strip_tags($emailData['body_html']);
 
             $mail->send();
             return true;

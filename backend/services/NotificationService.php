@@ -76,19 +76,44 @@ class NotificationService
         }
 
         // Queue email notification
-        if ($emailEnabled && $results['notification_id']) {
-            $emailQueued = $this->queueEmail(
-                $userId,
-                $userType,
-                $results['notification_id'],
-                $type,
-                $title,
-                $message,
-                $data,
-                $priority
-            );
+        // For high priority emails (like password resets), always send regardless of preferences
+        if (($emailEnabled || $priority === 'high') && ($results['notification_id'] || $priority === 'high')) {
+            // Create notification record if not already created (for email-only high priority)
+            if (!$results['notification_id']) {
+                $notificationId = $this->notificationModel->create([
+                    'user_id' => $userId,
+                    'user_type' => $userType,
+                    'type' => $type,
+                    'title' => $title,
+                    'message' => $message,
+                    'data' => $data ? json_encode($data) : null,
+                    'action_url' => $actionUrl,
+                    'priority' => $priority,
+                    'is_read' => 0
+                ]);
+                $results['notification_id'] = $notificationId;
+            }
 
-            $results['email'] = $emailQueued;
+            if ($results['notification_id']) {
+                $emailQueued = $this->queueEmail(
+                    $userId,
+                    $userType,
+                    $results['notification_id'],
+                    $type,
+                    $title,
+                    $message,
+                    $data,
+                    $priority
+                );
+
+                $results['email'] = $emailQueued;
+
+                // For high priority emails (like password resets), send immediately
+                if ($emailQueued && $priority === 'high') {
+                    $emailService = new EmailService();
+                    $emailService->processQueue(1); // Process just this one email
+                }
+            }
         }
 
         return $results;
@@ -142,6 +167,7 @@ class NotificationService
     ): bool {
         // Get user email based on type
         $email = $this->getUserEmail($userId, $userType);
+        
         if (!$email) {
             return false;
         }
@@ -149,15 +175,21 @@ class NotificationService
         // Determine email template
         $template = $this->getEmailTemplate($type);
 
+        // Prepare email body (convert message to HTML if needed)
+        $bodyHtml = $message;
+        if (strpos($message, '<html') === false && strpos($message, '<!DOCTYPE') === false) {
+            // Simple message, wrap in basic HTML
+            $bodyHtml = "<!DOCTYPE html><html><body>{$message}</body></html>";
+        }
+
         // Queue the email
         $emailId = $this->emailQueue->create([
             'notification_id' => $notificationId,
-            'recipient_email' => $email['email'],
-            'recipient_name' => $email['name'],
+            'to_email' => $email['email'],
+            'to_name' => $email['name'],
             'subject' => $title,
-            'body' => $message,
-            'template' => $template,
-            'template_data' => json_encode($data ?? []),
+            'body_html' => $bodyHtml,
+            'body_text' => strip_tags($message),
             'priority' => $priority,
             'status' => 'pending',
             'attempts' => 0,
@@ -176,14 +208,25 @@ class NotificationService
         // Note: 'admin' maps to super_admins table, 'customer' maps to store_customers
         switch ($userType) {
             case 'admin':
-                return $this->adminModel->getEmailAndName($userId);
+                $email = $this->adminModel->getEmailAndName($userId);
+                break;
             case 'client':
-                return $this->clientModel->getEmailAndName($userId);
+                $email = $this->clientModel->getEmailAndName($userId);
+                break;
             case 'customer':
-                return $this->customerModel->getEmailAndName($userId);
+                $email = $this->customerModel->getEmailAndName($userId);
+                break;
             default:
+                error_log("Unknown user type: {$userType}");
                 return null;
         }
+
+        if (!$email || empty($email['email'])) {
+            error_log("No email found for user ID {$userId}, type {$userType}");
+            return null;
+        }
+
+        return $email;
     }
 
     /**

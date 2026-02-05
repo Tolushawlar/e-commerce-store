@@ -75,6 +75,13 @@
                             placeholder="••••••••">
                     </div>
 
+                    <!-- Forgot Password Link (Client Only) -->
+                    <div id="forgotPasswordLink" class="hidden mb-6 text-right">
+                        <a href="/auth/forgot-password.php" class="text-sm text-primary font-semibold hover:underline">
+                            Forgot Password?
+                        </a>
+                    </div>
+
                     <div id="errorMessage" class="hidden mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
                         <p class="text-sm font-semibold"></p>
                     </div>
@@ -111,15 +118,18 @@
             const adminTab = document.getElementById('adminTab');
             const clientTab = document.getElementById('clientTab');
             const registerLink = document.getElementById('registerLink');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
 
             if (type === 'admin') {
                 adminTab.className = 'flex-1 py-3 px-4 rounded-lg font-semibold bg-primary text-white';
                 clientTab.className = 'flex-1 py-3 px-4 rounded-lg font-semibold text-gray-600 hover:bg-gray-50';
                 registerLink.classList.add('hidden');
+                forgotPasswordLink.classList.add('hidden');
             } else {
                 adminTab.className = 'flex-1 py-3 px-4 rounded-lg font-semibold text-gray-600 hover:bg-gray-50';
                 clientTab.className = 'flex-1 py-3 px-4 rounded-lg font-semibold bg-primary text-white';
                 registerLink.classList.remove('hidden');
+                forgotPasswordLink.classList.remove('hidden');
             }
         }
 

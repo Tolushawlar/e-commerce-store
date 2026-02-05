@@ -55,7 +55,7 @@ class StoreGeneratorService
         file_put_contents("{$storeDir}/config.json", json_encode($config, JSON_PRETTY_PRINT));
 
         // Copy store.js to the store directory
-        $storeJsSource = dirname(__DIR__, 2) . '/app/assets/js/store.js';
+        $storeJsSource = dirname(__DIR__, 2) . '/app/assets/js/store/store.js';
         $storeJsDest = "{$storeDir}/store.js";
         if (file_exists($storeJsSource)) {
             copy($storeJsSource, $storeJsDest);
@@ -66,7 +66,7 @@ class StoreGeneratorService
         file_put_contents("{$storeDir}/product.html", $productHtml);
 
         // Copy product-detail.js to the store directory
-        $productJsSource = dirname(__DIR__, 2) . '/app/assets/js/product-detail.js';
+        $productJsSource = dirname(__DIR__, 2) . '/app/assets/js/store/product-detail.js';
         $productJsDest = "{$storeDir}/product-detail.js";
         if (file_exists($productJsSource)) {
             copy($productJsSource, $productJsDest);
@@ -87,14 +87,14 @@ class StoreGeneratorService
         }
 
         // Copy customer-auth.js to the store directory
-        $customerAuthJsSource = dirname(__DIR__, 2) . '/app/assets/js/customer-auth.js';
+        $customerAuthJsSource = dirname(__DIR__, 2) . '/app/assets/js/store/customer-auth.js';
         $customerAuthJsDest = "{$storeDir}/customer-auth.js";
         if (file_exists($customerAuthJsSource)) {
             copy($customerAuthJsSource, $customerAuthJsDest);
         }
 
         // Copy profile-header.js to the store directory
-        $profileHeaderJsSource = dirname(__DIR__, 2) . '/app/assets/js/profile-header.js';
+        $profileHeaderJsSource = dirname(__DIR__, 2) . '/app/assets/js/components/profile-header.js';
         $profileHeaderJsDest = "{$storeDir}/profile-header.js";
         if (file_exists($profileHeaderJsSource)) {
             copy($profileHeaderJsSource, $profileHeaderJsDest);

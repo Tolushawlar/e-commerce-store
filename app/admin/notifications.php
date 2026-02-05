@@ -134,7 +134,7 @@ include '../shared/header-admin.php';
     </div>
 </div>
 
-<script src="/assets/js/toast.js"></script>
+<script src="/assets/js/components/toast.js"></script>
 <script>
     // notificationService is already available from header
     let allNotifications = [];

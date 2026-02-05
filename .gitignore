@@ -31,5 +31,4 @@ desktop.ini
 # Backup
 *-backup/
 
-/vendor
 /composer.lock
