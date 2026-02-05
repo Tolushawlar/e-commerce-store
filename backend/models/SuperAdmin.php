@@ -42,4 +42,16 @@ class SuperAdmin extends Model
 
         return $result ?: null;
     }
+
+    /**
+     * Get email and name by ID
+     */
+    public function getEmailAndName(int $id): ?array
+    {
+        $stmt = $this->db->prepare("SELECT email, username as name FROM {$this->table} WHERE id = ?");
+        $stmt->execute([$id]);
+        $result = $stmt->fetch();
+
+        return $result ?: null;
+    }
 }

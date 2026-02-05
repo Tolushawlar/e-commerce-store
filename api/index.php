@@ -7,8 +7,6 @@
 
 require_once __DIR__ . '/../backend/bootstrap.php';
 
-\Sentry\captureMessage('Test message from PHP', \Sentry\Severity::info());
-
 use App\Core\Router;
 use App\Controllers\AuthController;
 use App\Controllers\ClientController;
@@ -25,6 +23,7 @@ use App\Controllers\CheckoutController;
 use App\Controllers\AdminOrderController;
 use App\Controllers\PaymentController;
 use App\Controllers\DashboardController;
+use App\Controllers\NotificationController;
 use App\Middleware\AuthMiddleware;
 
 $router = new Router();
@@ -221,6 +220,29 @@ $router->put('/api/stores/{store_id}/admin/orders/{order_id}/payment-status', [A
 $router->put('/api/stores/{store_id}/admin/orders/{order_id}/tracking', [AdminOrderController::class, 'addTracking'])
     ->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/api/stores/{store_id}/admin/orders/bulk-update', [AdminOrderController::class, 'bulkUpdate'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+
+// Notification Routes (Protected - Admin and Client)
+// Note: Specific routes must come before dynamic routes with {id} parameters
+$router->get('/api/notifications', [NotificationController::class, 'index'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/notifications/unread-count', [NotificationController::class, 'unreadCount'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/notifications/recent', [NotificationController::class, 'recent'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/notifications/stats', [NotificationController::class, 'stats'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->put('/api/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->put('/api/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->delete('/api/notifications/{id}', [NotificationController::class, 'delete'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+
+// Notification Preferences Routes
+$router->get('/api/notification-preferences', [NotificationController::class, 'getPreferences'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->put('/api/notification-preferences', [NotificationController::class, 'updatePreferences'])
     ->middleware([AuthMiddleware::class, 'handle']);
 
 // API Documentation Routes

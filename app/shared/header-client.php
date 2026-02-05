@@ -107,6 +107,10 @@
                         <span class="material-symbols-outlined" style="font-size: 20px;">category</span>
                         <span class="text-sm font-medium">Categories</span>
                     </a>
+                    <a href="/client/notifications.php" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:bg-white/5 hover:text-white group transition-colors mt-1" data-page="notifications">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
+                        <span class="text-sm font-medium">Notifications</span>
+                    </a>
                     <a href="/client/store-settings.php" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:bg-white/5 hover:text-white group transition-colors mt-1" data-page="settings">
                         <span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
                         <span class="text-sm font-medium">Settings</span>
@@ -140,12 +144,41 @@
                         <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 mt-1"><?php echo $pageDescription; ?></p>
                     <?php endif; ?>
                 </div>
+
+                <!-- Notification Bell -->
+                <div class="flex items-center gap-4">
+                    <!-- Dark Mode Toggle -->
+                    <button id="darkModeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
+                        <span class="material-symbols-outlined dark-mode-icon">dark_mode</span>
+                    </button>
+
+                    <!-- Notification Bell -->
+                    <div id="notificationBell"></div>
+                </div>
             </div>
         </header>
 
         <!-- Page Content -->
         <div class="p-4 lg:p-8">
+            <script src="/assets/js/services/notification.service.js"></script>
+            <script src="/assets/js/notification-bell.js"></script>
             <script>
+                // Initialize notification bell
+                document.addEventListener('DOMContentLoaded', function() {
+                    new NotificationBell('notificationBell', {
+                        pollInterval: 30000, // Poll every 30 seconds
+                        maxVisible: 5,
+                        onNotificationClick: (notification) => {
+                            // Navigate to notification center or specific page based on type
+                            if (notification.action_url) {
+                                window.location.href = notification.action_url;
+                            } else {
+                                window.location.href = '/client/notifications.php';
+                            }
+                        }
+                    });
+                });
+
                 // Sidebar toggle for mobile
                 function toggleSidebar() {
                     const sidebar = document.getElementById('sidebar');
