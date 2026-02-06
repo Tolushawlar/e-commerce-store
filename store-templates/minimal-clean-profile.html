@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>My Profile - {{store_name}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "{{primary_color}}",
+                        "accent": "{{accent_color}}",
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+        
+        window.storeConfig = {
+            store_id: {{store_id}},
+            storeId: {{store_id}},
+            storeName: "{{store_name}}",
+            primaryColor: "{{primary_color}}",
+            accentColor: "{{accent_color}}"
+        };
+    </script>
+</head>
+<body class="bg-white font-sans text-gray-900 antialiased min-h-screen">
+    <!-- Minimal Header -->
+    <header class="border-b border-gray-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex items-center justify-between">
+            <a href="index.html">
+                <h1 class="text-xl font-light tracking-wide text-primary">{{store_name}}</h1>
+            </a>
+            <nav class="hidden md:flex items-center gap-8 text-sm">
+                <a href="index.html" class="text-gray-600 hover:text-primary transition-colors">Products</a>
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors">About</a>
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors">Contact</a>
+            </nav>
+            <a href="cart.html" class="p-2 hover:bg-gray-50 rounded-full transition-colors">
+                <span class="material-symbols-outlined text-gray-700">shopping_bag</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-light text-gray-900 mb-2 tracking-tight">My Profile</h2>
+            <div class="w-12 h-px bg-primary mx-auto"></div>
+        </div>
+
+        <div class="grid lg:grid-cols-4 gap-12">
+            <!-- Minimal Sidebar -->
+            <aside class="lg:col-span-1">
+                <div class="border border-gray-100 p-8">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="material-symbols-outlined text-gray-600 text-2xl">person</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900" id="sidebar-name">Loading...</h3>
+                        <p class="text-sm text-gray-500 font-light" id="sidebar-email">Loading...</p>
+                    </div>
+                    
+                    <nav class="space-y-1">
+                        <a href="profile.html" class="block px-4 py-3 text-primary font-medium border-l-2 border-primary bg-gray-50">
+                            Profile
+                        </a>
+                        <a href="orders.html" class="block px-4 py-3 text-gray-600 hover:text-primary transition-colors">
+                            Orders
+                        </a>
+                        <button id="logout-btn" class="block w-full text-left px-4 py-3 text-red-600 hover:text-red-700 transition-colors">
+                            Logout
+                        </button>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+                <div class="border border-gray-100 p-8">
+                    <div id="loading-state" class="flex items-center justify-center py-12">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b border-primary"></div>
+                    </div>
+
+                    <div id="profile-content" class="hidden space-y-12">
+                        <!-- Personal Information -->
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-6">Personal Information</h3>
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2 font-light">First Name</label>
+                                    <div class="px-4 py-3 bg-gray-50 text-gray-900 font-light" id="first-name">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2 font-light">Last Name</label>
+                                    <div class="px-4 py-3 bg-gray-50 text-gray-900 font-light" id="last-name">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2 font-light">Email Address</label>
+                                    <div class="px-4 py-3 bg-gray-50 text-gray-900 font-light" id="email">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2 font-light">Phone Number</label>
+                                    <div class="px-4 py-3 bg-gray-50 text-gray-900 font-light" id="phone">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-6">Address Information</h3>
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm text-gray-600 mb-2 font-light">Street Address</label>
+                                    <div class="px-4 py-3 bg-gray-50 text-gray-900 font-light" id="address">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2 font-light">City</label>
+                                    <div class="px-4 py-3 bg-gray-50 text-gray-900 font-light" id="city">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2 font-light">State</label>
+                                    <div class="px-4 py-3 bg-gray-50 text-gray-900 font-light" id="state">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2 font-light">Postal Code</label>
+                                    <div class="px-4 py-3 bg-gray-50 text-gray-900 font-light" id="postal-code">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2 font-light">Country</label>
+                                    <div class="px-4 py-3 bg-gray-50 text-gray-900 font-light" id="country">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Status -->
+                        <div class="pt-8 border-t border-gray-100">
+                            <div class="flex items-center gap-3 text-green-700">
+                                <span class="material-symbols-outlined text-sm">check_circle</span>
+                                <span class="text-sm font-medium">Account Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="error-state" class="hidden text-center py-12">
+                        <span class="material-symbols-outlined text-red-500 text-4xl mb-4">error</span>
+                        <p class="text-gray-600 font-light mb-6">Failed to load profile information</p>
+                        <button onclick="location.reload()" class="px-6 py-2 bg-primary text-white font-medium hover:opacity-90 transition-opacity">
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Minimal Footer -->
+    <footer class="border-t border-gray-100 py-12 mt-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+            <p class="text-sm text-gray-500 mb-4">{{store_name}}</p>
+            <p class="text-xs text-gray-400">© 2024 All rights reserved</p>
+        </div>
+    </footer>
+
+    <script src="customer-auth.js"></script>
+    <script>
+        if (typeof API_BASE_URL === "undefined") {
+            var API_BASE_URL = window.location.origin;
+        }
+
+        if (!CustomerAuth.isAuthenticated()) {
+            window.location.href = 'login.html?redirect=profile.html';
+        }
+
+        async function loadProfile() {
+            try {
+                const token = CustomerAuth.getToken();
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+
+                const response = await fetch(`${API_BASE_URL}/api/stores/${window.storeConfig.store_id}/customers/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const result = await response.json();
+                const profile = result.data || result;
+
+                document.getElementById('sidebar-name').textContent = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User';
+                document.getElementById('sidebar-email').textContent = profile.email || '';
+
+                document.getElementById('first-name').textContent = profile.first_name || '-';
+                document.getElementById('last-name').textContent = profile.last_name || '-';
+                document.getElementById('email').textContent = profile.email || '-';
+                document.getElementById('phone').textContent = profile.phone || '-';
+                
+                const address = profile.addresses && profile.addresses.length > 0 ? profile.addresses[0] : {};
+                document.getElementById('address').textContent = address.street_address || address.address || '-';
+                document.getElementById('city').textContent = address.city || '-';
+                document.getElementById('state').textContent = address.state || '-';
+                document.getElementById('postal-code').textContent = address.postal_code || '-';
+                document.getElementById('country').textContent = address.country || '-';
+
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('profile-content').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('error-state').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                CustomerAuth.logout();
+            }
+        });
+
+        loadProfile();
+    </script>
+</body>
+</html>

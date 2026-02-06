@@ -44,6 +44,9 @@ class StoreGeneratorService
             $template = $this->templateModel->getDefault();
         }
 
+        // Get template name for subpages
+        $templateName = $this->getTemplateName($template);
+
         // Generate HTML using template
         $html = $this->generateHTML($store, $template);
 
@@ -61,8 +64,8 @@ class StoreGeneratorService
             copy($storeJsSource, $storeJsDest);
         }
 
-        // Generate product.html using template
-        $productHtml = $this->generateProductHTML($store, $template);
+        // Generate product.html using template-specific version
+        $productHtml = $this->generateTemplateSpecificHTML($store, $templateName, 'product');
         file_put_contents("{$storeDir}/product.html", $productHtml);
 
         // Copy product-detail.js to the store directory
@@ -100,35 +103,38 @@ class StoreGeneratorService
             copy($profileHeaderJsSource, $profileHeaderJsDest);
         }
 
-        // Generate cart.html from template
-        $cartHtml = $this->generateCartHTML($store);
+        // Generate template-specific subpages
+        
+        // Generate cart.html from template-specific version
+        $cartHtml = $this->generateTemplateSpecificHTML($store, $templateName, 'cart');
         file_put_contents("{$storeDir}/cart.html", $cartHtml);
 
-        // Generate checkout.html from template
-        $checkoutHtml = $this->generateCheckoutHTML($store);
+        // Generate checkout.html from template-specific version
+        $checkoutHtml = $this->generateTemplateSpecificHTML($store, $templateName, 'checkout');
         file_put_contents("{$storeDir}/checkout.html", $checkoutHtml);
 
-        // Generate login.html from template
-        $loginHtml = $this->generateLoginHTML($store);
+        // Generate login.html from template-specific version
+        $loginHtml = $this->generateTemplateSpecificHTML($store, $templateName, 'login');
         file_put_contents("{$storeDir}/login.html", $loginHtml);
 
-        // Generate profile.html from template
-        $profileHtml = $this->generateProfileHTML($store);
+        // Generate profile.html from template-specific version
+        $profileHtml = $this->generateTemplateSpecificHTML($store, $templateName, 'profile');
         file_put_contents("{$storeDir}/profile.html", $profileHtml);
 
-        // Generate orders.html from template
-        $ordersHtml = $this->generateOrdersHTML($store);
+        // Generate orders.html from template-specific version
+        $ordersHtml = $this->generateTemplateSpecificHTML($store, $templateName, 'orders');
         file_put_contents("{$storeDir}/orders.html", $ordersHtml);
 
-        // Generate order-success.html from template
-        $successHtml = $this->generateOrderSuccessHTML($store);
+        // Generate order-success.html from template-specific version
+        $successHtml = $this->generateTemplateSpecificHTML($store, $templateName, 'order-success');
         file_put_contents("{$storeDir}/order-success.html", $successHtml);
 
         return [
             'store_id' => $storeId,
             'store_url' => "/stores/{$storeSlug}/",
             'files_generated' => ['index.html', 'config.json', 'store.js', 'product.html', 'product-detail.js', 'cart.js', 'checkout.js', 'customer-auth.js', 'profile-header.js', 'cart.html', 'checkout.html', 'login.html', 'profile.html', 'orders.html', 'order-success.html'],
-            'template_used' => $template['name'] ?? 'Default'
+            'template_used' => $template['name'] ?? 'Default',
+            'template_system' => 'Template-specific subpages generated for consistent design'
         ];
     }
 
@@ -576,81 +582,116 @@ class StoreGeneratorService
     }
 
     /**
-     * Generate cart.html from template
+     * Get template name from template data
      */
-    private function generateCartHTML(array $store): string
+    private function getTemplateName(?array $template): string
     {
-        $templatePath = $this->templatesPath . '/cart.html';
-        if (file_exists($templatePath)) {
-            $html = file_get_contents($templatePath);
-            return $this->replacePlaceholders($html, $store);
+        if (!$template || !isset($template['name'])) {
+            return 'default';
         }
-        return '';
+        
+        // Map template names to file prefixes
+        $templateMap = [
+            'Bold Modern' => 'bold-modern',
+            'Bold & Modern' => 'bold-modern',
+            'Classic Ecommerce' => 'classic-ecommerce',
+            'Classic E-commerce' => 'classic-ecommerce', 
+            'Minimal Clean' => 'minimal-clean',
+            'Minimalist Clean' => 'minimal-clean',
+            'Premium Luxury' => 'premium-luxury',
+            'CampMart Style' => 'campmart-style',
+            'Campmart Style' => 'campmart-style'
+        ];
+        
+        return $templateMap[$template['name']] ?? 'default';
     }
-
+    
     /**
-     * Generate checkout.html from template
+     * Generate template-specific subpage HTML
      */
-    private function generateCheckoutHTML(array $store): string
+    private function generateTemplateSpecificHTML(array $store, string $templateName, string $pageType): string
     {
-        $templatePath = $this->templatesPath . '/checkout.html';
-        if (file_exists($templatePath)) {
-            $html = file_get_contents($templatePath);
+        // Try template-specific version first
+        $specificTemplatePath = $this->templatesPath . "/{$templateName}-{$pageType}.html";
+        
+        if (file_exists($specificTemplatePath)) {
+            $html = file_get_contents($specificTemplatePath);
             return $this->replacePlaceholders($html, $store);
         }
-        return '';
+        
+        // Fallback to generic template
+        $genericTemplatePath = $this->templatesPath . "/{$pageType}.html";
+        if (file_exists($genericTemplatePath)) {
+            $html = file_get_contents($genericTemplatePath);
+            return $this->replacePlaceholders($html, $store);
+        }
+        
+        // Generate basic fallback HTML for essential pages
+        return $this->generateFallbackPageHTML($store, $pageType);
     }
-
+    
     /**
-     * Generate order-success.html from template
+     * Generate basic fallback HTML for essential pages when no template is found
      */
-    private function generateOrderSuccessHTML(array $store): string
+    private function generateFallbackPageHTML(array $store, string $pageType): string
     {
-        $templatePath = $this->templatesPath . '/order-success.html';
-        if (file_exists($templatePath)) {
-            $html = file_get_contents($templatePath);
-            return $this->replacePlaceholders($html, $store);
+        $primaryColor = $store['primary_color'] ?? '#064E3B';
+        $accentColor = $store['accent_color'] ?? '#BEF264';
+        $storeName = $store['store_name'] ?? 'My Store';
+        
+        switch ($pageType) {
+            case 'cart':
+                return $this->generateBasicCartHTML($store);
+            case 'checkout':
+                return $this->generateBasicCheckoutHTML($store);
+            case 'login':
+                return $this->generateBasicLoginHTML($store);
+            case 'profile':
+                return $this->generateBasicProfileHTML($store);
+            case 'orders':
+                return $this->generateBasicOrdersHTML($store);
+            case 'order-success':
+                return $this->generateBasicOrderSuccessHTML($store);
+            case 'product':
+                return $this->generateBasicProductHTML($store);
+            default:
+                return '';
         }
-        return '';
     }
-
-    /**
-     * Generate login.html from template
-     */
-    private function generateLoginHTML(array $store): string
+    
+    private function generateBasicCartHTML(array $store): string
     {
-        $templatePath = $this->templatesPath . '/login.html';
-        if (file_exists($templatePath)) {
-            $html = file_get_contents($templatePath);
-            return $this->replacePlaceholders($html, $store);
-        }
-        return '';
+        return "<!DOCTYPE html><html><head><title>Cart - {$store['store_name']}</title></head><body><h1>Shopping Cart</h1><p>Basic cart page</p></body></html>";
     }
-
-    /**
-     * Generate profile.html from template
-     */
-    private function generateProfileHTML(array $store): string
+    
+    private function generateBasicCheckoutHTML(array $store): string
     {
-        $templatePath = $this->templatesPath . '/profile.html';
-        if (file_exists($templatePath)) {
-            $html = file_get_contents($templatePath);
-            return $this->replacePlaceholders($html, $store);
-        }
-        return '';
+        return "<!DOCTYPE html><html><head><title>Checkout - {$store['store_name']}</title></head><body><h1>Checkout</h1><p>Basic checkout page</p></body></html>";
     }
-
-    /**
-     * Generate orders.html from template
-     */
-    private function generateOrdersHTML(array $store): string
+    
+    private function generateBasicLoginHTML(array $store): string
     {
-        $templatePath = $this->templatesPath . '/orders.html';
-        if (file_exists($templatePath)) {
-            $html = file_get_contents($templatePath);
-            return $this->replacePlaceholders($html, $store);
-        }
-        return '';
+        return "<!DOCTYPE html><html><head><title>Login - {$store['store_name']}</title></head><body><h1>Login</h1><p>Basic login page</p></body></html>";
+    }
+    
+    private function generateBasicProfileHTML(array $store): string
+    {
+        return "<!DOCTYPE html><html><head><title>Profile - {$store['store_name']}</title></head><body><h1>My Profile</h1><p>Basic profile page</p></body></html>";
+    }
+    
+    private function generateBasicOrdersHTML(array $store): string
+    {
+        return "<!DOCTYPE html><html><head><title>Orders - {$store['store_name']}</title></head><body><h1>My Orders</h1><p>Basic orders page</p></body></html>";
+    }
+    
+    private function generateBasicOrderSuccessHTML(array $store): string
+    {
+        return "<!DOCTYPE html><html><head><title>Order Success - {$store['store_name']}</title></head><body><h1>Order Successful</h1><p>Basic order success page</p></body></html>";
+    }
+    
+    private function generateBasicProductHTML(array $store): string
+    {
+        return "<!DOCTYPE html><html><head><title>Product - {$store['store_name']}</title></head><body><h1>Product Details</h1><p>Basic product page</p></body></html>";
     }
 
     /**

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>My Profile - {{store_name}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "{{primary_color}}",
+                        "accent": "{{accent_color}}",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"]
+                    },
+                },
+            },
+        }
+        
+        window.storeConfig = {
+            store_id: {{store_id}},
+            storeId: {{store_id}},
+            storeName: "{{store_name}}",
+            primaryColor: "{{primary_color}}",
+            accentColor: "{{accent_color}}"
+        };
+    </script>
+</head>
+<body class="bg-gray-50 font-display text-gray-900 antialiased min-h-screen">
+    <!-- Bold Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3">
+                    <a href="index.html" class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-2xl font-bold">bolt</span>
+                        </div>
+                        <span class="text-2xl font-black text-primary uppercase tracking-tight">{{store_name}}</span>
+                    </a>
+                </div>
+                
+                <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
+                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">NEW IN</a>
+                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">TRENDING</a>
+                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">SALE</a>
+                </nav>
+                
+                <div class="flex items-center gap-2">
+                    <a href="cart.html" class="p-3 text-gray-600 hover:text-primary transition-colors relative">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-accent text-primary text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"></span>
+                    </a>
+                    <div class="relative" id="profile-dropdown">
+                        <button class="flex items-center gap-2 p-2 rounded-xl hover:bg-gray-100 transition-colors" id="profile-button">
+                            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white text-xl">person</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid lg:grid-cols-4 gap-8">
+            <!-- Bold Sidebar -->
+            <aside class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-md p-8">
+                    <div class="text-center mb-8">
+                        <div class="w-24 h-24 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <span class="material-symbols-outlined text-white text-5xl">person</span>
+                        </div>
+                        <h2 class="text-xl font-black text-gray-900 uppercase tracking-wide" id="sidebar-name">Loading...</h2>
+                        <p class="text-sm text-gray-500 font-semibold" id="sidebar-email">Loading...</p>
+                    </div>
+                    
+                    <nav class="space-y-3">
+                        <a href="profile.html" class="flex items-center gap-4 px-6 py-4 bg-primary/10 text-primary rounded-xl font-black uppercase tracking-wide">
+                            <span class="material-symbols-outlined">person</span>
+                            <span>PROFILE</span>
+                        </a>
+                        <a href="orders.html" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-50 rounded-xl font-black uppercase tracking-wide transition-colors">
+                            <span class="material-symbols-outlined">receipt_long</span>
+                            <span>ORDERS</span>
+                        </a>
+                        <button id="logout-btn" class="w-full flex items-center gap-4 px-6 py-4 text-red-600 hover:bg-red-50 rounded-xl font-black uppercase tracking-wide transition-colors">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>LOGOUT</span>
+                        </button>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-2xl shadow-md p-8 mb-8">
+                    <div class="mb-8">
+                        <h1 class="text-4xl font-black text-gray-900 mb-2 uppercase tracking-wide">MY PROFILE</h1>
+                        <div class="w-20 h-1 bg-primary rounded-full"></div>
+                    </div>
+                    
+                    <div id="loading-state" class="flex items-center justify-center py-12">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
+
+                    <div id="profile-content" class="hidden">
+                        <!-- Personal Information -->
+                        <div class="mb-12">
+                            <h2 class="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3 uppercase tracking-wide">
+                                <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary">badge</span>
+                                </div>
+                                PERSONAL INFO
+                            </h2>
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">First Name</label>
+                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="first-name">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Last Name</label>
+                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="last-name">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Email Address</label>
+                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="email">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Phone Number</label>
+                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="phone">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3 uppercase tracking-wide">
+                                <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary">home</span>
+                                </div>
+                                ADDRESS INFO
+                            </h2>
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Street Address</label>
+                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="address">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">City</label>
+                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="city">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">State/Province</label>
+                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="state">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Postal Code</label>
+                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="postal-code">-</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Country</label>
+                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="country">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Status -->
+                        <div class="mt-12 p-6 bg-green-50 border-2 border-green-200 rounded-xl">
+                            <div class="flex items-center gap-3 text-green-800">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                </div>
+                                <span class="font-black uppercase tracking-wide">ACCOUNT ACTIVE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="error-state" class="hidden text-center py-12">
+                        <div class="w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <span class="material-symbols-outlined text-red-500 text-4xl">error</span>
+                        </div>
+                        <h3 class="text-xl font-black text-gray-900 mb-3 uppercase tracking-wide">FAILED TO LOAD</h3>
+                        <p class="text-gray-600 font-semibold mb-6">Unable to load profile information</p>
+                        <button onclick="location.reload()" class="px-8 py-4 bg-primary text-white font-black rounded-xl hover:scale-105 transition-transform shadow-lg uppercase tracking-wide">
+                            TRY AGAIN
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bold Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary font-bold">bolt</span>
+                        </div>
+                        <span class="text-xl font-black uppercase">{{store_name}}</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Your premium marketplace for amazing products</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-accent mb-4">SHOP</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="index.html" class="hover:text-white transition-colors">All Products</a></li>
+                        <li><a href="index.html" class="hover:text-white transition-colors">Best Sellers</a></li>
+                        <li><a href="index.html" class="hover:text-white transition-colors">Sale</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-accent mb-4">ACCOUNT</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="profile.html" class="hover:text-white transition-colors">My Profile</a></li>
+                        <li><a href="orders.html" class="hover:text-white transition-colors">My Orders</a></li>
+                        <li><a href="login.html" class="hover:text-white transition-colors">Login</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-accent mb-4">CONNECT</h4>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
+                            <span class="material-symbols-outlined">tag</span>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
+                            <span class="material-symbols-outlined">share</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 text-center">
+                <p class="text-xs text-gray-500">© 2024 {{store_name}}. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="customer-auth.js"></script>
+    <script>
+        if (typeof API_BASE_URL === "undefined") {
+            var API_BASE_URL = window.location.origin;
+        }
+
+        if (!CustomerAuth.isAuthenticated()) {
+            window.location.href = 'login.html?redirect=profile.html';
+        }
+
+        async function loadProfile() {
+            try {
+                const token = CustomerAuth.getToken();
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+
+                const response = await fetch(`${API_BASE_URL}/api/stores/${window.storeConfig.store_id}/customers/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const result = await response.json();
+                const profile = result.data || result;
+
+                document.getElementById('sidebar-name').textContent = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User';
+                document.getElementById('sidebar-email').textContent = profile.email || '';
+
+                document.getElementById('first-name').textContent = profile.first_name || '-';
+                document.getElementById('last-name').textContent = profile.last_name || '-';
+                document.getElementById('email').textContent = profile.email || '-';
+                document.getElementById('phone').textContent = profile.phone || '-';
+                
+                const address = profile.addresses && profile.addresses.length > 0 ? profile.addresses[0] : {};
+                document.getElementById('address').textContent = address.street_address || address.address || '-';
+                document.getElementById('city').textContent = address.city || '-';
+                document.getElementById('state').textContent = address.state || '-';
+                document.getElementById('postal-code').textContent = address.postal_code || '-';
+                document.getElementById('country').textContent = address.country || '-';
+
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('profile-content').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('error-state').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                CustomerAuth.logout();
+            }
+        });
+
+        loadProfile();
+    </script>
+</body>
+</html>
