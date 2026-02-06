@@ -111,7 +111,7 @@
         <!-- Page Content -->
         <div class="p-8">
             <script src="/assets/js/services/notification.service.js"></script>
-            <script src="/assets/js/notification-bell.js"></script>
+            <script src="/assets/js/components/notification-bell.js"></script>
             <script>
                 // Initialize notification bell
                 document.addEventListener('DOMContentLoaded', function() {

@@ -69,8 +69,8 @@
         <span class="cart-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full font-bold">0</span>
     </a>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/services/cart.js"></script>
+    <script src="/assets/js/core/api.js"></script>
+    <script src="/assets/js/services/cart.service.js"></script>
     <script>
         const apiClient = new APIClient();
         const cartService = new CartService(apiClient);

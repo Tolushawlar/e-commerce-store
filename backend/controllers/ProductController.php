@@ -6,6 +6,7 @@ use App\Core\Controller;
 use App\Models\Product;
 use App\Models\Store;
 use App\Services\NotificationService;
+use App\Services\ExportService;
 
 /**
  * Product Controller
@@ -95,17 +96,20 @@ class ProductController extends Controller
 
         $page = (int)$this->query('page', 1);
         $limit = (int)$this->query('limit', 50);
+        $offset = ($page - 1) * $limit;
 
         $filters = [
             'category' => $this->query('category'),
             'category_id' => $this->query('category_id'),
             'status' => $this->query('status'),
             'search' => $this->query('search'),
-            'limit' => $limit
+            'limit' => $limit,
+            'offset' => $offset
         ];
 
         $products = $this->productModel->getByStore((int)$storeId, $filters);
         $total = $this->productModel->countByStore((int)$storeId, $filters);
+        $stats = $this->productModel->getStoreStats((int)$storeId, $filters);
 
         // Add images to each product
         foreach ($products as &$product) {
@@ -119,7 +123,8 @@ class ProductController extends Controller
                 'limit' => $limit,
                 'total' => $total,
                 'pages' => ceil($total / $limit)
-            ]
+            ],
+            'stats' => $stats
         ]);
     }
 
@@ -456,5 +461,401 @@ class ProductController extends Controller
         $products = $this->productModel->getLowStock((int)$storeId, $threshold);
 
         $this->success(['products' => $products]);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/products/import-csv",
+     *     tags={"Products"},
+     *     summary="Import products from CSV file",
+     *     description="Bulk import products from a CSV file with validation and error reporting",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"csv_file", "store_id"},
+     *                 @OA\Property(
+     *                     property="csv_file",
+     *                     type="string",
+     *                     format="binary",
+     *                     description="CSV file containing product data"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="store_id",
+     *                     type="integer",
+     *                     description="Store ID to import products into",
+     *                     example=1
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="CSV import completed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Successfully imported 45 products"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="success_count", type="integer", example=45),
+     *                 @OA\Property(property="total_rows", type="integer", example=50),
+     *                 @OA\Property(property="failed_count", type="integer", example=5),
+     *                 @OA\Property(
+     *                     property="errors",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="row", type="integer", example=5),
+     *                         @OA\Property(property="error", type="string", example="Price must be a positive number"),
+     *                         @OA\Property(property="data", type="object")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Invalid request", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=422, description="Validation failed", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=401, description="Unauthorized", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=500, description="Server error", @OA\JsonContent(ref="#/components/schemas/Error"))
+     * )
+     */
+    public function importCSV(): void
+    {
+        // Increase execution time for large imports
+        set_time_limit(300); // 5 minutes
+        ini_set('max_execution_time', '300');
+        ini_set('memory_limit', '256M');
+
+        try {
+            // Validate store_id
+            $storeId = $_POST['store_id'] ?? null;
+            if (!$storeId) {
+                $this->error('Store ID is required', 400);
+            }
+
+            // Check if file was uploaded
+            if (!isset($_FILES['csv_file'])) {
+                $this->error('No CSV file uploaded', 400);
+            }
+
+            $file = $_FILES['csv_file'];
+
+            // Validate file
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                $this->error('File upload failed', 400);
+            }
+
+            // Check file size (max 5MB)
+            $maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
+            if ($file['size'] > $maxFileSize) {
+                $this->error('File size exceeds 5MB limit', 400);
+            }
+
+            // Check file type
+            $allowedMimes = ['text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel'];
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+
+            // Also check file extension
+            $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            if (!in_array($mimeType, $allowedMimes) && $fileExtension !== 'csv') {
+                $this->error('Invalid file type. Please upload a CSV file', 400);
+            }
+
+            // Parse CSV file
+            $handle = fopen($file['tmp_name'], 'r');
+            if ($handle === false) {
+                $this->error('Failed to read CSV file', 500);
+            }
+
+            // Read header row
+            $headers = fgetcsv($handle);
+            if ($headers === false) {
+                fclose($handle);
+                $this->error('CSV file is empty', 400);
+            }
+
+            // Normalize headers (lowercase, trim)
+            $headers = array_map(function ($header) {
+                return strtolower(trim($header));
+            }, $headers);
+
+            // Required headers
+            $requiredHeaders = ['name', 'price', 'stock_quantity'];
+            $missingHeaders = array_diff($requiredHeaders, $headers);
+            if (!empty($missingHeaders)) {
+                fclose($handle);
+                $this->error('Missing required columns: ' . implode(', ', $missingHeaders), 422);
+            }
+
+            // Parse rows and validate
+            $validProducts = [];
+            $errors = [];
+            $rowNumber = 1; // Start at 1 (header is row 0)
+
+            while (($row = fgetcsv($handle)) !== false) {
+                $rowNumber++;
+
+                // Skip empty rows
+                if (empty(array_filter($row))) {
+                    continue;
+                }
+
+                // Combine headers with row data
+                $rowData = array_combine($headers, $row);
+
+                // Validate row
+                $validationErrors = $this->validateCSVRow($rowData, $rowNumber, (int)$storeId);
+                if (!empty($validationErrors)) {
+                    $errors[] = [
+                        'row' => $rowNumber,
+                        'error' => implode(', ', $validationErrors),
+                        'data' => $rowData
+                    ];
+                    continue;
+                }
+
+                // Process category if provided
+                $categoryId = null;
+                if (!empty($rowData['category_name'])) {
+                    $category = $this->productModel->findCategoryByName((int)$storeId, trim($rowData['category_name']));
+                    if ($category) {
+                        $categoryId = $category['id'];
+                    } else {
+                        // Auto-create category
+                        $categoryId = $this->productModel->createCategory((int)$storeId, trim($rowData['category_name']));
+                    }
+                }
+
+                // Prepare product data
+                $validProducts[] = [
+                    'store_id' => (int)$storeId,
+                    'name' => trim($rowData['name']),
+                    'description' => !empty($rowData['description']) ? trim($rowData['description']) : null,
+                    'price' => (float)$rowData['price'],
+                    'stock_quantity' => (int)($rowData['stock_quantity'] ?? 0),
+                    'category_id' => $categoryId,
+                    'sku' => !empty($rowData['sku']) ? trim($rowData['sku']) : null,
+                    'weight' => !empty($rowData['weight']) ? (float)$rowData['weight'] : null,
+                    'status' => !empty($rowData['status']) && in_array(strtolower($rowData['status']), ['active', 'inactive'])
+                        ? strtolower($rowData['status'])
+                        : 'active'
+                ];
+            }
+
+            fclose($handle);
+
+            // Check if we have any valid products to import
+            if (empty($validProducts)) {
+                $this->error('No valid products found in CSV file', 422, ['errors' => $errors]);
+            }
+
+            // Bulk insert products
+            $result = $this->productModel->bulkInsert($validProducts);
+
+            // Merge validation errors with insertion errors
+            $allErrors = array_merge($errors, $result['errors']);
+
+            $totalRows = count($validProducts) + count($errors);
+            $message = $result['success_count'] > 0
+                ? "Successfully imported {$result['success_count']} products"
+                : "Failed to import products";
+
+            if (!empty($allErrors)) {
+                $message .= ". {count($allErrors)} rows failed";
+            }
+
+            $this->success([
+                'success_count' => $result['success_count'],
+                'total_rows' => $totalRows,
+                'failed_count' => count($allErrors),
+                'errors' => $allErrors
+            ], $message);
+        } catch (\Exception $e) {
+            error_log("CSV Import Error: " . $e->getMessage());
+            $this->error('Failed to import CSV: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Validate a single CSV row
+     * @param array $rowData Row data
+     * @param int $rowNumber Row number for error reporting
+     * @param int $storeId Store ID
+     * @return array Array of validation errors
+     */
+    private function validateCSVRow(array $rowData, int $rowNumber, int $storeId): array
+    {
+        $errors = [];
+
+        // Validate name
+        if (empty($rowData['name']) || strlen(trim($rowData['name'])) < 2) {
+            $errors[] = 'Product name is required and must be at least 2 characters';
+        } elseif (strlen(trim($rowData['name'])) > 200) {
+            $errors[] = 'Product name must not exceed 200 characters';
+        }
+
+        // Validate price
+        if (empty($rowData['price']) || !is_numeric($rowData['price'])) {
+            $errors[] = 'Price is required and must be a number';
+        } elseif ((float)$rowData['price'] <= 0) {
+            $errors[] = 'Price must be greater than 0';
+        }
+
+        // Validate stock_quantity
+        if (!isset($rowData['stock_quantity']) || $rowData['stock_quantity'] === '') {
+            $errors[] = 'Stock quantity is required';
+        } elseif (!is_numeric($rowData['stock_quantity'])) {
+            $errors[] = 'Stock quantity must be a number';
+        } elseif ((int)$rowData['stock_quantity'] < 0) {
+            $errors[] = 'Stock quantity cannot be negative';
+        }
+
+        // Validate SKU if provided (check for duplicates)
+        if (!empty($rowData['sku'])) {
+            if (strlen($rowData['sku']) > 100) {
+                $errors[] = 'SKU must not exceed 100 characters';
+            } elseif ($this->productModel->skuExists($storeId, trim($rowData['sku']))) {
+                $errors[] = 'SKU already exists in this store';
+            }
+        }
+
+        // Validate weight if provided
+        if (!empty($rowData['weight']) && !is_numeric($rowData['weight'])) {
+            $errors[] = 'Weight must be a number';
+        }
+
+        // Validate status if provided
+        if (!empty($rowData['status']) && !in_array(strtolower($rowData['status']), ['active', 'inactive'])) {
+            $errors[] = 'Status must be either active or inactive';
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/products/csv-template",
+     *     tags={"Products"},
+     *     summary="Download CSV template",
+     *     description="Download a sample CSV template for bulk product import",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="store_id",
+     *         in="query",
+     *         description="Store ID to include existing categories in template",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="CSV template file",
+     *         @OA\MediaType(
+     *             mediaType="text/csv",
+     *             @OA\Schema(type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function csvTemplate(): void
+    {
+        // Set headers for CSV download
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="product_import_template.csv"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        // Open output stream
+        $output = fopen('php://output', 'w');
+
+        // Write CSV headers
+        fputcsv($output, ['name', 'sku', 'description', 'price', 'stock_quantity', 'category_name', 'weight', 'status']);
+
+        // Write sample data
+        fputcsv($output, [
+            'Sample Product 1',
+            'PROD-001',
+            'This is a sample product description',
+            '25000',
+            '100',
+            'Electronics',
+            '0.5',
+            'active'
+        ]);
+
+        fputcsv($output, [
+            'Sample Product 2',
+            'PROD-002',
+            'Another sample product',
+            '15000',
+            '50',
+            'Accessories',
+            '0.2',
+            'active'
+        ]);
+
+        fclose($output);
+        exit;
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/stores/{storeId}/products/export",
+     *     tags={"Products"},
+     *     summary="Export products data",
+     *     description="Export store products to CSV format",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="storeId",
+     *         in="path",
+     *         description="Store ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="category_id",
+     *         in="query",
+     *         description="Filter by category ID",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by status",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(response=200, description="CSV file download"),
+     *     @OA\Response(response=400, description="Bad request", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=401, description="Unauthorized", @OA\JsonContent(ref="#/components/schemas/Error"))
+     * )
+     */
+    public function exportProducts(int $storeId): void
+    {
+        // Get filters from query params
+        $filters = [
+            'category_id' => $this->query('category_id'),
+            'status' => $this->query('status'),
+            'search' => $this->query('search'),
+            'limit' => 10000  // High limit to get all products for export
+        ];
+
+        // Remove empty filters (except limit)
+        $filters = array_filter($filters, function($value, $key) {
+            return $value !== null && $value !== '' || $key === 'limit';
+        }, ARRAY_FILTER_USE_BOTH);
+
+        // Get all products using the correct method
+        $products = $this->productModel->getByStore($storeId, $filters);
+
+        // Export to CSV
+        $exportService = new ExportService();
+        $exportService->exportProducts($products);
     }
 }

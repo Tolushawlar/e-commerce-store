@@ -14,12 +14,13 @@ class EmailQueue extends Model
 
     protected array $fillable = [
         'notification_id',
-        'recipient_email',
-        'recipient_name',
+        'to_email',
+        'to_name',
+        'from_email',
+        'from_name',
         'subject',
-        'body',
-        'template',
-        'template_data',
+        'body_html',
+        'body_text',
         'priority',
         'status',
         'attempts',

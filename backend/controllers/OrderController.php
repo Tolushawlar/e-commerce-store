@@ -6,6 +6,7 @@ use App\Core\Controller;
 use App\Models\Order;
 use App\Models\Store;
 use App\Services\NotificationService;
+use App\Services\ExportService;
 
 /**
  * Order Controller
@@ -355,6 +356,97 @@ class OrderController extends Controller
     }
 
     /**
+     * @OA\Put(
+     *     path="/api/orders/{id}/payment-status",
+     *     tags={"Orders"},
+     *     summary="Update payment status",
+     *     description="Update the payment status of an existing order",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Order ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"payment_status"},
+     *             @OA\Property(property="payment_status", type="string", enum={"pending", "paid", "failed", "refunded"}, example="paid")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment status updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Payment status updated successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Order")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Order not found", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=400, description="Invalid payment status or payment status is required", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=401, description="Unauthorized", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=500, description="Server error", @OA\JsonContent(ref="#/components/schemas/Error"))
+     * )
+     */
+    public function updatePaymentStatus(string $id): void
+    {
+        $orderId = (int)$id;
+
+        if (!$this->orderModel->find($orderId)) {
+            $this->error('Order not found', 404);
+        }
+
+        $paymentStatus = $this->input('payment_status');
+
+        if (!$paymentStatus) {
+            $this->error('Payment status is required', 400);
+        }
+
+        if ($this->orderModel->updatePaymentStatus($orderId, $paymentStatus)) {
+            $order = $this->orderModel->find($orderId);
+
+            // Send notification for payment status change
+            try {
+                $storeModel = new Store();
+                $store = $storeModel->find($order['store_id']);
+
+                if ($store && isset($store['client_id'])) {
+                    $statusMessages = [
+                        'pending' => 'payment is pending',
+                        'paid' => 'payment has been confirmed',
+                        'failed' => 'payment has failed',
+                        'refunded' => 'payment has been refunded'
+                    ];
+
+                    $message = $statusMessages[$paymentStatus] ?? "payment status updated to {$paymentStatus}";
+                    $priority = in_array($paymentStatus, ['paid', 'failed', 'refunded']) ? 'high' : 'normal';
+
+                    $this->notificationService->send(
+                        (int)$store['client_id'],
+                        'client',
+                        'order',
+                        'Payment Status Updated',
+                        "Order #{$orderId} {$message}",
+                        null,
+                        "/client/orders.php?id={$orderId}",
+                        $priority
+                    );
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the status update
+                error_log("Failed to send payment status notification: " . $e->getMessage());
+            }
+
+            $this->success($order, 'Payment status updated successfully');
+        } else {
+            $this->error('Invalid payment status or failed to update', 400);
+        }
+    }
+
+    /**
      * @OA\Get(
      *     path="/api/orders/stats",
      *     tags={"Orders"},
@@ -401,5 +493,104 @@ class OrderController extends Controller
         $stats = $this->orderModel->getStoreStats((int)$storeId);
 
         $this->success($stats);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/stores/{storeId}/orders/export",
+     *     tags={"Orders"},
+     *     summary="Export orders data",
+     *     description="Export store orders to CSV format",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="storeId",
+     *         in="path",
+     *         description="Store ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by order status",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="payment_status",
+     *         in="query",
+     *         description="Filter by payment status",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="from_date",
+     *         in="query",
+     *         description="Filter from date (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="to_date",
+     *         in="query",
+     *         description="Filter to date (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Response(response=200, description="CSV file download"),
+     *     @OA\Response(response=400, description="Bad request", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=401, description="Unauthorized", @OA\JsonContent(ref="#/components/schemas/Error"))
+     * )
+     */
+    public function exportOrders(int $storeId): void
+    {
+        // Get filters from query params
+        $filters = [
+            'status' => $this->query('status'),
+            'payment_status' => $this->query('payment_status'),
+            'from_date' => $this->query('from_date'),
+            'to_date' => $this->query('to_date'),
+            'limit' => 10000  // High limit to get all orders for export
+        ];
+
+        // Remove empty filters (except limit)
+        $filters = array_filter($filters, function($value, $key) {
+            return $value !== null && $value !== '' || $key === 'limit';
+        }, ARRAY_FILTER_USE_BOTH);
+
+        // Get orders with filters using the correct method
+        $orders = $this->orderModel->getByStore($storeId, $filters);
+
+        // Export to CSV
+        $exportService = new ExportService();
+        $exportService->exportOrders($orders);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/stores/{storeId}/customers/export",
+     *     tags={"Orders"},
+     *     summary="Export customers data",
+     *     description="Export store customers to CSV format",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="storeId",
+     *         in="path",
+     *         description="Store ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="CSV file download"),
+     *     @OA\Response(response=401, description="Unauthorized", @OA\JsonContent(ref="#/components/schemas/Error"))
+     * )
+     */
+    public function exportCustomers(int $storeId): void
+    {
+        // Get all customers with order statistics (not just top customers)
+        $customers = $this->orderModel->getTopCustomers($storeId, 10000);
+
+        // Export to CSV
+        $exportService = new ExportService();
+        $exportService->exportCustomers($customers);
     }
 }

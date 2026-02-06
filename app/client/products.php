@@ -11,7 +11,11 @@ include '../shared/header-client.php';
         <p class="text-gray-600 dark:text-gray-400 text-sm">Manage your inventory, prices, and product visibility across your store.</p>
     </div>
     <div class="flex gap-3">
-        <button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm text-gray-900 dark:text-white">
+        <button onclick="openExportModal()" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm text-gray-900 dark:text-white">
+            <span class="material-symbols-outlined" style="font-size: 18px;">download</span>
+            Export
+        </button>
+        <button onclick="openCsvImportModal()" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm text-gray-900 dark:text-white">
             <span class="material-symbols-outlined" style="font-size: 18px;">upload_file</span>
             Import CSV
         </button>
@@ -212,6 +216,175 @@ include '../shared/header-client.php';
     </div>
 </div>
 
+<!-- Export Modal -->
+<div id="exportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Export Products</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Download your product data</p>
+            </div>
+            <button onclick="closeExportModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-5">
+            <!-- Export Type Selection -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Export Data</label>
+                <div class="space-y-2">
+                    <label class="export-type-option flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <input type="radio" name="export_type" value="filtered" checked class="mt-0.5 text-primary focus:ring-primary">
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900 dark:text-white text-sm">Current Filtered Data</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Export products matching current filters</div>
+                        </div>
+                    </label>
+                    <label class="export-type-option flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <input type="radio" name="export_type" value="all" class="mt-0.5 text-primary focus:ring-primary">
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900 dark:text-white text-sm">All Products</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Export all products from the store</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Format Selection -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Export Format</label>
+                <select id="exportFormat" class="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg text-sm py-2.5 px-3 text-gray-900 dark:text-white focus:ring-primary focus:border-primary">
+                    <option value="csv">CSV (Excel Compatible)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+            <button onclick="closeExportModal()" class="px-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                Cancel
+            </button>
+            <button onclick="handleExport()" class="px-4 py-2 bg-primary hover:bg-primary-dark text-[#0d1b18] rounded-lg text-sm font-bold shadow-glow transition-all">
+                Export Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- CSV Import Modal -->
+<div id="csvImportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-auto">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Import Products from CSV</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Upload a CSV file to import multiple products at once</p>
+            </div>
+            <button onclick="closeCsvImportModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <!-- Step 1: Download Template -->
+            <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 mt-0.5">info</span>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Step 1: Download Template</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Start by downloading our CSV template with sample data and required format.</p>
+                        <button onclick="downloadCsvTemplate()"
+                            class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">download</span>
+                            Download Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Prepare Your Data -->
+            <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-700 rounded-xl">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-gray-600 dark:text-gray-400 mt-0.5">edit_note</span>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Step 2: Prepare Your Data</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Fill in the CSV file with your product data.</p>
+                        <div class="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                            <p><strong class="text-gray-900 dark:text-white">Required columns:</strong> name, price, stock_quantity</p>
+                            <p><strong class="text-gray-900 dark:text-white">Optional columns:</strong> sku, description, category_name, weight, status</p>
+                            <p class="text-orange-600 dark:text-orange-400">⚠️ Categories will be auto-created if they don't exist</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Upload CSV -->
+            <div class="mb-6">
+                <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Step 3: Upload Your CSV File</h3>
+
+                <!-- Drag & Drop Area -->
+                <div id="csvDropArea"
+                    class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center hover:border-primary dark:hover:border-primary transition-colors cursor-pointer"
+                    onclick="document.getElementById('csvFileInput').click()">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                            <span class="material-symbols-outlined text-4xl text-gray-400 dark:text-gray-500">upload_file</span>
+                        </div>
+                        <div>
+                            <p class="text-gray-900 dark:text-white font-semibold mb-1">Click to upload or drag and drop</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">CSV files only (max 5MB)</p>
+                        </div>
+                        <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleCsvFileSelect(event)">
+                    </div>
+                </div>
+
+                <!-- Selected File Display -->
+                <div id="selectedFileDisplay" class="hidden mt-3 p-3 bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white" id="selectedFileName"></p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400" id="selectedFileSize"></p>
+                            </div>
+                        </div>
+                        <button onclick="clearSelectedFile()" class="text-gray-400 hover:text-red-600 dark:hover:text-red-400">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="csvUploadProgress" class="hidden mt-3">
+                    <div class="flex items-center justify-between mb-2 text-sm">
+                        <span class="text-gray-700 dark:text-gray-300">Uploading and processing...</span>
+                        <span class="text-gray-500 dark:text-gray-400" id="csvProgressPercent">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div id="csvProgressBar" class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Results -->
+            <div id="csvImportResults" class="hidden">
+                <!-- Will be populated after import -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button type="button" onclick="closeCsvImportModal()"
+                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold text-gray-900 dark:text-white">
+                    Cancel
+                </button>
+                <button type="button" id="csvImportBtn" onclick="importCsvFile()" disabled
+                    class="px-4 py-2 bg-primary hover:bg-primary-dark text-[#0d1b18] rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                    Import Products
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php include '../shared/footer-client.php'; ?>
 
 <style>
@@ -223,12 +396,19 @@ include '../shared/header-client.php';
     html.dark .light-mode-icon {
         display: inline-block !important;
     }
+
+    /* Export type option selected state */
+    .export-type-option:has(input:checked) {
+        border-color: var(--primary-color, #86efac);
+        background-color: rgba(134, 239, 172, 0.1);
+    }
 </style>
 
 <script src="/assets/js/services/store.service.js"></script>
 <script src="/assets/js/services/product.service.js"></script>
 <script src="/assets/js/services/category.service.js"></script>
 <script src="/assets/js/services/image.service.js"></script>
+<script src="/assets/js/services/export.service.js"></script>
 
 <script>
     let currentPage = 1;
@@ -378,8 +558,9 @@ include '../shared/header-client.php';
             const response = await productService.getAll(params);
             const products = response.data?.products || [];
             const pagination = response.data?.pagination || {};
+            const stats = response.data?.stats || null;
 
-            displayProducts(products);
+            displayProducts(products, pagination, stats);
             displayPagination(pagination);
 
         } catch (error) {
@@ -390,34 +571,52 @@ include '../shared/header-client.php';
     }
 
     // Display products table
-    function displayProducts(products) {
+    function displayProducts(products, pagination = {}, stats = null) {
         const container = document.getElementById('productsTable');
         const countElement = document.getElementById('productCount');
 
-        countElement.textContent = `${products.length} product${products.length !== 1 ? 's' : ''}`;
+        const totalProducts = pagination.total || products.length;
+        countElement.textContent = `${totalProducts} product${totalProducts !== 1 ? 's' : ''}`;
 
-        // Calculate stats
-        const totalProducts = products.length;
-        const activeProducts = products.filter(p => p.status === 'active' && p.stock_quantity > 0).length;
-        const lowStock = products.filter(p => p.stock_quantity < 10 && p.stock_quantity > 0).length;
-        const outOfStock = products.filter(p => p.stock_quantity === 0).length;
-        const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock_quantity), 0);
+        // Use server-provided stats if available, otherwise calculate from current page
+        let displayStats;
+        if (stats) {
+            // Find top performer from current page for display
+            const topPerformer = products.reduce((top, p) => {
+                const sales = p.sales_count || 0;
+                return (!top || sales > (top.sales_count || 0)) ? p : top;
+            }, null);
 
-        // Find top performer by sales
-        const topPerformer = products.reduce((top, p) => {
-            const sales = p.sales_count || 0;
-            return (!top || sales > (top.sales_count || 0)) ? p : top;
-        }, null);
+            displayStats = {
+                totalProducts: stats.total_products,
+                activeProducts: stats.active_products,
+                lowStock: stats.low_stock,
+                outOfStock: stats.out_of_stock,
+                totalValue: stats.total_value,
+                topPerformer: topPerformer ? topPerformer.name : 'N/A'
+            };
+        } else {
+            // Fallback to calculating from current page
+            const activeProducts = products.filter(p => p.status === 'active' && p.stock_quantity > 0).length;
+            const lowStock = products.filter(p => p.stock_quantity < 10 && p.stock_quantity > 0).length;
+            const outOfStock = products.filter(p => p.stock_quantity === 0).length;
+            const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock_quantity), 0);
+            const topPerformer = products.reduce((top, p) => {
+                const sales = p.sales_count || 0;
+                return (!top || sales > (top.sales_count || 0)) ? p : top;
+            }, null);
 
-        // Update stats cards
-        updateStatsCards({
-            totalProducts,
-            activeProducts,
-            lowStock,
-            outOfStock,
-            totalValue,
-            topPerformer: topPerformer ? topPerformer.name : 'N/A'
-        });
+            displayStats = {
+                totalProducts,
+                activeProducts,
+                lowStock,
+                outOfStock,
+                totalValue,
+                topPerformer: topPerformer ? topPerformer.name : 'N/A'
+            };
+        }
+
+        updateStatsCards(displayStats);
 
         if (products.length === 0) {
             container.innerHTML = `
@@ -962,6 +1161,344 @@ include '../shared/header-client.php';
         document.getElementById('productForm').reset();
         uploadedImages = [];
         displayImagePreviews();
+    }
+
+    // ========================================
+    // CSV Import Functions
+    // ========================================
+
+    let selectedCsvFile = null;
+
+    // Open CSV import modal
+    function openCsvImportModal() {
+        if (!selectedStoreId) {
+            utils.toast('Please select a store first', 'warning');
+            return;
+        }
+
+        // Reset modal state
+        selectedCsvFile = null;
+        document.getElementById('csvFileInput').value = '';
+        document.getElementById('selectedFileDisplay').classList.add('hidden');
+        document.getElementById('csvUploadProgress').classList.add('hidden');
+        document.getElementById('csvImportResults').classList.add('hidden');
+        document.getElementById('csvImportBtn').disabled = true;
+
+        // Setup drag and drop
+        setupCsvDragDrop();
+
+        document.getElementById('csvImportModal').classList.remove('hidden');
+    }
+
+    // Close CSV import modal
+    function closeCsvImportModal() {
+        document.getElementById('csvImportModal').classList.add('hidden');
+        selectedCsvFile = null;
+
+        // Refresh products if import was successful
+        const resultsDiv = document.getElementById('csvImportResults');
+        if (!resultsDiv.classList.contains('hidden')) {
+            loadProducts(currentPage);
+        }
+    }
+
+    // Setup drag and drop for CSV
+    function setupCsvDragDrop() {
+        const dropArea = document.getElementById('csvDropArea');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.add('border-primary', 'bg-primary/5');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.remove('border-primary', 'bg-primary/5');
+            }, false);
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleCsvFileSelect({
+                    target: {
+                        files: files
+                    }
+                });
+            }
+        }, false);
+    }
+
+    // Handle CSV file selection
+    function handleCsvFileSelect(event) {
+        const file = event.target.files[0];
+
+        if (!file) return;
+
+        // Validate file type
+        const validTypes = ['text/csv', 'application/vnd.ms-excel', 'text/plain'];
+        const fileName = file.name.toLowerCase();
+
+        if (!validTypes.includes(file.type) && !fileName.endsWith('.csv')) {
+            utils.toast('Please select a valid CSV file', 'error');
+            event.target.value = '';
+            return;
+        }
+
+        // Validate file size (5MB max)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            utils.toast('File size must not exceed 5MB', 'error');
+            event.target.value = '';
+            return;
+        }
+
+        // Store file and display info
+        selectedCsvFile = file;
+        displaySelectedFile(file);
+
+        // Enable import button
+        document.getElementById('csvImportBtn').disabled = false;
+    }
+
+    // Display selected file info
+    function displaySelectedFile(file) {
+        const fileNameEl = document.getElementById('selectedFileName');
+        const fileSizeEl = document.getElementById('selectedFileSize');
+        const displayDiv = document.getElementById('selectedFileDisplay');
+
+        fileNameEl.textContent = file.name;
+        fileSizeEl.textContent = `${(file.size / 1024).toFixed(2)} KB`;
+        displayDiv.classList.remove('hidden');
+    }
+
+    // Clear selected file
+    function clearSelectedFile() {
+        selectedCsvFile = null;
+        document.getElementById('csvFileInput').value = '';
+        document.getElementById('selectedFileDisplay').classList.add('hidden');
+        document.getElementById('csvImportBtn').disabled = true;
+    }
+
+    // Download CSV template
+    async function downloadCsvTemplate() {
+        try {
+            await productService.downloadTemplate();
+            utils.toast('Template downloaded successfully!', 'success');
+        } catch (error) {
+            console.error('Download template error:', error);
+            utils.toast('Failed to download template', 'error');
+        }
+    }
+
+    // Import CSV file
+    async function importCsvFile() {
+        if (!selectedCsvFile) {
+            utils.toast('Please select a CSV file first', 'warning');
+            return;
+        }
+
+        if (!selectedStoreId) {
+            utils.toast('Please select a store', 'warning');
+            return;
+        }
+
+        const importBtn = document.getElementById('csvImportBtn');
+        const progressDiv = document.getElementById('csvUploadProgress');
+        const progressBar = document.getElementById('csvProgressBar');
+        const progressPercent = document.getElementById('csvProgressPercent');
+
+        try {
+            // Disable button and show progress
+            importBtn.disabled = true;
+            importBtn.textContent = 'Importing...';
+            progressDiv.classList.remove('hidden');
+            progressBar.style.width = '30%';
+            progressPercent.textContent = '30%';
+
+            // Import CSV
+            const result = await productService.importCSV(selectedCsvFile, selectedStoreId);
+
+            // Update progress
+            progressBar.style.width = '100%';
+            progressPercent.textContent = '100%';
+
+            // Hide progress after a moment
+            setTimeout(() => {
+                progressDiv.classList.add('hidden');
+            }, 500);
+
+            // Display results
+            displayCsvImportResults(result.data);
+
+            // Show success message
+            if (result.data.failed_count === 0) {
+                utils.toast(`Successfully imported ${result.data.success_count} products!`, 'success');
+            } else {
+                utils.toast(`Imported ${result.data.success_count} products, ${result.data.failed_count} failed`, 'warning');
+            }
+
+            // Clear selected file
+            clearSelectedFile();
+
+        } catch (error) {
+            console.error('CSV import error:', error);
+            utils.toast(error.message || 'Failed to import CSV file', 'error');
+
+            // Hide progress
+            progressDiv.classList.add('hidden');
+
+        } finally {
+            // Re-enable button
+            importBtn.disabled = false;
+            importBtn.textContent = 'Import Products';
+        }
+    }
+
+    // Display CSV import results
+    function displayCsvImportResults(data) {
+        const resultsDiv = document.getElementById('csvImportResults');
+
+        let html = '<div class=\"space-y-4\">';
+
+        // Success summary
+        html += `
+            <div class=\"p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl\">
+                <div class=\"flex items-start gap-3\">
+                    <span class=\"material-symbols-outlined text-green-600 dark:text-green-400\">check_circle</span>
+                    <div class=\"flex-1\">
+                        <h3 class=\"font-semibold text-green-900 dark:text-green-100 mb-1\">Import Summary</h3>
+                        <div class=\"text-sm text-green-700 dark:text-green-300 space-y-1\">
+                            <p>✓ Successfully imported: <strong>${data.success_count}</strong> products</p>
+                            <p>• Total rows processed: <strong>${data.total_rows}</strong></p>
+                            ${data.failed_count > 0 ? `<p>✗ Failed: <strong class=\"text-red-600 dark:text-red-400\">${data.failed_count}</strong> rows</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Error details (if any)
+        if (data.errors && data.errors.length > 0) {
+            html += `
+                <div class=\"p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl\">
+                    <div class=\"flex items-start gap-3 mb-3\">
+                        <span class=\"material-symbols-outlined text-red-600 dark:text-red-400\">error</span>
+                        <div class=\"flex-1\">
+                            <h3 class=\"font-semibold text-red-900 dark:text-red-100 mb-1\">Failed Rows (${data.errors.length})</h3>
+                            <p class=\"text-sm text-red-700 dark:text-red-300\">The following rows could not be imported:</p>
+                        </div>
+                    </div>
+                    
+                    <div class=\"max-h-64 overflow-y-auto\">
+                        <table class=\"w-full text-sm\">
+                            <thead class=\"bg-red-100 dark:bg-red-900/30 sticky top-0\">
+                                <tr>
+                                    <th class=\"px-3 py-2 text-left text-red-900 dark:text-red-100\">Row</th>
+                                    <th class=\"px-3 py-2 text-left text-red-900 dark:text-red-100\">Error</th>
+                                    <th class=\"px-3 py-2 text-left text-red-900 dark:text-red-100\">Product Name</th>
+                                </tr>
+                            </thead>
+                            <tbody class=\"divide-y divide-red-200 dark:divide-red-800\">
+            `;
+
+            data.errors.forEach(error => {
+                html += `
+                    <tr class=\"hover:bg-red-50 dark:hover:bg-red-900/10\">
+                        <td class=\"px-3 py-2 text-red-900 dark:text-red-100\">${error.row}</td>
+                        <td class=\"px-3 py-2 text-red-700 dark:text-red-300\">${error.error}</td>
+                        <td class=\"px-3 py-2 text-red-700 dark:text-red-300\">${error.data?.name || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <button onclick=\"downloadErrorReport()\" class=\"mt-3 flex items-center gap-2 px-3 py-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-lg text-sm font-semibold transition-colors\">
+                        <span class=\"material-symbols-outlined\" style=\"font-size: 16px;\">download</span>
+                        Download Error Report
+                    </button>
+                </div>
+            `;
+        }
+
+        html += '</div>';
+
+        resultsDiv.innerHTML = html;
+        resultsDiv.classList.remove('hidden');
+    }
+
+    // Download error report as CSV
+    function downloadErrorReport() {
+        const resultsDiv = document.getElementById('csvImportResults');
+        if (resultsDiv.classList.contains('hidden')) return;
+
+        // This would ideally get the errors from the last import
+        // For now, we'll show a message
+        utils.toast('Error report download functionality coming soon', 'info');
+    }
+
+    // Export modal functions
+    function openExportModal() {
+        if (!selectedStoreId) {
+            utils.toast('Please select a store first', 'warning');
+            return;
+        }
+        document.getElementById('exportModal').classList.remove('hidden');
+    }
+
+    function closeExportModal() {
+        document.getElementById('exportModal').classList.add('hidden');
+    }
+
+    async function handleExport() {
+        try {
+            const exportType = document.querySelector('input[name="export_type"]:checked').value;
+            const exportFormat = document.getElementById('exportFormat').value;
+
+            // Build filters
+            const filters = {};
+
+            // If exporting filtered data, use current filters
+            if (exportType === 'filtered') {
+                const statusFilter = document.getElementById('statusFilter').value;
+                const searchInput = document.getElementById('searchInput').value;
+
+                if (statusFilter) filters.status = statusFilter;
+                if (searchInput) filters.search = searchInput;
+            }
+
+            // Initialize export service
+            const exportService = new ExportService(api);
+
+            console.log('Exporting with store ID:', selectedStoreId);
+            console.log('Export filters:', filters);
+
+            // Trigger export
+            await exportService.exportProducts(selectedStoreId, filters, exportFormat);
+            
+            // Show success message
+            utils.toast('Export started! Your download will begin shortly.', 'success');
+            
+            // Close modal
+            closeExportModal();
+        } catch (error) {
+            console.error('Export failed:', error);
+            utils.toast(error.message || 'Failed to export data', 'error');
+        }
     }
 
     // Initialize

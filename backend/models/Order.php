@@ -103,13 +103,24 @@ class Order extends Model
         }
 
         $stmt = $this->db->prepare("
-            SELECT oi.*, p.name as product_name, p.image_url as product_image
+            SELECT oi.*, p.name as product_name
             FROM order_items oi
             JOIN products p ON oi.product_id = p.id
             WHERE oi.order_id = ?
         ");
         $stmt->execute([$id]);
         $order['items'] = $stmt->fetchAll();
+
+        // Fetch images for each product
+        foreach ($order['items'] as &$item) {
+            $stmt = $this->db->prepare("
+                SELECT * FROM product_images 
+                WHERE product_id = ? 
+                ORDER BY is_primary DESC, id ASC
+            ");
+            $stmt->execute([$item['product_id']]);
+            $item['images'] = $stmt->fetchAll();
+        }
 
         return $order;
     }
@@ -198,7 +209,6 @@ class Order extends Model
             SELECT 
                 oi.*,
                 p.name as product_name,
-                p.image_url as product_image,
                 p.description as product_description
             FROM order_items oi
             JOIN products p ON oi.product_id = p.id
@@ -206,6 +216,17 @@ class Order extends Model
         ");
         $stmt->execute([$id]);
         $order['items'] = $stmt->fetchAll();
+
+        // Fetch images for each product
+        foreach ($order['items'] as &$item) {
+            $stmt = $this->db->prepare("
+                SELECT * FROM product_images 
+                WHERE product_id = ? 
+                ORDER BY is_primary DESC, id ASC
+            ");
+            $stmt->execute([$item['product_id']]);
+            $item['images'] = $stmt->fetchAll();
+        }
 
         // Get shipping address if exists
         if ($order['shipping_address_id']) {
@@ -273,7 +294,10 @@ class Order extends Model
                 SUM(total_amount) as total_revenue,
                 AVG(total_amount) as average_order_value,
                 COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_orders,
-                COUNT(CASE WHEN status = 'delivered' THEN 1 END) as delivered_orders
+                COUNT(CASE WHEN status = 'processing' THEN 1 END) as processing_orders,
+                COUNT(CASE WHEN status = 'shipped' THEN 1 END) as shipped_orders,
+                COUNT(CASE WHEN status = 'delivered' THEN 1 END) as delivered_orders,
+                COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_orders
             FROM {$this->table}
             WHERE store_id = ?
         ");

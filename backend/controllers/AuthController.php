@@ -5,7 +5,9 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Client;
 use App\Models\SuperAdmin;
+use App\Models\PasswordReset;
 use App\Helpers\JWT;
+use App\Services\NotificationService;
 
 /**
  * Authentication Controller
@@ -496,5 +498,249 @@ class AuthController extends Controller
         }
 
         $this->success(null, 'Password changed successfully');
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/forgot-password",
+     *     tags={"Authentication"},
+     *     summary="Request Password Reset",
+     *     description="Request a password reset link for client account",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email"},
+     *             @OA\Property(property="email", type="string", format="email", example="client@example.com")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reset link sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="If an account exists with this email, a password reset link has been sent"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="reset_link", type="string", example="/auth/reset-password.php?token=abc123..."),
+     *                 @OA\Property(property="expires_in", type="string", example="1 hour")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Validation failed", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=429, description="Too many requests", @OA\JsonContent(ref="#/components/schemas/Error"))
+     * )
+     */
+    public function forgotPassword(): void
+    {
+        $email = $this->input('email');
+
+        // Validation
+        $errors = $this->validate([
+            'email' => $email
+        ], [
+            'email' => 'required|email'
+        ]);
+
+        if (!empty($errors)) {
+            $this->error('Validation failed', 422, $errors);
+        }
+
+        $clientModel = new Client();
+        $client = $clientModel->findByEmail($email);
+
+        // Always return success message for security (don't reveal if email exists)
+        $message = 'If an account exists with this email, a password reset link has been sent';
+
+        if ($client) {
+            $passwordResetModel = new PasswordReset();
+
+            // Rate limiting: Check if user has requested too many resets
+            $recentCount = $passwordResetModel->getRecentTokenCount($client['id'], 'client', 15);
+            if ($recentCount >= 3) {
+                $this->error('Too many password reset requests. Please try again later.', 429);
+            }
+
+            // Create reset token
+            $tokenData = $passwordResetModel->createToken($client['id'], 'client');
+            
+            // Generate reset link - use frontend URL from env or default to localhost:3000
+            $frontendUrl = getenv('APP_URL') ?: ($_ENV['APP_URL'] ?? 'http://localhost:3000');
+            $resetLink = '/auth/reset-password.php?token=' . $tokenData['token'];
+            $fullResetLink = rtrim($frontendUrl, '/') . $resetLink;
+
+            // Send notification email
+            $notificationService = new NotificationService();
+            $notificationService->send(
+                $client['id'],
+                'client',
+                'system',
+                'Password Reset Request',
+                "A password reset was requested for your account. Click the link to reset your password: {$fullResetLink}\n\nThis link will expire in 1 hour.\n\nIf you did not request this reset, please ignore this email.",
+                [
+                    'reset_link' => $fullResetLink,
+                    'expires_at' => $tokenData['expires_at']
+                ],
+                null,
+                'high'
+            );
+        }
+
+        // Return same message for both cases (security best practice)
+        $this->success(null, $message);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/auth/verify-reset-token/{token}",
+     *     tags={"Authentication"},
+     *     summary="Verify Password Reset Token",
+     *     description="Check if a password reset token is valid and not expired",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="path",
+     *         required=true,
+     *         description="Password reset token",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Token is valid",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Token is valid"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="valid", type="boolean", example=true),
+     *                 @OA\Property(property="email", type="string", example="client@example.com")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Invalid or expired token", @OA\JsonContent(ref="#/components/schemas/Error"))
+     * )
+     */
+    public function verifyResetToken(string $token): void
+    {
+        if (!$token) {
+            $this->error('Token is required', 422);
+        }
+
+        $passwordResetModel = new PasswordReset();
+        $resetData = $passwordResetModel->verifyToken($token);
+
+        if (!$resetData) {
+            $this->error('Invalid or expired reset token', 400);
+        }
+
+        // Get user email
+        $clientModel = new Client();
+        $client = $clientModel->find($resetData['user_id']);
+
+        if (!$client) {
+            $this->error('User not found', 404);
+        }
+
+        $this->success([
+            'valid' => true,
+            'email' => $client['email']
+        ], 'Token is valid');
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/reset-password",
+     *     tags={"Authentication"},
+     *     summary="Reset Password",
+     *     description="Reset user password using a valid reset token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"token", "password", "confirm_password"},
+     *             @OA\Property(property="token", type="string", example="abc123..."),
+     *             @OA\Property(property="password", type="string", format="password", minLength=8, example="newpassword123"),
+     *             @OA\Property(property="confirm_password", type="string", format="password", example="newpassword123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password reset successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Password reset successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Invalid token or passwords don't match", @OA\JsonContent(ref="#/components/schemas/Error")),
+     *     @OA\Response(response=422, description="Validation failed", @OA\JsonContent(ref="#/components/schemas/Error"))
+     * )
+     */
+    public function resetPassword(): void
+    {
+        $token = $this->input('token');
+        $password = $this->input('password');
+        $confirmPassword = $this->input('confirm_password');
+
+        // Validation
+        $errors = $this->validate([
+            'token' => $token,
+            'password' => $password,
+            'confirm_password' => $confirmPassword
+        ], [
+            'token' => 'required',
+            'password' => 'required|min:8',
+            'confirm_password' => 'required'
+        ]);
+
+        if (!empty($errors)) {
+            $this->error('Validation failed', 422, $errors);
+        }
+
+        if ($password !== $confirmPassword) {
+            $this->error('Passwords do not match', 400);
+        }
+
+        $passwordResetModel = new PasswordReset();
+        $resetData = $passwordResetModel->verifyToken($token);
+
+        if (!$resetData) {
+            $this->error('Invalid or expired reset token', 400);
+        }
+
+        // Update password based on user type
+        if ($resetData['user_type'] === 'admin') {
+            $adminModel = new SuperAdmin();
+            $user = $adminModel->find($resetData['user_id']);
+            
+            if (!$user) {
+                $this->error('User not found', 404);
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $adminModel->update($resetData['user_id'], ['password' => $hashedPassword]);
+        } else {
+            $clientModel = new Client();
+            $user = $clientModel->find($resetData['user_id']);
+            
+            if (!$user) {
+                $this->error('User not found', 404);
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $clientModel->update($resetData['user_id'], ['password' => $hashedPassword]);
+        }
+
+        // Delete the used token
+        $passwordResetModel->deleteToken($resetData['id']);
+
+        // Send confirmation notification
+        $notificationService = new NotificationService();
+        $notificationService->send(
+            $resetData['user_id'],
+            $resetData['user_type'],
+            'system',
+            'Password Reset Successful',
+            'Your password has been successfully reset. If you did not make this change, please contact support immediately.',
+            null,
+            null,
+            'high'
+        );
+
+        $this->success(null, 'Password reset successfully');
     }
 }

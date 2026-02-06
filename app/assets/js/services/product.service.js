@@ -81,6 +81,74 @@ class ProductService {
       throw error;
     }
   }
+
+  /**
+   * Import products from CSV file
+   * Endpoint: POST /api/products/import-csv
+   */
+  async importCSV(file, storeId) {
+    try {
+      const formData = new FormData();
+      formData.append("csv_file", file);
+      formData.append("store_id", storeId);
+
+      const token = auth.getToken();
+      const response = await fetch(`${api.baseURL}/api/products/import-csv`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "CSV import failed");
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Download CSV template
+   * Endpoint: GET /api/products/csv-template
+   */
+  async downloadTemplate() {
+    try {
+      const token = auth.getToken();
+      const response = await fetch(`${api.baseURL}/api/products/csv-template`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download template");
+      }
+
+      // Create blob from response
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "product_import_template.csv";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 // Create global instance

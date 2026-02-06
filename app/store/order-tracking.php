@@ -189,9 +189,9 @@
         </div>
     </main>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/services/cart.js"></script>
-    <script src="/assets/js/services/checkout.js"></script>
+    <script src="/assets/js/core/api.js"></script>
+    <script src="/assets/js/services/cart.service.js"></script>
+    <script src="/assets/js/services/checkout.service.js"></script>
     <script>
         const apiClient = new APIClient();
         const cartService = new CartService(apiClient);

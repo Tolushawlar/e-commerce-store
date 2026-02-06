@@ -73,7 +73,7 @@
         </div>
     </main>
 
-    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/core/api.js"></script>
     <script>
         const apiClient = new APIClient();
 

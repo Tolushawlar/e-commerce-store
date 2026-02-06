@@ -43,17 +43,6 @@
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
         }
-
-        /* Sidebar transitions */
-        .sidebar-transition {
-            transition: transform 0.3s ease-in-out;
-        }
-
-        @media (max-width: 1024px) {
-            .sidebar-hidden {
-                transform: translateX(-100%);
-            }
-        }
     </style>
 </head>
 
@@ -62,7 +51,7 @@
     <div id="sidebarBackdrop" class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 flex-shrink-0 flex flex-col justify-between bg-[#0b1614] text-white sidebar-transition z-50 h-full">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 flex-shrink-0 flex flex-col justify-between bg-[#0b1614] text-white transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0 z-50 h-full">
         <div class="flex flex-col h-full">
             <!-- User Profile / Brand -->
             <div class="p-6 border-b border-white/10">
@@ -147,11 +136,6 @@
 
                 <!-- Notification Bell -->
                 <div class="flex items-center gap-4">
-                    <!-- Dark Mode Toggle -->
-                    <button id="darkModeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
-                        <span class="material-symbols-outlined dark-mode-icon">dark_mode</span>
-                    </button>
-
                     <!-- Notification Bell -->
                     <div id="notificationBell"></div>
                 </div>
@@ -161,7 +145,7 @@
         <!-- Page Content -->
         <div class="p-4 lg:p-8">
             <script src="/assets/js/services/notification.service.js"></script>
-            <script src="/assets/js/notification-bell.js"></script>
+            <script src="/assets/js/components/notification-bell.js"></script>
             <script>
                 // Initialize notification bell
                 document.addEventListener('DOMContentLoaded', function() {
@@ -184,7 +168,7 @@
                     const sidebar = document.getElementById('sidebar');
                     const backdrop = document.getElementById('sidebarBackdrop');
 
-                    sidebar.classList.toggle('sidebar-hidden');
+                    sidebar.classList.toggle('-translate-x-full');
                     backdrop.classList.toggle('hidden');
                 }
 

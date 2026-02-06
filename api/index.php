@@ -38,6 +38,11 @@ $router->post('/api/auth/logout', [AuthController::class, 'logout']);
 $router->post('/api/auth/change-password', [AuthController::class, 'changePassword'])
     ->middleware([AuthMiddleware::class, 'handle']);
 
+// Password Reset Routes (Public)
+$router->post('/api/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+$router->get('/api/auth/verify-reset-token/{token}', [AuthController::class, 'verifyResetToken']);
+$router->post('/api/auth/reset-password', [AuthController::class, 'resetPassword']);
+
 // Client Routes (Admin Only)
 $router->get('/api/clients', [ClientController::class, 'index'])
     ->middleware([AuthMiddleware::class, 'adminOnly']);
@@ -90,14 +95,18 @@ $router->delete('/api/categories/{id}', [CategoryController::class, 'destroy'])
 
 // Product Routes (Public listing for stores, Protected for management)
 $router->get('/api/products', [ProductController::class, 'index']); // Public for store display
+$router->get('/api/products/low-stock', [ProductController::class, 'lowStock'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/products/csv-template', [ProductController::class, 'csvTemplate'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/api/products/import-csv', [ProductController::class, 'importCSV'])
+    ->middleware([AuthMiddleware::class, 'handle']);
 $router->get('/api/products/{id}', [ProductController::class, 'show']); // Public for store display
 $router->post('/api/products', [ProductController::class, 'store'])
     ->middleware([AuthMiddleware::class, 'handle']);
 $router->put('/api/products/{id}', [ProductController::class, 'update'])
     ->middleware([AuthMiddleware::class, 'handle']);
 $router->delete('/api/products/{id}', [ProductController::class, 'destroy'])
-    ->middleware([AuthMiddleware::class, 'handle']);
-$router->get('/api/products/low-stock', [ProductController::class, 'lowStock'])
     ->middleware([AuthMiddleware::class, 'handle']);
 
 // Order Routes (Protected)
@@ -109,7 +118,17 @@ $router->post('/api/orders', [OrderController::class, 'store'])
     ->middleware([AuthMiddleware::class, 'handle']);
 $router->put('/api/orders/{id}/status', [OrderController::class, 'updateStatus'])
     ->middleware([AuthMiddleware::class, 'handle']);
+$router->put('/api/orders/{id}/payment-status', [OrderController::class, 'updatePaymentStatus'])
+    ->middleware([AuthMiddleware::class, 'handle']);
 $router->get('/api/orders/stats', [OrderController::class, 'stats'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+
+// Export Routes (Protected)
+$router->get('/api/stores/{storeId}/orders/export', [OrderController::class, 'exportOrders'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/stores/{storeId}/customers/export', [OrderController::class, 'exportCustomers'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/stores/{storeId}/products/export', [ProductController::class, 'exportProducts'])
     ->middleware([AuthMiddleware::class, 'handle']);
 
 // Image Upload Routes (Protected)

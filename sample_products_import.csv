@@ -1,0 +1,11 @@
+name              , sku        , description                                      , price , stock_quantity, category_name, weight, status
+iPhone 13 Pro     , IP13P128   , Latest iPhone model with A15 Bionic chip         , 450000, 25            , Electronics  , 0.2   , active
+Samsung Galaxy S21, SGS21256   , Flagship Android smartphone                      , 380000, 15            , Electronics  , 0.19  , active
+Wireless Earbuds  , WEB-001    , Bluetooth 5.0 wireless earbuds with charging case, 15000 , 100           , Accessories  , 0.05  , active
+Leather Wallet    , LW-BROWN-01, Premium genuine leather wallet                   , 8500  , 50            , Accessories  , 0.1   , active
+Running Shoes     , RS-NIKE-42 , Nike Air Max running shoes size 42               , 35000 , 30            , Footwear     , 0.8   , active
+Cotton T-Shirt    , TS-BLK-L   , 100% cotton black t-shirt large                  , 5000  , 200           , Clothing     , 0.2   , active
+Smartwatch        , SW-APPLE-S7, Apple Watch Series 7 with GPS                    , 180000, 12            , Electronics  , 0.15  , active
+Backpack          , BP-NORTH-01, Waterproof hiking backpack 40L                   , 25000 , 40            , Accessories  , 1.2   , active
+Gaming Mouse      , GM-LOGITECH, Logitech G502 gaming mouse                       , 18000 , 60            , Electronics  , 0.12  , active
+Yoga Mat          , YM-PURPLE  , Premium non-slip yoga mat with carry strap       , 8000  , 75            , Fitness      , 1.5   , active
