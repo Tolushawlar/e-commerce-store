@@ -75,21 +75,21 @@ class StoreGeneratorService
             copy($productJsSource, $productJsDest);
         }
 
-        // Copy cart.js to the store directory
-        $cartJsSource = dirname(__DIR__, 2) . '/app/assets/js/cart.js';
+        // Copy cart.js to the store directory - use the full service version
+        $cartJsSource = dirname(__DIR__, 2) . '/app/assets/js/services/cart.service.js';
         $cartJsDest = "{$storeDir}/cart.js";
         if (file_exists($cartJsSource)) {
             copy($cartJsSource, $cartJsDest);
         }
 
-        // Copy checkout.js to the store directory
-        $checkoutJsSource = dirname(__DIR__, 2) . '/app/assets/js/checkout.js';
+        // Copy checkout.js to the store directory - use template-specific version (static utility pattern)
+        $checkoutJsSource = $this->templatesPath . '/checkout.js';
         $checkoutJsDest = "{$storeDir}/checkout.js";
         if (file_exists($checkoutJsSource)) {
             copy($checkoutJsSource, $checkoutJsDest);
         }
 
-        // Copy customer-auth.js to the store directory
+        // Copy customer-auth.js to the store directory - use the original version
         $customerAuthJsSource = dirname(__DIR__, 2) . '/app/assets/js/store/customer-auth.js';
         $customerAuthJsDest = "{$storeDir}/customer-auth.js";
         if (file_exists($customerAuthJsSource)) {
@@ -167,6 +167,9 @@ class StoreGeneratorService
             '{{logo_url}}' => $store['logo_url'] ?? '',
             '{{tagline}}' => $store['tagline'] ?? 'Your premium marketplace',
             '{{store_id}}' => $store['id'] ?? 1,
+            '{{group_by_category}}' => ($store['group_by_category'] ?? false) ? 'true' : 'false',
+            '{{product_grid_columns}}' => $store['product_grid_columns'] ?? 4,
+            '{{show_category_images}}' => ($store['show_category_images'] ?? true) ? 'true' : 'false',
         ];
 
         // Replace all placeholders

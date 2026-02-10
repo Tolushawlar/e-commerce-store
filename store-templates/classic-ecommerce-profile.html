@@ -32,90 +32,59 @@
     </script>
 </head>
 <body class="bg-gray-100 font-sans text-gray-900 min-h-screen">
-    <!-- Classic Top Bar -->
-    <div class="bg-primary text-white text-xs py-2">
-        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
-            <span>Welcome to {{store_name}} - Free shipping on orders over ₦5,000</span>
-            <div class="flex items-center gap-4">
-                <a href="#" class="hover:underline">Help</a>
-                <a href="orders.html" class="hover:underline">Track Order</a>
-            </div>
-        </div>
-    </div>
-
     <!-- Classic Header -->
     <header class="bg-white border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between">
                 <a href="index.html">
                     <h1 class="text-3xl font-bold text-primary">{{store_name}}</h1>
                 </a>
                 
-                <div class="flex-1 max-w-xl mx-8 hidden md:block">
-                    <div class="flex items-center bg-gray-100 rounded-md overflow-hidden">
-                        <input type="text" placeholder="Search products..." class="flex-1 px-4 py-2 bg-transparent focus:outline-none text-sm">
-                        <button class="px-4 py-2 bg-primary text-white">
-                            <span class="material-symbols-outlined text-sm">search</span>
+                <nav class="hidden lg:flex items-center gap-6 text-sm font-medium">
+                    <a href="index.html" class="text-gray-700 hover:text-primary">Home</a>
+                    <a href="index.html" class="text-gray-700 hover:text-primary">Shop</a>
+                    <a href="profile.html" class="text-primary font-semibold">My Profile</a>
+                </nav>
+                
+                <div class="flex items-center gap-4">
+                    <a href="cart.html" class="p-2 text-gray-600 hover:text-primary transition-colors relative">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </a>
+                    <div class="relative" id="profile-dropdown">
+                        <button class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors" id="profile-button">
+                            <span class="material-symbols-outlined text-gray-600">account_circle</span>
+                            <span class="material-symbols-outlined text-gray-600">expand_more</span>
                         </button>
                     </div>
                 </div>
-                
-                <div class="flex items-center gap-4">
-                    <a href="profile.html" class="flex items-center gap-1 text-primary font-semibold">
-                        <span class="material-symbols-outlined">person</span>
-                        <span class="text-sm hidden lg:inline">Account</span>
-                    </a>
-                    <a href="cart.html" class="flex items-center gap-1 text-gray-700 hover:text-primary relative">
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                        <span class="text-sm hidden lg:inline">Cart</span>
-                        <span id="cart-count" class="absolute -top-1 -right-1 bg-accent text-primary text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">0</span>
-                    </a>
-                </div>
             </div>
-            
-            <!-- Navigation Menu -->
-            <nav class="flex items-center gap-6 text-sm font-medium border-t border-gray-200 pt-3">
-                <a href="index.html" class="text-primary font-semibold flex items-center gap-1">
-                    <span class="material-symbols-outlined text-lg">menu</span>
-                    All Categories
-                </a>
-                <a href="index.html" class="text-gray-700 hover:text-primary">New Arrivals</a>
-                <a href="index.html" class="text-gray-700 hover:text-primary">Best Sellers</a>
-                <a href="index.html" class="text-gray-700 hover:text-primary">Deals</a>
-                <a href="index.html" class="text-red-600 font-bold">Sale</a>
-            </nav>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-6">
-        <!-- Breadcrumb -->
-        <div class="text-sm text-gray-600 mb-6">
-            <a href="index.html" class="hover:text-primary">Home</a> / 
-            <span class="text-gray-900">My Profile</span>
-        </div>
-
+    <main class="max-w-7xl mx-auto px-6 py-8">
         <div class="grid lg:grid-cols-4 gap-6">
-            <!-- Sidebar -->
+            <!-- Classic Sidebar -->
             <aside class="lg:col-span-1">
                 <div class="bg-white rounded-lg border border-gray-200 p-6">
                     <div class="text-center mb-6">
-                        <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
-                            <span class="material-symbols-outlined text-white text-4xl">person</span>
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="material-symbols-outlined text-primary text-3xl">person</span>
                         </div>
                         <h2 class="text-lg font-bold text-gray-900" id="sidebar-name">Loading...</h2>
                         <p class="text-sm text-gray-500" id="sidebar-email">Loading...</p>
                     </div>
                     
                     <nav class="space-y-2">
-                        <a href="profile.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded font-medium">
+                        <a href="profile.html" class="flex items-center gap-3 p-3 bg-primary/10 text-primary rounded-lg font-semibold">
                             <span class="material-symbols-outlined">person</span>
-                            <span>Profile</span>
+                            <span>My Profile</span>
                         </a>
-                        <a href="orders.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded font-medium transition-colors">
+                        <a href="orders.html" class="flex items-center gap-3 p-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors">
                             <span class="material-symbols-outlined">receipt_long</span>
                             <span>My Orders</span>
                         </a>
-                        <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded font-medium transition-colors">
+                        <button id="logout-btn" class="w-full flex items-center gap-3 p-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                             <span class="material-symbols-outlined">logout</span>
                             <span>Logout</span>
                         </button>
@@ -126,7 +95,10 @@
             <!-- Main Content -->
             <div class="lg:col-span-3">
                 <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-                    <h1 class="text-2xl font-bold text-gray-900 mb-6">My Profile</h1>
+                    <div class="mb-6">
+                        <h1 class="text-3xl font-bold text-gray-900 mb-1">My Profile</h1>
+                        <p class="text-sm text-gray-500">Manage your account information</p>
+                    </div>
                     
                     <div id="loading-state" class="flex items-center justify-center py-12">
                         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -135,73 +107,104 @@
                     <div id="profile-content" class="hidden">
                         <!-- Personal Information -->
                         <div class="mb-8">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary">badge</span>
                                 Personal Information
                             </h2>
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                    <div class="px-4 py-3 bg-gray-50 rounded border text-gray-900" id="first-name">-</div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">First Name</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-medium" id="first-name">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                    <div class="px-4 py-3 bg-gray-50 rounded border text-gray-900" id="last-name">-</div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Last Name</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-medium" id="last-name">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                                    <div class="px-4 py-3 bg-gray-50 rounded border text-gray-900" id="email">-</div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Email Address</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-medium" id="email">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                                    <div class="px-4 py-3 bg-gray-50 rounded border text-gray-900" id="phone">-</div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Phone Number</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-medium" id="phone">-</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Address Information -->
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <div class="mb-8">
+                            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary">home</span>
                                 Address Information
                             </h2>
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
-                                    <div class="px-4 py-3 bg-gray-50 rounded border text-gray-900" id="address">-</div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Street Address</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-medium" id="address">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
-                                    <div class="px-4 py-3 bg-gray-50 rounded border text-gray-900" id="city">-</div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">City</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-medium" id="city">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">State/Province</label>
-                                    <div class="px-4 py-3 bg-gray-50 rounded border text-gray-900" id="state">-</div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">State/Province</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-medium" id="state">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
-                                    <div class="px-4 py-3 bg-gray-50 rounded border text-gray-900" id="postal-code">-</div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Postal Code</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-medium" id="postal-code">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Country</label>
-                                    <div class="px-4 py-3 bg-gray-50 rounded border text-gray-900" id="country">-</div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Country</label>
+                                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-medium" id="country">-</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Account Status -->
-                        <div class="mt-8 p-4 bg-green-50 border border-green-200 rounded">
-                            <div class="flex items-center gap-2 text-green-800">
-                                <span class="material-symbols-outlined">check_circle</span>
-                                <span class="font-medium">Account Active</span>
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg mb-8">
+                            <div class="flex items-center gap-3 text-green-800">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                </div>
+                                <span class="font-semibold">Account Active</span>
                             </div>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="grid grid-cols-3 gap-4 mb-8">
+                            <div class="bg-primary/5 rounded-lg p-4 text-center border border-primary/10">
+                                <div class="text-2xl font-bold text-primary mb-1">0</div>
+                                <div class="text-sm text-gray-600">Total Orders</div>
+                            </div>
+                            <div class="bg-accent/5 rounded-lg p-4 text-center border border-accent/10">
+                                <div class="text-2xl font-bold text-primary mb-1">₦0</div>
+                                <div class="text-sm text-gray-600">Total Spent</div>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
+                                <div class="text-2xl font-bold text-purple-600 mb-1">0</div>
+                                <div class="text-sm text-gray-600">Rewards Points</div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex gap-4">
+                            <button class="px-6 py-3 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
+                                Edit Profile
+                            </button>
+                            <button class="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                                Change Password
+                            </button>
                         </div>
                     </div>
 
                     <div id="error-state" class="hidden text-center py-12">
-                        <span class="material-symbols-outlined text-red-500 text-6xl mb-4">error</span>
-                        <p class="text-gray-600">Failed to load profile information</p>
-                        <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors">
+                        <div class="w-20 h-20 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-6">
+                            <span class="material-symbols-outlined text-red-500 text-4xl">error</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Failed to Load</h3>
+                        <p class="text-gray-600 mb-6">Unable to load profile information</p>
+                        <button onclick="location.reload()" class="px-6 py-3 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-colors">
                             Try Again
                         </button>
                     </div>
@@ -211,29 +214,27 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-16 py-12">
+    <footer class="bg-gray-800 text-white py-12 mt-16">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 <div>
                     <h3 class="text-xl font-bold mb-4">{{store_name}}</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed">Your trusted online marketplace for quality products</p>
+                    <p class="text-sm text-gray-400 leading-relaxed">{{store_description}}</p>
                 </div>
                 <div>
                     <h4 class="font-bold mb-4">Customer Service</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
-                        <li><a href="#" class="hover:text-white">Shipping Info</a></li>
-                        <li><a href="#" class="hover:text-white">Returns</a></li>
-                        <li><a href="#" class="hover:text-white">FAQs</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Returns</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-bold mb-4">My Account</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="login.html" class="hover:text-white">Sign In</a></li>
-                        <li><a href="orders.html" class="hover:text-white">Order History</a></li>
-                        <li><a href="profile.html" class="hover:text-white">My Profile</a></li>
-                        <li><a href="orders.html" class="hover:text-white">Track Order</a></li>
+                        <li><a href="profile.html" class="hover:text-white transition-colors">My Profile</a></li>
+                        <li><a href="orders.html" class="hover:text-white transition-colors">My Orders</a></li>
+                        <li><a href="login.html" class="hover:text-white transition-colors">Login</a></li>
                     </ul>
                 </div>
                 <div>

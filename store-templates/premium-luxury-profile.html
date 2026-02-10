@@ -5,7 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>My Profile - {{store_name}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -16,7 +16,8 @@
                         "accent": "{{accent_color}}",
                     },
                     fontFamily: {
-                        "display": ["Poppins", "sans-serif"]
+                        "serif": ["Playfair Display", "serif"],
+                        "sans": ["Lato", "sans-serif"]
                     },
                 },
             },
@@ -31,68 +32,59 @@
         };
     </script>
 </head>
-<body class="bg-gray-50 font-display text-gray-900 antialiased min-h-screen">
-    <!-- Bold Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex items-center justify-between h-20">
-                <div class="flex items-center gap-3">
-                    <a href="index.html" class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white text-2xl font-bold">bolt</span>
-                        </div>
-                        <span class="text-2xl font-black text-primary uppercase tracking-tight">{{store_name}}</span>
-                    </a>
-                </div>
-                
-                <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">NEW IN</a>
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">TRENDING</a>
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">SALE</a>
+<body class="bg-neutral-50 text-gray-900 antialiased min-h-screen">
+    <!-- Elegant Header -->
+    <header class="bg-primary text-white">
+        <div class="max-w-[1400px] mx-auto px-8">
+            <div class="flex items-center justify-between h-24">
+                <nav class="hidden lg:flex items-center gap-8 text-sm tracking-widest font-light">
+                    <a href="index.html" class="hover:text-accent transition-colors">COLLECTIONS</a>
+                    <a href="index.html" class="hover:text-accent transition-colors">NEW ARRIVALS</a>
                 </nav>
                 
-                <div class="flex items-center gap-2">
-                    <a href="cart.html" class="p-3 text-gray-600 hover:text-primary transition-colors relative">
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                        <span id="cart-count" class="absolute -top-1 -right-1 bg-accent text-primary text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"></span>
+                <div class="flex-1 flex justify-center">
+                    <h1 class="text-3xl font-serif font-light tracking-wider">{{store_name}}</h1>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <a href="index.html" class="hover:text-accent transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined">home</span>
+                        <span class="text-sm font-light tracking-wider">Home</span>
                     </a>
-                    <div class="relative" id="profile-dropdown">
-                        <button class="flex items-center gap-2 p-2 rounded-xl hover:bg-gray-100 transition-colors" id="profile-button">
-                            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                                <span class="material-symbols-outlined text-white text-xl">person</span>
-                            </div>
-                        </button>
-                    </div>
+                    <a href="cart.html" class="hover:text-accent transition-colors relative">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-accent text-primary text-xs rounded-full w-5 h-5 flex items-center justify-center font-light"></span>
+                    </a>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-8">
+    <main class="max-w-[1400px] mx-auto px-8 py-16">
         <div class="grid lg:grid-cols-4 gap-8">
-            <!-- Bold Sidebar -->
+            <!-- Elegant Sidebar -->
             <aside class="lg:col-span-1">
-                <div class="bg-white rounded-2xl shadow-md p-8">
+                <div class="bg-white border border-gray-200 p-8">
                     <div class="text-center mb-8">
-                        <div class="w-24 h-24 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <span class="material-symbols-outlined text-white text-5xl">person</span>
+                        <div class="w-24 h-24 border border-primary flex items-center justify-center mx-auto mb-4">
+                            <span class="material-symbols-outlined text-primary text-5xl">person</span>
                         </div>
-                        <h2 class="text-xl font-black text-gray-900 uppercase tracking-wide" id="sidebar-name">Loading...</h2>
-                        <p class="text-sm text-gray-500 font-semibold" id="sidebar-email">Loading...</p>
+                        <h2 class="text-xl font-serif font-light text-gray-900" id="sidebar-name">Loading...</h2>
+                        <p class="text-sm text-gray-500 font-light mt-1" id="sidebar-email">Loading...</p>
                     </div>
                     
                     <nav class="space-y-3">
-                        <a href="profile.html" class="flex items-center gap-4 px-6 py-4 bg-primary/10 text-primary rounded-xl font-black uppercase tracking-wide">
+                        <a href="profile.html" class="flex items-center gap-4 px-6 py-4 bg-primary/5 text-primary border border-primary font-light tracking-wider">
                             <span class="material-symbols-outlined">person</span>
-                            <span>PROFILE</span>
+                            <span>Profile</span>
                         </a>
-                        <a href="orders.html" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-gray-50 rounded-xl font-black uppercase tracking-wide transition-colors">
+                        <a href="orders.html" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-neutral-50 border border-gray-200 font-light tracking-wider transition-colors">
                             <span class="material-symbols-outlined">receipt_long</span>
-                            <span>ORDERS</span>
+                            <span>Orders</span>
                         </a>
-                        <button id="logout-btn" class="w-full flex items-center gap-4 px-6 py-4 text-red-600 hover:bg-red-50 rounded-xl font-black uppercase tracking-wide transition-colors">
+                        <button id="logout-btn" class="w-full flex items-center gap-4 px-6 py-4 text-red-600 hover:bg-red-50 border border-red-200 font-light tracking-wider transition-colors">
                             <span class="material-symbols-outlined">logout</span>
-                            <span>LOGOUT</span>
+                            <span>Logout</span>
                         </button>
                     </nav>
                 </div>
@@ -100,10 +92,10 @@
 
             <!-- Main Content -->
             <div class="lg:col-span-3">
-                <div class="bg-white rounded-2xl shadow-md p-8 mb-8">
-                    <div class="mb-8">
-                        <h1 class="text-4xl font-black text-gray-900 mb-2 uppercase tracking-wide">MY PROFILE</h1>
-                        <div class="w-20 h-1 bg-primary rounded-full"></div>
+                <div class="bg-white border border-gray-200 p-12 mb-8">
+                    <div class="mb-12 text-center">
+                        <h1 class="text-4xl font-serif font-light text-gray-900 mb-4">My Profile</h1>
+                        <div class="w-24 h-px bg-accent mx-auto"></div>
                     </div>
                     
                     <div id="loading-state" class="flex items-center justify-center py-12">
@@ -113,83 +105,83 @@
                     <div id="profile-content" class="hidden">
                         <!-- Personal Information -->
                         <div class="mb-12">
-                            <h2 class="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3 uppercase tracking-wide">
-                                <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-primary">badge</span>
+                            <h2 class="text-2xl font-serif font-light text-gray-900 mb-8 flex items-center gap-3">
+                                <div class="w-8 h-8 border border-primary flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-sm">badge</span>
                                 </div>
-                                PERSONAL INFO
+                                Personal Information
                             </h2>
                             <div class="grid md:grid-cols-2 gap-8">
                                 <div>
-                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">First Name</label>
-                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="first-name">-</div>
+                                    <label class="block text-sm font-light text-gray-700 mb-3 tracking-wider">First Name</label>
+                                    <div class="px-6 py-4 bg-neutral-50 border border-gray-200 text-gray-900 font-light" id="first-name">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Last Name</label>
-                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="last-name">-</div>
+                                    <label class="block text-sm font-light text-gray-700 mb-3 tracking-wider">Last Name</label>
+                                    <div class="px-6 py-4 bg-neutral-50 border border-gray-200 text-gray-900 font-light" id="last-name">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Email Address</label>
-                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="email">-</div>
+                                    <label class="block text-sm font-light text-gray-700 mb-3 tracking-wider">Email Address</label>
+                                    <div class="px-6 py-4 bg-neutral-50 border border-gray-200 text-gray-900 font-light" id="email">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Phone Number</label>
-                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="phone">-</div>
+                                    <label class="block text-sm font-light text-gray-700 mb-3 tracking-wider">Phone Number</label>
+                                    <div class="px-6 py-4 bg-neutral-50 border border-gray-200 text-gray-900 font-light" id="phone">-</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Address Information -->
                         <div>
-                            <h2 class="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3 uppercase tracking-wide">
-                                <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-primary">home</span>
+                            <h2 class="text-2xl font-serif font-light text-gray-900 mb-8 flex items-center gap-3">
+                                <div class="w-8 h-8 border border-primary flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-sm">home</span>
                                 </div>
-                                ADDRESS INFO
+                                Address Information
                             </h2>
                             <div class="grid md:grid-cols-2 gap-8">
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Street Address</label>
-                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="address">-</div>
+                                    <label class="block text-sm font-light text-gray-700 mb-3 tracking-wider">Street Address</label>
+                                    <div class="px-6 py-4 bg-neutral-50 border border-gray-200 text-gray-900 font-light" id="address">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">City</label>
-                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="city">-</div>
+                                    <label class="block text-sm font-light text-gray-700 mb-3 tracking-wider">City</label>
+                                    <div class="px-6 py-4 bg-neutral-50 border border-gray-200 text-gray-900 font-light" id="city">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">State/Province</label>
-                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="state">-</div>
+                                    <label class="block text-sm font-light text-gray-700 mb-3 tracking-wider">State/Province</label>
+                                    <div class="px-6 py-4 bg-neutral-50 border border-gray-200 text-gray-900 font-light" id="state">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Postal Code</label>
-                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="postal-code">-</div>
+                                    <label class="block text-sm font-light text-gray-700 mb-3 tracking-wider">Postal Code</label>
+                                    <div class="px-6 py-4 bg-neutral-50 border border-gray-200 text-gray-900 font-light" id="postal-code">-</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wide">Country</label>
-                                    <div class="px-6 py-4 bg-gray-50 rounded-xl text-gray-900 font-semibold" id="country">-</div>
+                                    <label class="block text-sm font-light text-gray-700 mb-3 tracking-wider">Country</label>
+                                    <div class="px-6 py-4 bg-neutral-50 border border-gray-200 text-gray-900 font-light" id="country">-</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Account Status -->
-                        <div class="mt-12 p-6 bg-green-50 border-2 border-green-200 rounded-xl">
+                        <div class="mt-12 p-8 bg-green-50 border border-green-200">
                             <div class="flex items-center gap-3 text-green-800">
-                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <span class="material-symbols-outlined">check_circle</span>
+                                <div class="w-8 h-8 border border-green-600 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-sm">check_circle</span>
                                 </div>
-                                <span class="font-black uppercase tracking-wide">ACCOUNT ACTIVE</span>
+                                <span class="font-light tracking-wider">Account Active</span>
                             </div>
                         </div>
                     </div>
 
                     <div id="error-state" class="hidden text-center py-12">
-                        <div class="w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <div class="w-20 h-20 border border-red-200 flex items-center justify-center mx-auto mb-6">
                             <span class="material-symbols-outlined text-red-500 text-4xl">error</span>
                         </div>
-                        <h3 class="text-xl font-black text-gray-900 mb-3 uppercase tracking-wide">FAILED TO LOAD</h3>
-                        <p class="text-gray-600 font-semibold mb-6">Unable to load profile information</p>
-                        <button onclick="location.reload()" class="px-8 py-4 bg-primary text-white font-black rounded-xl hover:scale-105 transition-transform shadow-lg uppercase tracking-wide">
-                            TRY AGAIN
+                        <h3 class="text-xl font-serif font-light text-gray-900 mb-3">Failed to Load</h3>
+                        <p class="text-gray-600 font-light mb-6">Unable to load profile information</p>
+                        <button onclick="location.reload()" class="px-8 py-4 bg-primary text-white font-light tracking-wider hover:bg-primary/90 transition-colors">
+                            Try Again
                         </button>
                     </div>
                 </div>
@@ -197,54 +189,53 @@
         </div>
     </main>
 
-    <!-- Bold Footer -->
-    <footer class="bg-gray-900 text-white py-12 mt-16">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <!-- Elegant Footer -->
+    <footer class="bg-neutral-900 text-white py-16 mt-16">
+        <div class="max-w-[1400px] mx-auto px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                            <span class="material-symbols-outlined text-primary font-bold">bolt</span>
-                        </div>
-                        <span class="text-xl font-black uppercase">{{store_name}}</span>
-                    </div>
-                    <p class="text-sm text-gray-400">Your premium marketplace for amazing products</p>
+                    <h2 class="text-2xl font-serif font-light mb-4">{{store_name}}</h2>
+                    <p class="text-sm text-gray-400 font-light">Curated excellence in every detail</p>
                 </div>
                 <div>
-                    <h4 class="font-bold text-accent mb-4">SHOP</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
+                    <h4 class="font-light tracking-wider mb-4">Collections</h4>
+                    <ul class="space-y-2 text-sm text-gray-400 font-light">
                         <li><a href="index.html" class="hover:text-white transition-colors">All Products</a></li>
-                        <li><a href="index.html" class="hover:text-white transition-colors">Best Sellers</a></li>
-                        <li><a href="index.html" class="hover:text-white transition-colors">Sale</a></li>
+                        <li><a href="index.html" class="hover:text-white transition-colors">Featured</a></li>
+                        <li><a href="index.html" class="hover:text-white transition-colors">New Arrivals</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-accent mb-4">ACCOUNT</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
+                    <h4 class="font-light tracking-wider mb-4">Account</h4>
+                    <ul class="space-y-2 text-sm text-gray-400 font-light">
                         <li><a href="profile.html" class="hover:text-white transition-colors">My Profile</a></li>
                         <li><a href="orders.html" class="hover:text-white transition-colors">My Orders</a></li>
                         <li><a href="login.html" class="hover:text-white transition-colors">Login</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-accent mb-4">CONNECT</h4>
+                    <h4 class="font-light tracking-wider mb-4">Connect</h4>
                     <div class="flex gap-3">
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
-                            <span class="material-symbols-outlined">tag</span>
+                        <a href="#" class="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-primary transition-all">
+                            <span class="material-symbols-outlined text-sm">tag</span>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
-                            <span class="material-symbols-outlined">share</span>
+                        <a href="#" class="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-primary transition-all">
+                            <span class="material-symbols-outlined text-sm">share</span>
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="border-t border-white/10 pt-8 text-center">
-                <p class="text-xs text-gray-500">© 2024 {{store_name}}. All rights reserved.</p>
+            <div class="border-t border-white/10 pt-8 flex items-center justify-between text-xs font-light text-gray-500">
+                <p>© 2024 {{store_name}}. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms</a>
+                </div>
             </div>
         </div>
     </footer>
 
-    <script src="customer-auth.js"></script>
+      <script src="customer-auth.js"></script>
     <script>
         if (typeof API_BASE_URL === "undefined") {
             var API_BASE_URL = window.location.origin;

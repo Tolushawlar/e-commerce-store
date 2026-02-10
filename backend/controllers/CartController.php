@@ -68,6 +68,7 @@ class CartController extends Controller
 
         if (!$customerPayload) {
             // Return empty cart for non-authenticated users
+            error_log("[CartController::index] No customer payload - returning empty cart");
             $this->success([
                 'items' => [],
                 'totals' => [
@@ -79,18 +80,23 @@ class CartController extends Controller
             return;
         }
 
+        error_log("[CartController::index] Customer payload: " . json_encode($customerPayload));
+
         // Verify store matches
         if ($customerPayload['store_id'] != $storeId) {
             $this->error('Invalid store', 403);
         }
 
-        $customerId = $customerPayload['customer_id'];
+        $customerId = $customerPayload['id'];
+        error_log("[CartController::index] Customer ID: $customerId");
 
         // Get cart items with product details
         $items = $this->cartModel->getCartItems($customerId);
+        error_log("[CartController::index] Cart items count: " . count($items));
 
         // Get totals
         $totals = $this->cartModel->getCartTotal($customerId);
+        error_log("[CartController::index] Cart totals: " . json_encode($totals));
 
         // Validate cart (check stock availability)
         $issues = $this->cartModel->validateCart($customerId);
@@ -156,6 +162,9 @@ class CartController extends Controller
             $this->error('Please login or register to add items to cart', 401);
         }
 
+        error_log("[CartController::addItem] Customer payload: " . json_encode($customerPayload));
+        error_log("[CartController::addItem] Customer ID: " . $customerPayload['id']);
+
         if ($customerPayload['store_id'] != $storeId) {
             $this->error('Invalid store', 403);
         }
@@ -173,6 +182,8 @@ class CartController extends Controller
 
         $productId = (int)$data['product_id'];
         $quantity = (int)$data['quantity'];
+
+        error_log("[CartController::addItem] Product ID: $productId, Quantity: $quantity");
 
         if ($quantity < 1) {
             $this->error('Quantity must be at least 1', 400);
@@ -200,18 +211,22 @@ class CartController extends Controller
 
         // Add to cart
         $success = $this->cartModel->addItem(
-            $customerPayload['customer_id'],
+            $customerPayload['id'],
             $productId,
             $quantity
         );
+
+        error_log("[CartController::addItem] addItem success: " . ($success ? 'true' : 'false'));
 
         if (!$success) {
             $this->error('Failed to add item to cart', 500);
         }
 
         // Get updated cart
-        $items = $this->cartModel->getCartItems($customerPayload['customer_id']);
-        $totals = $this->cartModel->getCartTotal($customerPayload['customer_id']);
+        $items = $this->cartModel->getCartItems($customerPayload['id']);
+        $totals = $this->cartModel->getCartTotal($customerPayload['id']);
+
+        error_log("[CartController::addItem] Updated cart - items count: " . count($items) . ", totals: " . json_encode($totals));
 
         $this->success([
             'items' => $items,
@@ -287,7 +302,7 @@ class CartController extends Controller
         // Get cart item
         $item = $this->cartModel->find($itemId);
 
-        if (!$item || $item['customer_id'] != $customerPayload['customer_id']) {
+        if (!$item || $item['customer_id'] != $customerPayload['id']) {
             $this->error('Cart item not found', 404);
         }
 
@@ -312,8 +327,8 @@ class CartController extends Controller
         }
 
         // Get updated cart
-        $items = $this->cartModel->getCartItems($customerPayload['customer_id']);
-        $totals = $this->cartModel->getCartTotal($customerPayload['customer_id']);
+        $items = $this->cartModel->getCartItems($customerPayload['id']);
+        $totals = $this->cartModel->getCartTotal($customerPayload['id']);
 
         $this->success([
             'items' => $items,
@@ -370,7 +385,7 @@ class CartController extends Controller
         // Get cart item
         $item = $this->cartModel->find($itemId);
 
-        if (!$item || $item['customer_id'] != $customerPayload['customer_id']) {
+        if (!$item || $item['customer_id'] != $customerPayload['id']) {
             $this->error('Cart item not found', 404);
         }
 
@@ -381,8 +396,8 @@ class CartController extends Controller
         }
 
         // Get updated cart
-        $items = $this->cartModel->getCartItems($customerPayload['customer_id']);
-        $totals = $this->cartModel->getCartTotal($customerPayload['customer_id']);
+        $items = $this->cartModel->getCartItems($customerPayload['id']);
+        $totals = $this->cartModel->getCartTotal($customerPayload['id']);
 
         $this->success([
             'items' => $items,
@@ -433,7 +448,7 @@ class CartController extends Controller
             $this->error('Unauthorized', 401);
         }
 
-        $success = $this->cartModel->clearCart($customerPayload['customer_id']);
+        $success = $this->cartModel->clearCart($customerPayload['id']);
 
         if (!$success) {
             $this->error('Failed to clear cart', 500);
@@ -509,7 +524,7 @@ class CartController extends Controller
         }
 
         $success = $this->cartModel->syncWithSession(
-            $customerPayload['customer_id'],
+            $customerPayload['id'],
             $data['items']
         );
 
@@ -518,8 +533,8 @@ class CartController extends Controller
         }
 
         // Get updated cart
-        $items = $this->cartModel->getCartItems($customerPayload['customer_id']);
-        $totals = $this->cartModel->getCartTotal($customerPayload['customer_id']);
+        $items = $this->cartModel->getCartItems($customerPayload['id']);
+        $totals = $this->cartModel->getCartTotal($customerPayload['id']);
 
         $this->success([
             'items' => $items,

@@ -29,10 +29,16 @@ class ShoppingCart extends Model
                 p.name as product_name,
                 p.description as product_description,
                 p.price as product_price,
-                p.image_url as product_image,
                 p.stock_quantity,
                 p.status as product_status,
-                (c.quantity * p.price) as subtotal
+                (c.quantity * p.price) as subtotal,
+                (
+                    SELECT image_url 
+                    FROM product_images 
+                    WHERE product_id = p.id 
+                    ORDER BY is_primary DESC, id ASC 
+                    LIMIT 1
+                ) as product_image
             FROM {$this->table} c
             INNER JOIN products p ON c.product_id = p.id
             WHERE c.customer_id = ?
@@ -47,13 +53,19 @@ class ShoppingCart extends Model
      */
     public function addItem(int $customerId, int $productId, int $quantity = 1): bool
     {
+        error_log("[ShoppingCart::addItem] Called with customerId=$customerId, productId=$productId, quantity=$quantity");
+        
         // Check if item already in cart
         $existing = $this->findCartItem($customerId, $productId);
+        error_log("[ShoppingCart::addItem] Existing item: " . json_encode($existing));
 
         if ($existing) {
             // Update quantity
             $newQuantity = $existing['quantity'] + $quantity;
-            return $this->updateQuantity($existing['id'], $newQuantity);
+            error_log("[ShoppingCart::addItem] Updating existing item to quantity=$newQuantity");
+            $result = $this->updateQuantity($existing['id'], $newQuantity);
+            error_log("[ShoppingCart::addItem] Update result: " . ($result ? 'true' : 'false'));
+            return $result;
         } else {
             // Add new item
             $data = [
@@ -61,7 +73,10 @@ class ShoppingCart extends Model
                 'product_id' => $productId,
                 'quantity' => $quantity
             ];
-            return $this->create($data) !== null;
+            error_log("[ShoppingCart::addItem] Creating new item with data: " . json_encode($data));
+            $result = $this->create($data);
+            error_log("[ShoppingCart::addItem] Create result (lastInsertId): " . json_encode($result));
+            return $result !== null;
         }
     }
 

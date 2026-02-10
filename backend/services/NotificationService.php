@@ -8,6 +8,7 @@ use App\Models\EmailQueue;
 use App\Models\Client;
 use App\Models\SuperAdmin;
 use App\Models\StoreCustomer;
+use App\Services\EmailService;
 
 /**
  * NotificationService
@@ -252,12 +253,16 @@ class NotificationService
 
     public function notifyOrderPlaced(int $clientId, int $orderId, array $orderData): array
     {
+        $customerName = $orderData['customer_name'] ?? 'Unknown Customer';
+        $totalAmount = $orderData['total_amount'] ?? 0;
+        $formattedTotal = number_format($totalAmount, 2);
+        
         return $this->send(
             $clientId,
             'client',
             'order',
             'New Order Received',
-            "You have received a new order #{$orderId}",
+            "New order #{$orderId} from {$customerName} - Total: ₦{$formattedTotal}",
             ['order_id' => $orderId, 'order_data' => $orderData],
             "/client/orders.php?id={$orderId}",
             'high'

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -119,14 +120,6 @@
                             <span>Subtotal</span>
                             <span id="subtotal">₦0.00</span>
                         </div>
-                        <div class="flex justify-between text-gray-600">
-                            <span>Shipping</span>
-                            <span id="shipping">₦1,500.00</span>
-                        </div>
-                        <div class="flex justify-between text-gray-600">
-                            <span>Tax (7.5%)</span>
-                            <span id="tax">₦0.00</span>
-                        </div>
                         <div class="border-t pt-3 flex justify-between text-lg font-bold text-gray-900">
                             <span>Total</span>
                             <span id="total">₦0.00</span>
@@ -245,15 +238,57 @@
         </div>
     </footer>
 
+    <script>
+        // Initialize global configuration
+        window.API_BASE_URL = window.location.origin;
+        window.storeConfig = {
+            store_id: {{store_id}},
+        apiUrl: window.location.origin + '/api'
+        };
+    </script>
     <script src="cart.js"></script>
     <script src="customer-auth.js"></script>
+    <!-- Initialize Cart Badge -->
     <script>
-        const storeConfig = {
-            store_id: {{store_id}},
-            apiUrl: window.location.origin + '/api'
-        };
-        window.storeConfig = storeConfig;
+        // Global cart badge update function
+        async function updateCartBadge() {
+            try {
+                const badge = document.getElementById('cart-badge');
+                if (!badge) return;
 
+                const storeId = window.storeConfig.store_id;
+                const cartKey = `cart_${storeId}`;
+
+                // Check if user is authenticated
+                const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+
+                if (isAuthenticated && typeof window.CartService !== 'undefined') {
+                    // For authenticated users, get count from API
+                    const cartService = window.CartService;
+                    const cartItems = await cartService.getCartWithDetails(storeId, true);
+                    const count = cartItems.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                    badge.textContent = count;
+                    badge.classList.toggle('hidden', count === 0);
+                } else {
+                    // For guest users, get count from localStorage
+                    const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                    const count = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                    badge.textContent = count;
+                    badge.classList.toggle('hidden', count === 0);
+                }
+            } catch (error) {
+                console.error('Error updating cart badge:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            await updateCartBadge();
+            window.addEventListener('storage', updateCartBadge);
+            window.addEventListener('cartUpdated', updateCartBadge);
+        });
+    </script>
+    <script>
+        const cartService = window.CartService;
         document.getElementById('checkout-btn').addEventListener('click', (e) => {
             e.preventDefault();
             if (typeof CustomerAuth !== 'undefined' && !CustomerAuth.isAuthenticated()) {
@@ -267,7 +302,10 @@
         });
 
         async function loadCart() {
-            const cartItems = await CartService.getCartWithDetails();
+            console.log('[Cart Page] Loading cart...');
+            console.log('[Cart Page] Auth status:', typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated());
+            const cartItems = await cartService.getCartWithDetails(storeConfig.store_id);
+            console.log('[Cart Page] Cart items loaded:', cartItems);
             const cartContainer = document.getElementById('cart-items');
             const emptyCart = document.getElementById('empty-cart');
             const checkoutBtn = document.getElementById('checkout-btn');
@@ -276,7 +314,7 @@
                 cartContainer.classList.add('hidden');
                 emptyCart.classList.remove('hidden');
                 checkoutBtn.disabled = true;
-                checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed', 'transform-none');
                 return;
             }
 
@@ -286,41 +324,41 @@
                 const subtotal = product.price * item.quantity;
 
                 return `
-                    <div class="bg-white rounded-lg border border-gray-200 p-6">
-                        <div class="flex gap-4">
-                            <div class="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-                                ${image ? `<img src="${image}" alt="${product.name}" class="w-full h-full object-cover">` : 
-                                `<div class="w-full h-full flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-gray-400">inventory_2</span>
+                    <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                        <div class="flex gap-6">
+                            <div class="w-32 h-32 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden">
+                                ${image ? `<img src="${image}" alt="${product.name}" class="w-full h-full object-cover">` :
+                        `<div class="w-full h-full flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-gray-400 text-2xl">inventory_2</span>
                                 </div>`}
                             </div>
                             <div class="flex-1">
-                                <div class="flex justify-between">
+                                <div class="flex justify-between items-start mb-4">
                                     <div>
-                                        <h3 class="font-semibold text-gray-900">${product.name}</h3>
-                                        <p class="text-sm text-gray-500 mt-1">${product.category_name || ''}</p>
-                                        <p class="text-lg font-bold text-primary mt-2">${CartService.formatCurrency(product.price)}</p>
+                                        <h3 class="text-xl font-black text-gray-900">${product.name}</h3>
+                                        <p class="text-sm text-gray-500 font-semibold mt-1">${product.category_name || ''}</p>
+                                        <p class="text-2xl font-black text-primary mt-2">${cartService.formatCurrency(product.price)}</p>
                                     </div>
-                                    <button onclick="removeItem(${product.id})" class="text-gray-400 hover:text-red-500">
+                                    <button onclick="removeItem(${product.id})" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
                                         <span class="material-symbols-outlined">delete</span>
                                     </button>
                                 </div>
-                                <div class="flex items-center justify-between mt-4">
-                                    <div class="flex items-center gap-3">
-                                        <button onclick="decrementQuantity(${product.id}, ${item.quantity})" class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-50">
-                                            <span class="material-symbols-outlined text-sm">remove</span>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <button onclick="decrementQuantity(${product.id}, ${item.quantity})" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center font-bold transition-colors">
+                                            <span class="material-symbols-outlined">remove</span>
                                         </button>
-                                        <span class="w-12 text-center font-semibold">${item.quantity}</span>
-                                        <button onclick="incrementQuantity(${product.id}, ${item.quantity}, ${product.stock_quantity})" class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-50">
-                                            <span class="material-symbols-outlined text-sm">add</span>
+                                        <span class="w-16 text-center font-black text-lg">${item.quantity}</span>
+                                        <button onclick="incrementQuantity(${product.id}, ${item.quantity}, ${product.stock_quantity})" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center font-bold transition-colors">
+                                            <span class="material-symbols-outlined">add</span>
                                         </button>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-sm text-gray-500">Subtotal</p>
-                                        <p class="text-lg font-bold text-primary">${CartService.formatCurrency(subtotal)}</p>
+                                        <p class="text-sm text-gray-500 font-semibold">SUBTOTAL</p>
+                                        <p class="text-2xl font-black text-primary">${cartService.formatCurrency(subtotal)}</p>
                                     </div>
                                 </div>
-                                ${product.stock_quantity < 10 ? `<p class="text-sm text-orange-600 mt-2">Only ${product.stock_quantity} left in stock</p>` : ''}
+                                ${product.stock_quantity < 10 ? `<p class="text-sm text-orange-600 font-semibold mt-3 flex items-center gap-1"><span class="material-symbols-outlined text-sm">warning</span>Only ${product.stock_quantity} left in stock</p>` : ''}
                             </div>
                         </div>
                     </div>
@@ -331,43 +369,47 @@
         }
 
         async function updateTotals() {
-            const totals = await CartService.calculateTotals();
-            
-            document.getElementById('subtotal').textContent = CartService.formatCurrency(totals.subtotal);
-            document.getElementById('shipping').textContent = CartService.formatCurrency(totals.shipping);
-            document.getElementById('tax').textContent = CartService.formatCurrency(totals.tax);
-            document.getElementById('total').textContent = CartService.formatCurrency(totals.total);
+            const totals = await cartService.calculateTotals();
+
+            document.getElementById('subtotal').textContent = cartService.formatCurrency(totals.subtotal);
+            document.getElementById('total').textContent = cartService.formatCurrency(totals.total);
         }
 
-        function incrementQuantity(productId, currentQty, maxStock) {
+        async function incrementQuantity(productId, currentQty, maxStock) {
             if (currentQty >= maxStock) {
                 showToast('Maximum stock reached');
                 return;
             }
-            CartService.updateQuantity(productId, currentQty + 1);
-            loadCart();
+            await cartService.updateQuantity(productId, currentQty + 1);
+            await loadCart();
+            updateCartBadge();
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
         }
 
-        function decrementQuantity(productId, currentQty) {
+        async function decrementQuantity(productId, currentQty) {
             if (currentQty <= 1) {
-                removeItem(productId);
+                await removeItem(productId);
                 return;
             }
-            CartService.updateQuantity(productId, currentQty - 1);
-            loadCart();
+            await cartService.updateQuantity(productId, currentQty - 1);
+            await loadCart();
+            updateCartBadge();
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
         }
 
-        function removeItem(productId) {
+        async function removeItem(productId) {
             if (confirm('Remove this item from your cart?')) {
-                CartService.removeItem(productId);
-                loadCart();
+                await cartService.removeItem(productId);
+                await loadCart();
+                updateCartBadge();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
                 showToast('Item removed from cart');
             }
         }
 
         function showToast(message) {
             const toast = document.createElement('div');
-            toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 transition-opacity duration-300';
+            toast.className = 'fixed top-4 right-4 bg-primary text-white px-6 py-3 rounded-xl shadow-lg z-50 transition-opacity duration-300 font-bold';
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => {

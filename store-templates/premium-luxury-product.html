@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Product Details - {{store_name}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <script>
@@ -17,7 +17,8 @@
                         "accent": "{{accent_color}}",
                     },
                     fontFamily: {
-                        "display": ["Poppins", "sans-serif"]
+                        "serif": ["Playfair Display", "serif"],
+                        "sans": ["Lato", "sans-serif"]
                     },
                 },
             },
@@ -28,7 +29,7 @@
             color: var(--tw-color-primary);
             background: white;
             padding: 20px;
-            border-radius: 50%;
+            border: 1px solid #e5e7eb;
             width: 44px;
             height: 44px;
         }
@@ -37,49 +38,43 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 font-display text-gray-900 antialiased">
-    <!-- Bold Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex items-center justify-between h-20">
-                <div class="flex items-center gap-3">
-                    <a href="index.html" class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white text-2xl font-bold">bolt</span>
-                        </div>
-                        <span class="text-2xl font-black text-primary uppercase tracking-tight">{{store_name}}</span>
-                    </a>
-                </div>
-                
-                <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">NEW IN</a>
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">TRENDING</a>
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">SALE</a>
+<body class="bg-neutral-50 text-gray-900 antialiased">
+    <!-- Elegant Header -->
+    <header class="bg-primary text-white">
+        <div class="max-w-[1400px] mx-auto px-8">
+            <div class="flex items-center justify-between h-24">
+                <nav class="hidden lg:flex items-center gap-8 text-sm tracking-widest font-light">
+                    <a href="index.html" class="hover:text-accent transition-colors">COLLECTIONS</a>
+                    <a href="index.html" class="hover:text-accent transition-colors">NEW ARRIVALS</a>
                 </nav>
                 
-                <div class="flex items-center gap-2">
-                    <a href="index.html" class="px-4 py-2 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition-all flex items-center gap-2">
+                <div class="flex-1 flex justify-center">
+                    <h1 class="text-3xl font-serif font-light tracking-wider">{{store_name}}</h1>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <a href="index.html" class="hover:text-accent transition-colors flex items-center gap-2">
                         <span class="material-symbols-outlined">arrow_back</span>
-                        <span class="hidden sm:inline">BACK</span>
+                        <span class="hidden sm:inline font-light">Back</span>
                     </a>
-                    <a href="cart.html" class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all relative">
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-accent text-primary text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold hidden">0</span>
+                    <a href="cart.html" class="hover:text-accent transition-colors relative">
+                        <span class="material-symbols-outlined">shopping_bag</span>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-accent text-primary text-xs h-5 w-5 flex items-center justify-center font-light hidden">0</span>
                     </a>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-8">
-        <!-- Bold Breadcrumb -->
-        <nav class="mb-8 text-sm font-semibold" id="breadcrumb">
+    <main class="max-w-[1400px] mx-auto px-8 py-16">
+        <!-- Elegant Breadcrumb -->
+        <nav class="mb-8 text-sm font-light" id="breadcrumb">
             <div class="flex items-center gap-3 text-gray-500">
-                <a href="index.html" class="hover:text-primary transition-colors">HOME</a>
+                <a href="index.html" class="hover:text-primary transition-colors">Home</a>
                 <span class="material-symbols-outlined text-xs">chevron_right</span>
-                <span id="breadcrumb-category" class="uppercase tracking-wide">Loading...</span>
+                <span id="breadcrumb-category">Loading...</span>
                 <span class="material-symbols-outlined text-xs">chevron_right</span>
-                <span class="text-primary font-black uppercase tracking-wide" id="breadcrumb-product">Loading...</span>
+                <span class="text-primary" id="breadcrumb-product">Loading...</span>
             </div>
         </nav>
 
@@ -87,7 +82,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
             <!-- Left: Image Gallery -->
             <div class="space-y-6">
-                <div class="swiper main-swiper rounded-3xl overflow-hidden shadow-xl bg-white">
+                <div class="swiper main-swiper border border-gray-200 overflow-hidden bg-white">
                     <div class="swiper-wrapper" id="main-swiper-wrapper">
                         <div class="swiper-slide flex items-center justify-center bg-gray-100" style="min-height: 500px;">
                             <div class="animate-pulse w-full h-full bg-gray-200"></div>
@@ -107,56 +102,56 @@
             <div class="space-y-8">
                 <!-- Category Badge -->
                 <div id="category-badge-container">
-                    <div class="animate-pulse h-6 w-32 bg-gray-200 rounded-full"></div>
+                    <div class="animate-pulse h-6 w-32 bg-gray-200"></div>
                 </div>
 
                 <!-- Product Title -->
                 <div>
-                    <h1 id="product-name" class="text-4xl lg:text-5xl font-black text-gray-900 mb-3 uppercase tracking-tight">
-                        <div class="animate-pulse h-12 bg-gray-200 rounded w-3/4"></div>
+                    <h1 id="product-name" class="text-4xl lg:text-5xl font-serif font-light text-gray-900 mb-3">
+                        <div class="animate-pulse h-12 bg-gray-200 w-3/4"></div>
                     </h1>
-                    <p id="product-sku" class="text-sm text-gray-500 font-semibold"></p>
+                    <p id="product-sku" class="text-sm text-gray-500 font-light"></p>
                 </div>
 
                 <!-- Price and Stock -->
-                <div class="flex items-center gap-6 pb-8 border-b-2 border-gray-200">
-                    <div id="product-price" class="text-5xl font-black text-primary">
-                        <div class="animate-pulse h-14 w-48 bg-gray-200 rounded"></div>
+                <div class="flex items-center gap-6 pb-8 border-b border-gray-200">
+                    <div id="product-price" class="text-5xl font-light text-primary">
+                        <div class="animate-pulse h-14 w-48 bg-gray-200"></div>
                     </div>
                     <div id="stock-badge">
-                        <div class="animate-pulse h-6 w-24 bg-gray-200 rounded-full"></div>
+                        <div class="animate-pulse h-6 w-24 bg-gray-200"></div>
                     </div>
                 </div>
 
                 <!-- Description -->
                 <div>
-                    <h3 class="text-xl font-black mb-4 text-gray-900 uppercase tracking-wide">DESCRIPTION</h3>
-                    <div id="product-description" class="text-gray-600 leading-relaxed font-semibold">
-                        <div class="animate-pulse h-4 bg-gray-200 rounded mb-2"></div>
-                        <div class="animate-pulse h-4 bg-gray-200 rounded mb-2"></div>
-                        <div class="animate-pulse h-4 bg-gray-200 rounded w-2/3"></div>
+                    <h3 class="text-xl font-serif font-light mb-4 text-gray-900">Description</h3>
+                    <div id="product-description" class="text-gray-600 leading-relaxed font-light">
+                        <div class="animate-pulse h-4 bg-gray-200 mb-2"></div>
+                        <div class="animate-pulse h-4 bg-gray-200 mb-2"></div>
+                        <div class="animate-pulse h-4 bg-gray-200 w-2/3"></div>
                     </div>
                 </div>
 
                 <!-- Product Details Grid -->
-                <div class="bg-white rounded-2xl p-8 shadow-md">
-                    <h3 class="text-xl font-black mb-6 text-gray-900 uppercase tracking-wide">PRODUCT DETAILS</h3>
+                <div class="bg-white border border-gray-200 p-8">
+                    <h3 class="text-xl font-serif font-light mb-6 text-gray-900">Product Details</h3>
                     <div class="grid grid-cols-2 gap-6 text-sm">
                         <div>
-                            <p class="text-gray-500 mb-2 font-bold uppercase tracking-wide">Category</p>
-                            <p id="detail-category" class="font-black text-gray-900">-</p>
+                            <p class="text-gray-500 mb-2 font-light tracking-wider">Category</p>
+                            <p id="detail-category" class="font-light text-gray-900">-</p>
                         </div>
                         <div>
-                            <p class="text-gray-500 mb-2 font-bold uppercase tracking-wide">Stock</p>
-                            <p id="detail-stock" class="font-black text-gray-900">-</p>
+                            <p class="text-gray-500 mb-2 font-light tracking-wider">Stock</p>
+                            <p id="detail-stock" class="font-light text-gray-900">-</p>
                         </div>
                         <div>
-                            <p class="text-gray-500 mb-2 font-bold uppercase tracking-wide">SKU</p>
-                            <p id="detail-sku" class="font-black text-gray-900">-</p>
+                            <p class="text-gray-500 mb-2 font-light tracking-wider">SKU</p>
+                            <p id="detail-sku" class="font-light text-gray-900">-</p>
                         </div>
                         <div>
-                            <p class="text-gray-500 mb-2 font-bold uppercase tracking-wide">Status</p>
-                            <p id="detail-status" class="font-black">-</p>
+                            <p class="text-gray-500 mb-2 font-light tracking-wider">Status</p>
+                            <p id="detail-status" class="font-light">-</p>
                         </div>
                     </div>
                 </div>
@@ -164,29 +159,29 @@
                 <!-- Quantity Selector and Add to Cart -->
                 <div class="space-y-6">
                     <div class="flex items-center gap-6">
-                        <label class="text-sm font-black text-gray-900 uppercase tracking-wide">QUANTITY:</label>
-                        <div class="flex items-center border-2 border-gray-300 rounded-xl overflow-hidden">
-                            <button id="qty-decrease" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black">
+                        <label class="text-sm font-light text-gray-900 tracking-wider">Quantity:</label>
+                        <div class="flex items-center border border-gray-300 overflow-hidden">
+                            <button id="qty-decrease" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-light">
                                 <span class="material-symbols-outlined">remove</span>
                             </button>
-                            <input type="number" id="quantity" value="1" min="1" class="w-20 text-center font-black py-3 border-none focus:outline-none" />
-                            <button id="qty-increase" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black">
+                            <input type="number" id="quantity" value="1" min="1" class="w-20 text-center font-light py-3 border-none focus:outline-none" />
+                            <button id="qty-increase" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-light">
                                 <span class="material-symbols-outlined">add</span>
                             </button>
                         </div>
                     </div>
 
                     <div class="flex gap-4">
-                        <button id="add-to-cart" class="flex-1 py-5 rounded-xl font-black text-lg text-white transition-all duration-200 hover:scale-105 shadow-lg flex items-center justify-center gap-3 uppercase tracking-wide bg-primary">
-                            <span class="material-symbols-outlined">bolt</span>
+                        <button id="add-to-cart" class="flex-1 py-5 font-light text-lg text-white transition-all duration-200 hover:bg-primary/90 flex items-center justify-center gap-3 tracking-wider bg-primary">
+                            <span class="material-symbols-outlined">shopping_bag</span>
                             ADD TO CART
                         </button>
-                        <button class="px-8 py-5 border-2 rounded-xl font-black text-lg transition-all duration-200 hover:scale-105 border-primary text-primary">
+                        <button class="px-8 py-5 border font-light text-lg transition-all duration-200 hover:border-gray-400 border-gray-300 text-gray-700">
                             <span class="material-symbols-outlined">favorite_border</span>
                         </button>
                     </div>
 
-                    <button class="w-full py-5 rounded-xl font-black text-lg text-primary transition-all duration-200 hover:scale-105 bg-accent uppercase tracking-wide">
+                    <button class="w-full py-5 font-light text-lg text-primary transition-all duration-200 hover:opacity-90 bg-accent tracking-wider">
                         BUY NOW
                     </button>
                 </div>
@@ -197,61 +192,56 @@
         <section class="mt-20">
             <div class="flex items-center justify-between mb-12">
                 <div>
-                    <h2 class="text-4xl font-black text-gray-900 mb-2 uppercase tracking-tight">MORE FROM THIS CATEGORY</h2>
-                    <div class="w-20 h-1 bg-primary rounded-full"></div>
+                    <h2 class="text-4xl font-serif font-light text-gray-900 mb-4">More from this Category</h2>
+                    <div class="w-20 h-px bg-accent"></div>
                 </div>
-                <a href="index.html" class="text-sm font-black flex items-center gap-2 hover:underline text-primary uppercase tracking-wide">
+                <a href="index.html" class="text-sm font-light flex items-center gap-2 hover:underline text-primary tracking-wider">
                     VIEW ALL
                     <span class="material-symbols-outlined text-lg">arrow_forward</span>
                 </a>
             </div>
             
             <div id="related-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="animate-pulse bg-white rounded-2xl p-6 shadow-md" style="height: 350px;"></div>
-                <div class="animate-pulse bg-white rounded-2xl p-6 shadow-md" style="height: 350px;"></div>
-                <div class="animate-pulse bg-white rounded-2xl p-6 shadow-md" style="height: 350px;"></div>
-                <div class="animate-pulse bg-white rounded-2xl p-6 shadow-md" style="height: 350px;"></div>
+                <div class="animate-pulse bg-white border border-gray-200 p-6" style="height: 350px;"></div>
+                <div class="animate-pulse bg-white border border-gray-200 p-6" style="height: 350px;"></div>
+                <div class="animate-pulse bg-white border border-gray-200 p-6" style="height: 350px;"></div>
+                <div class="animate-pulse bg-white border border-gray-200 p-6" style="height: 350px;"></div>
             </div>
         </section>
     </main>
 
-    <!-- Bold Footer -->
-    <footer class="bg-gray-900 text-white py-12 mt-20">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <!-- Elegant Footer -->
+    <footer class="bg-gray-900 text-white py-16 mt-16">
+        <div class="max-w-[1400px] mx-auto px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                            <span class="material-symbols-outlined text-primary font-bold">bolt</span>
-                        </div>
-                        <span class="text-xl font-black uppercase">{{store_name}}</span>
-                    </div>
-                    <p class="text-sm text-gray-400">Your premium marketplace for amazing products</p>
+                    <h3 class="text-2xl font-serif font-light mb-4">{{store_name}}</h3>
+                    <p class="text-sm text-gray-400 font-light">Your premier destination for curated luxury</p>
                 </div>
                 <div>
-                    <h4 class="font-bold text-accent mb-4">SHOP</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
+                    <h4 class="font-light text-white mb-4 tracking-wider">SHOP</h4>
+                    <ul class="space-y-2 text-sm text-gray-400 font-light">
                         <li><a href="index.html" class="hover:text-white transition-colors">New Arrivals</a></li>
                         <li><a href="index.html" class="hover:text-white transition-colors">Best Sellers</a></li>
-                        <li><a href="index.html" class="hover:text-white transition-colors">Sale</a></li>
+                        <li><a href="index.html" class="hover:text-white transition-colors">Collections</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-accent mb-4">INFO</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
+                    <h4 class="font-light text-white mb-4 tracking-wider">INFO</h4>
+                    <ul class="space-y-2 text-sm text-gray-400 font-light">
                         <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">FAQs</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-accent mb-4">CONNECT</h4>
-                    <div class="flex gap-3">
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
-                            <span class="material-symbols-outlined">tag</span>
+                    <h4 class="font-light text-white mb-4 tracking-wider">CONNECT</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:border-accent transition-colors">
+                            <span class="material-symbols-outlined text-sm">tag</span>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
-                            <span class="material-symbols-outlined">share</span>
+                        <a href="#" class="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:border-accent transition-colors">
+                            <span class="material-symbols-outlined text-sm">share</span>
                         </a>
                     </div>
                 </div>
@@ -263,7 +253,60 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Store Configuration (MUST be before other scripts) -->
+    <script>
+        window.API_BASE_URL = window.location.origin;
+        window.storeConfig = {
+            store_id: {{store_id}},
+            store_name: '{{store_name}}',
+            apiUrl: window.location.origin + '/api'
+        };
+    </script>
+
+    <!-- JavaScript files (copied to store folder during generation) -->
     <script src="cart.js"></script>
+    <script src="customer-auth.js"></script>
+    <script src="profile-header.js"></script>
     <script src="product-detail.js"></script>
+
+    <!-- Initialize Cart Badge -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const storeId = window.storeConfig.store_id;
+            const cartKey = `cart_${storeId}`;
+
+            async function updateCartBadge() {
+                try {
+                    const badge = document.getElementById('cart-badge');
+                    if (!badge) return;
+
+                    // Check if user is authenticated
+                    const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+
+                    if (isAuthenticated) {
+                        // For authenticated users, get count from API
+                        const cartService = window.CartService;
+                        const cartItems = await cartService.getCartWithDetails(storeId, true);
+                        const count = cartItems.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    } else {
+                        // For guest users, get count from localStorage
+                        const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                        const count = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    }
+                } catch (error) {
+                    console.error('Error updating cart badge:', error);
+                }
+            }
+
+            await updateCartBadge();
+            window.addEventListener('storage', updateCartBadge);
+            window.addEventListener('cartUpdated', updateCartBadge);
+        });
+    </script>
 </body>
 </html>

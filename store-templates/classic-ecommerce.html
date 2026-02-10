@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>{{store_name}} - Classic Ecommerce</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
     <script>
         tailwind.config = {
             theme: {
@@ -22,7 +24,24 @@
             },
         }
     </script>
+    <style>
+       :root {
+            --primary: {{primary_color}};
+            --accent: {{accent_color}};
+        }
+
+        /* Active category button styling */
+        .category-filter-btn.active {
+            color: var(--primary);
+            font-weight: 600;
+            background-color: rgba(var(--primary), 0.05);
+            padding: 0.5rem;
+            margin: -0.5rem;
+            border-radius: 0.375rem;
+        }
+    </style>
 </head>
+
 <body class="bg-gray-100 font-sans text-gray-900">
     <!-- Classic Top Bar -->
     <div class="bg-primary text-white text-xs py-2">
@@ -40,29 +59,27 @@
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex items-center justify-between mb-4">
                 <h1 class="text-3xl font-bold text-primary">{{store_name}}</h1>
-                
+
                 <div class="flex-1 max-w-xl mx-8 hidden md:block">
                     <div class="flex items-center bg-gray-100 rounded-md overflow-hidden">
-                        <input type="text" placeholder="Search products..." class="flex-1 px-4 py-2 bg-transparent focus:outline-none text-sm">
-                        <button class="px-4 py-2 bg-primary text-white">
+                        <input id="search-input" type="text" placeholder="Search products..."
+                            class="flex-1 px-4 py-2 bg-transparent focus:outline-none text-sm">
+                        <button id="search-button" class="px-4 py-2 bg-primary text-white">
                             <span class="material-symbols-outlined text-sm">search</span>
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="flex items-center gap-4">
-                    <button class="flex items-center gap-1 text-gray-700 hover:text-primary">
-                        <span class="material-symbols-outlined">person</span>
-                        <span class="text-sm hidden lg:inline">Account</span>
-                    </button>
-                    <button class="flex items-center gap-1 text-gray-700 hover:text-primary relative">
+                    <a href="cart.html"
+                        class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all relative">
                         <span class="material-symbols-outlined">shopping_cart</span>
-                        <span class="text-sm hidden lg:inline">Cart</span>
-                        <span class="absolute -top-1 -right-1 bg-accent text-primary text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">0</span>
-                    </button>
+                        <span id="cart-badge"
+                            class="absolute -top-1 -right-1 bg-accent text-primary text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold hidden">0</span>
+                    </a>
                 </div>
             </div>
-            
+
             <!-- Navigation Menu -->
             <nav class="flex items-center gap-6 text-sm font-medium border-t border-gray-200 pt-3">
                 <a href="#" class="text-primary font-semibold flex items-center gap-1">
@@ -80,55 +97,18 @@
     <main class="max-w-7xl mx-auto px-6 py-6">
         <!-- Breadcrumb -->
         <div class="text-sm text-gray-600 mb-6">
-            <a href="#" class="hover:text-primary">Home</a> / 
+            <a href="#" class="hover:text-primary">Home</a> /
             <span class="text-gray-900">Products</span>
         </div>
 
         <div class="grid grid-cols-12 gap-6">
             <!-- Sidebar -->
             <aside class="col-span-12 lg:col-span-3">
-                <div class="bg-white rounded-lg p-4 mb-4">
+                <div id="categories-sidebar" class="bg-white rounded-lg p-4 mb-4">
                     <h3 class="font-bold text-gray-900 mb-4">Categories</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="text-gray-700 hover:text-primary flex items-center justify-between">
-                            Electronics <span class="text-gray-400">(45)</span>
-                        </a></li>
-                        <li><a href="#" class="text-gray-700 hover:text-primary flex items-center justify-between">
-                            Fashion <span class="text-gray-400">(32)</span>
-                        </a></li>
-                        <li><a href="#" class="text-gray-700 hover:text-primary flex items-center justify-between">
-                            Home & Garden <span class="text-gray-400">(28)</span>
-                        </a></li>
-                        <li><a href="#" class="text-gray-700 hover:text-primary flex items-center justify-between">
-                            Sports <span class="text-gray-400">(19)</span>
-                        </a></li>
+                    <ul id="sidebar-categories-list" class="space-y-2 text-sm">
+                        <!-- Categories will be loaded here -->
                     </ul>
-                </div>
-                
-                <div class="bg-white rounded-lg p-4 mb-4">
-                    <h3 class="font-bold text-gray-900 mb-4">Price Range</h3>
-                    <div class="space-y-2 text-sm">
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" class="rounded">
-                            <span class="text-gray-700">Under ₦1,000</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" class="rounded">
-                            <span class="text-gray-700">₦1,000 - ₦5,000</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" class="rounded">
-                            <span class="text-gray-700">Over ₦5,000</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="bg-accent/10 border border-accent rounded-lg p-4">
-                    <h3 class="font-bold text-primary mb-2">Special Offer!</h3>
-                    <p class="text-sm text-gray-700 mb-3">Get 20% off your first purchase</p>
-                    <button class="w-full px-4 py-2 bg-primary text-white rounded font-medium hover:bg-primary/90">
-                        Claim Now
-                    </button>
                 </div>
             </aside>
 
@@ -145,8 +125,9 @@
 
                 <!-- Products Header -->
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">Featured Products</h2>
-                    <select class="px-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-primary">
+                    <h2 id="products-section-title" class="text-2xl font-bold text-gray-900">All Products</h2>
+                    <select
+                        class="px-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-primary">
                         <option>Sort by: Featured</option>
                         <option>Price: Low to High</option>
                         <option>Price: High to Low</option>
@@ -195,7 +176,8 @@
                                 <span class="material-symbols-outlined text-yellow-500 text-sm">star</span>
                                 <span class="material-symbols-outlined text-yellow-500 text-sm">star</span>
                             </div>
-                            <p class="text-sm text-gray-700 mb-3">"Great quality products and fast delivery. Highly recommended!"</p>
+                            <p class="text-sm text-gray-700 mb-3">"Great quality products and fast delivery. Highly
+                                recommended!"</p>
                             <p class="text-xs text-gray-500 font-medium">- Sarah M.</p>
                         </div>
                         <div class="bg-white rounded-lg p-6 border border-gray-200">
@@ -206,7 +188,8 @@
                                 <span class="material-symbols-outlined text-yellow-500 text-sm">star</span>
                                 <span class="material-symbols-outlined text-yellow-500 text-sm">star</span>
                             </div>
-                            <p class="text-sm text-gray-700 mb-3">"Excellent customer service and amazing products. Will shop again!"</p>
+                            <p class="text-sm text-gray-700 mb-3">"Excellent customer service and amazing products. Will
+                                shop again!"</p>
                             <p class="text-xs text-gray-500 font-medium">- John D.</p>
                         </div>
                         <div class="bg-white rounded-lg p-6 border border-gray-200">
@@ -217,7 +200,8 @@
                                 <span class="material-symbols-outlined text-yellow-500 text-sm">star</span>
                                 <span class="material-symbols-outlined text-yellow-500 text-sm">star</span>
                             </div>
-                            <p class="text-sm text-gray-700 mb-3">"Best online shopping experience. Quality products at great prices!"</p>
+                            <p class="text-sm text-gray-700 mb-3">"Best online shopping experience. Quality products at
+                                great prices!"</p>
                             <p class="text-xs text-gray-500 font-medium">- Emily R.</p>
                         </div>
                     </div>
@@ -256,7 +240,8 @@
                     <h4 class="font-bold mb-4">Newsletter</h4>
                     <p class="text-sm text-gray-400 mb-3">Subscribe for exclusive deals</p>
                     <div class="flex gap-2">
-                        <input type="email" placeholder="Email" class="flex-1 px-3 py-2 bg-gray-700 rounded text-sm focus:outline-none">
+                        <input type="email" placeholder="Email"
+                            class="flex-1 px-3 py-2 bg-gray-700 rounded text-sm focus:outline-none">
                         <button class="px-4 py-2 bg-accent text-primary font-bold rounded">Go</button>
                     </div>
                 </div>
@@ -267,44 +252,228 @@
         </div>
     </footer>
 
+    <!-- Store Configuration (MUST be before other scripts) -->
+    <script>
+        window.API_BASE_URL = window.location.origin;
+        window.storeConfig = {
+            store_id: {{store_id}},
+        apiUrl: window.location.origin + '/api',
+            groupByCategory: {{group_by_category}},
+        productGridColumns: {{product_grid_columns}},
+        showCategoryImages: {{show_category_images}}
+        };
+    </script>
+
+    <!-- JavaScript files (copied to store folder during generation) -->
     <script src="customer-auth.js"></script>
+    <script src="cart.js"></script>
     <script src="profile-header.js"></script>
     <script src="store.js"></script>
+
+    <!-- Initialize Cart Badge -->
     <script>
-        // @ts-nocheck - Template placeholders will be replaced during generation
-        const storeConfig = {
-            storeId: {{store_id}},
-            apiUrl: window.location.origin + '/api',
-            groupByCategory: false,
-            productGridColumns: 3,
-            showCategoryImages: false
-        };
-        
-        if (typeof loadProducts === 'function') {
-            loadProducts(storeConfig);
-        } else {
-            fetch('/api/products/featured')
-                .then(response => response.json())
-                .then(products => {
-                    const container = document.getElementById('featured-products');
-                    container.innerHTML = products.map(product => `
-                        <a href="product.html?id=${product.id}" class="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 group">
-                            <div class="aspect-square bg-gray-100 overflow-hidden">
-                                <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-medium text-gray-900 mb-2 line-clamp-2">${product.name}</h3>
-                                <div class="flex items-center justify-between">
-                                    <p class="text-primary font-bold text-lg">₦${product.price}</p>
-                                    <button onclick="event.preventDefault(); event.stopPropagation();" class="px-3 py-1 bg-primary text-white text-xs rounded hover:bg-primary/90">
-                                        Add to Cart
-                                    </button>
-                                </div>
-                            </div>
-                        </a>
-                    `).join('');
+        document.addEventListener('DOMContentLoaded', async function () {
+            const storeId = window.storeConfig.store_id;
+            const cartKey = `cart_${storeId}`;
+
+            async function updateCartBadge() {
+                try {
+                    const badge = document.getElementById('cart-badge');
+                    if (!badge) return;
+
+                    // Check if user is authenticated
+                    const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+                    console.log('[Cart Badge] Auth status:', isAuthenticated);
+
+                    if (isAuthenticated) {
+                        // For authenticated users, get count from API
+                        const cartService = window.CartService;
+                        const cartItems = await cartService.getCartWithDetails(storeId, true);
+                        console.log('[Cart Badge] API cart items:', cartItems);
+                        const count = cartItems.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    } else {
+                        // For guest users, get count from localStorage
+                        const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                        console.log('[Cart Badge] LocalStorage cart:', cart);
+                        const count = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    }
+                } catch (error) {
+                    console.error('Error updating cart badge:', error);
+                }
+            }
+
+            await updateCartBadge();
+            window.addEventListener('storage', updateCartBadge);
+            window.addEventListener('cartUpdated', updateCartBadge);
+        });
+    </script>
+
+    <!-- Load Categories and Products -->
+    <script>
+        const storeConfig = window.storeConfig;
+
+        // Function to load sidebar categories
+        async function loadSidebarCategories(storeId) {
+            try {
+                const response = await fetch(`${window.API_BASE_URL}/api/categories?store_id=${storeId}&status=active`);
+                const data = await response.json();
+
+                if (!data.success || !data.data.categories || data.data.categories.length === 0) {
+                    document.getElementById('categories-sidebar').style.display = 'none';
+                    return;
+                }
+
+                const categories = data.data.categories;
+                const categoriesList = document.getElementById('sidebar-categories-list');
+
+                // Add "All Products" option
+                let html = `
+                    <li>
+                        <button onclick="filterProductsByCategory(null)" 
+                            class="w-full text-left category-filter-btn text-gray-700 hover:text-primary flex items-center justify-between font-semibold"
+                            data-category-id="all">
+                            All Products
+                        </button>
+                    </li>
+                `;
+
+                // Add category buttons
+                categories.forEach(category => {
+                    // Try to access allProducts from store.js global scope, fallback to window.allProducts
+                    let products = [];
+                    try {
+                        products = (typeof allProducts !== 'undefined') ? allProducts : (window.allProducts || []);
+                    } catch (e) {
+                        products = window.allProducts || [];
+                    }
+                    const productCount = products.filter(p => p.category_id === category.id).length;
+                    html += `
+                        <li>
+                            <button onclick="filterProductsByCategory(${category.id})" 
+                                class="w-full text-left category-filter-btn text-gray-700 hover:text-primary flex items-center justify-between"
+                                data-category-id="${category.id}">
+                                ${escapeHtml(category.name)} <span class="text-gray-400">(${productCount})</span>
+                            </button>
+                        </li>
+                    `;
                 });
+
+                categoriesList.innerHTML = html;
+
+                // Store categories globally for reference - both ways for compatibility
+                window.sidebarCategories = categories;
+                window.categoriesData = categories;
+
+                // Also set as global variable for store.js functions to access
+                try {
+                    categoriesData = categories;
+                } catch (e) {
+                    // If categoriesData is not accessible, that's ok
+                    console.log('Could not set categoriesData directly:', e);
+                }
+            } catch (error) {
+                console.error('Error loading sidebar categories:', error);
+                document.getElementById('categories-sidebar').style.display = 'none';
+            }
         }
+
+        // Function to update active state in sidebar categories
+        function updateSidebarCategoryActiveState(activeCategoryId) {
+            const buttons = document.querySelectorAll('.category-filter-btn');
+            buttons.forEach(btn => {
+                const categoryId = btn.getAttribute('data-category-id');
+                if ((activeCategoryId === null && categoryId === 'all') ||
+                    (categoryId === String(activeCategoryId))) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load categories and products when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set up function overrides after store.js has loaded
+            const originalFilterProductsByCategory = window.filterProductsByCategory;
+            const originalSearchProducts = window.searchProducts;
+
+            // Override filterProductsByCategory to also update sidebar
+            window.filterProductsByCategory = function (categoryId) {
+                // Call the original function from store.js
+                if (typeof originalFilterProductsByCategory === 'function') {
+                    originalFilterProductsByCategory(categoryId);
+                }
+                // Update sidebar active state
+                updateSidebarCategoryActiveState(categoryId);
+            };
+
+            // Override searchProducts to clear sidebar active state
+            window.searchProducts = function (query) {
+                if (typeof originalSearchProducts === 'function') {
+                    originalSearchProducts(query);
+                }
+                // Clear sidebar active state when searching
+                updateSidebarCategoryActiveState(null);
+            };
+
+            // Load products with modified config to force grid view
+            if (typeof loadProducts === 'function') {
+                // Pass a modified config that forces groupByCategory to false for initial load
+                const modifiedConfig = {
+                    ...storeConfig,
+                    groupByCategory: false  // Force grid view initially
+                };
+
+                loadProducts(modifiedConfig).then(() => {
+                    // After products are loaded, load sidebar categories if groupByCategory is enabled in original config
+                    if (storeConfig.groupByCategory && typeof loadSidebarCategories === 'function') {
+                        loadSidebarCategories(storeConfig.store_id);
+                    } else {
+                        const sidebar = document.getElementById('categories-sidebar');
+                        if (sidebar) {
+                            sidebar.style.display = 'none';
+                        }
+                    }
+                });
+            } else {
+                // Fallback
+                fetch('/api/products/featured')
+                    .then(response => response.json())
+                    .then(products => {
+                        const container = document.getElementById('products-container');
+                        if (container) {
+                            container.innerHTML = products.map(product => `
+                                <a href="product.html?id=${product.id}" class="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow border border-gray-200">
+                                    <div class="aspect-square bg-gray-200">
+                                        <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-bold text-gray-900 mb-2">${product.name}</h3>
+                                        <p class="text-primary font-bold text-lg">₦${product.price}</p>
+                                    </div>
+                                </a>
+                            `).join('');
+                        }
+                    });
+            }
+
+            // Initialize search listeners
+            if (typeof initSearchListeners === 'function') {
+                initSearchListeners();
+            }
+        });
     </script>
 </body>
+
 </html>

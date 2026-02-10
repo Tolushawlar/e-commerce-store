@@ -36,10 +36,13 @@
                 <a href="#" class="text-gray-600 hover:text-primary transition-colors">About</a>
                 <a href="#" class="text-gray-600 hover:text-primary transition-colors">Contact</a>
             </nav>
-            <a href="cart.html" class="p-2 hover:bg-gray-50 rounded-full transition-colors relative">
-                <span class="material-symbols-outlined text-gray-700">shopping_bag</span>
-                <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium hidden">0</span>
-            </a>
+            
+            <div class="flex items-center gap-2">
+                <a href="cart.html" class="p-2 hover:bg-gray-50 rounded-full transition-colors relative">
+                    <span class="material-symbols-outlined text-gray-700">shopping_bag</span>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full px-1 hidden">0</span>
+                </a>
+            </div>
         </div>
     </header>
 
@@ -190,7 +193,60 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Store Configuration (MUST be before other scripts) -->
+    <script>
+        window.API_BASE_URL = window.location.origin;
+        window.storeConfig = {
+            store_id: {{store_id}},
+            store_name: '{{store_name}}',
+            apiUrl: window.location.origin + '/api'
+        };
+    </script>
+
+    <!-- JavaScript files (copied to store folder during generation) -->
     <script src="cart.js"></script>
+    <script src="customer-auth.js"></script>
+    <script src="profile-header.js"></script>
     <script src="product-detail.js"></script>
+
+    <!-- Initialize Cart Badge -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const storeId = window.storeConfig.store_id;
+            const cartKey = `cart_${storeId}`;
+
+            async function updateCartBadge() {
+                try {
+                    const badge = document.getElementById('cart-badge');
+                    if (!badge) return;
+
+                    // Check if user is authenticated
+                    const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+
+                    if (isAuthenticated) {
+                        // For authenticated users, get count from API
+                        const cartService = window.CartService;
+                        const cartItems = await cartService.getCartWithDetails(storeId, true);
+                        const count = cartItems.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    } else {
+                        // For guest users, get count from localStorage
+                        const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                        const count = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    }
+                } catch (error) {
+                    console.error('Error updating cart badge:', error);
+                }
+            }
+
+            await updateCartBadge();
+            window.addEventListener('storage', updateCartBadge);
+            window.addEventListener('cartUpdated', updateCartBadge);
+        });
+    </script>
 </body>
 </html>

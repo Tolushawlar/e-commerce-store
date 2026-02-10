@@ -3,10 +3,38 @@
  * Handles all cart-related API operations for customers
  */
 class CartService {
-  constructor(apiClient) {
-    this.apiClient = apiClient;
+  
+  /**
+   * Validate and get store ID
+   * @param {number} storeId - Optional store ID
+   * @returns {number} Valid store ID
+   * @throws {Error} If store ID cannot be determined
+   */
+  _validateStoreId(storeId = null) {
+    if (storeId) return storeId;
+    
+    if (!window.storeConfig || !window.storeConfig.store_id) {
+      throw new Error('Store configuration not found. Please ensure window.storeConfig is set.');
+    }
+    
+    return window.storeConfig.store_id;
   }
-
+  
+  /**
+   * Get API URL from config
+   * @returns {string} API URL
+   * @throws {Error} If config is missing
+   */
+  _getApiUrl() {
+    if (!window.storeConfig || !window.storeConfig.apiUrl) {
+      if (!window.API_BASE_URL) {
+        throw new Error('API URL not configured. Please set window.storeConfig.apiUrl or window.API_BASE_URL');
+      }
+      return window.API_BASE_URL + '/api';
+    }
+    return window.storeConfig.apiUrl;
+  }
+  
   /**
    * Get cart items for a specific store
    * @param {number} storeId - The store ID
@@ -14,11 +42,137 @@ class CartService {
    */
   async getCart(storeId) {
     try {
-      const response = await this.apiClient.get(`/api/stores/${storeId}/cart`);
-      return response;
+      const apiUrl = this._getApiUrl();
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add authentication token if available
+      const token = typeof CustomerAuth !== 'undefined' ? CustomerAuth.getToken() : null;
+      console.log('[CartService] getCart - token:', token ? 'Present' : 'Missing');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(
+        `${apiUrl}/stores/${storeId}/cart`,
+        { headers }
+      );
+      const result = await response.json();
+      console.log('[CartService] getCart response:', result);
+      return result;
     } catch (error) {
       console.error("Error fetching cart:", error);
       throw error;
+    }
+  }
+
+  /**
+   * Get cart items with full product details
+   * Handles both authenticated (API) and guest (localStorage) users
+   * @param {number} storeId - The store ID (optional, uses window.storeConfig if not provided)
+   * @param {boolean} isAuthenticated - Whether user is authenticated (optional, auto-detected)
+   * @returns {Promise<Array>} Array of cart items with product details
+   */
+  async getCartWithDetails(storeId = null, isAuthenticated = null) {
+    try {
+      // Auto-detect storeId from window.storeConfig if not provided
+      storeId = this._validateStoreId(storeId);
+      
+      if (!storeId) {
+        throw new Error("Store ID is required");
+      }
+
+      // Auto-detect authentication status if not provided
+      if (isAuthenticated === null && typeof CustomerAuth !== 'undefined') {
+        isAuthenticated = CustomerAuth.isAuthenticated();
+      }
+
+      console.log('[CartService] getCartWithDetails - storeId:', storeId, 'isAuthenticated:', isAuthenticated);
+
+      if (isAuthenticated) {
+        // Get cart from API for authenticated users
+        console.log('[CartService] Fetching cart from API...');
+        const response = await this.getCart(storeId);
+        console.log('[CartService] API response:', response);
+        
+        if (!response.success || !response.data || !response.data.items) {
+          console.log('[CartService] No cart items found in API response');
+          return [];
+        }
+
+        // Transform API response to expected format
+        return response.data.items.map(item => ({
+          id: item.id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+          product: {
+            id: item.product_id,
+            name: item.product_name,
+            description: item.product_description,
+            price: parseFloat(item.product_price),
+            image_url: item.product_image,
+            stock_quantity: item.stock_quantity,
+            category_name: item.category_name || '',
+            images: item.product_image ? [{ image_url: item.product_image }] : []
+          }
+        }));
+      } else {
+        // Get cart from localStorage for guest users
+        const localCart = this.getLocalCart(storeId);
+        
+        if (!localCart || localCart.length === 0) {
+          return [];
+        }
+
+        // Fetch product details for each cart item
+        const cartWithDetails = await Promise.all(
+          localCart.map(async (cartItem) => {
+            try {
+              const response = await fetch(
+                `${window.storeConfig.apiUrl}/products/${cartItem.product_id}`
+              );
+              
+              if (!response.ok) {
+                console.warn(`Failed to fetch product ${cartItem.product_id}`);
+                return null;
+              }
+
+              const productData = await response.json();
+              
+              if (!productData.success || !productData.data) {
+                return null;
+              }
+
+              const product = productData.data;
+              
+              return {
+                product_id: cartItem.product_id,
+                quantity: cartItem.quantity,
+                product: {
+                  id: product.id,
+                  name: product.name,
+                  description: product.description,
+                  price: parseFloat(product.price),
+                  image_url: product.image_url,
+                  stock_quantity: product.stock_quantity,
+                  category_name: product.category_name || '',
+                  images: product.images || []
+                }
+              };
+            } catch (error) {
+              console.error(`Error fetching product ${cartItem.product_id}:`, error);
+              return null;
+            }
+          })
+        );
+
+        // Filter out failed requests
+        return cartWithDetails.filter(item => item !== null);
+      }
+    } catch (error) {
+      console.error("Error fetching cart with details:", error);
+      return [];
     }
   }
 
@@ -31,14 +185,35 @@ class CartService {
    */
   async addItem(storeId, productId, quantity = 1) {
     try {
-      const response = await this.apiClient.post(
-        `/api/stores/${storeId}/cart/items`,
+      const apiUrl = this._getApiUrl();
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add authentication token if available
+      const token = typeof CustomerAuth !== 'undefined' ? CustomerAuth.getToken() : null;
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      console.log('[CartService] addItem - storeId:', storeId, 'productId:', productId, 'quantity:', quantity);
+      console.log('[CartService] addItem - token:', token ? 'Present' : 'None');
+      
+      const response = await fetch(
+        `${apiUrl}/stores/${storeId}/cart`,
         {
-          product_id: productId,
-          quantity: quantity,
-        },
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            product_id: productId,
+            quantity: quantity,
+          }),
+        }
       );
-      return response;
+      
+      const result = await response.json();
+      console.log('[CartService] addItem - API response:', result);
+      return result;
     } catch (error) {
       console.error("Error adding item to cart:", error);
       throw error;
@@ -46,21 +221,33 @@ class CartService {
   }
 
   /**
-   * Update cart item quantity
+   * Update cart item quantity (API method)
    * @param {number} storeId - The store ID
    * @param {number} itemId - The cart item ID
    * @param {number} quantity - New quantity
    * @returns {Promise} Updated cart data
    */
-  async updateQuantity(storeId, itemId, quantity) {
+  async updateCartItemQuantity(storeId, itemId, quantity) {
     try {
-      const response = await this.apiClient.put(
-        `/api/stores/${storeId}/cart/items/${itemId}`,
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add authentication token if available
+      const token = typeof CustomerAuth !== 'undefined' ? CustomerAuth.getToken() : null;
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(
+        `${window.storeConfig.apiUrl}/stores/${storeId}/cart/${itemId}`,
         {
-          quantity: quantity,
-        },
+          method: 'PUT',
+          headers,
+          body: JSON.stringify({ quantity }),
+        }
       );
-      return response;
+      return await response.json();
     } catch (error) {
       console.error("Error updating cart item:", error);
       throw error;
@@ -68,17 +255,31 @@ class CartService {
   }
 
   /**
-   * Remove item from cart
+   * Remove item from cart (API method)
    * @param {number} storeId - The store ID
    * @param {number} itemId - The cart item ID
    * @returns {Promise} Updated cart data
    */
-  async removeItem(storeId, itemId) {
+  async removeCartItem(storeId, itemId) {
     try {
-      const response = await this.apiClient.delete(
-        `/api/stores/${storeId}/cart/items/${itemId}`,
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add authentication token if available
+      const token = typeof CustomerAuth !== 'undefined' ? CustomerAuth.getToken() : null;
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(
+        `${window.storeConfig.apiUrl}/stores/${storeId}/cart/${itemId}`,
+        {
+          method: 'DELETE',
+          headers,
+        }
       );
-      return response;
+      return await response.json();
     } catch (error) {
       console.error("Error removing cart item:", error);
       throw error;
@@ -92,10 +293,24 @@ class CartService {
    */
   async clearCart(storeId) {
     try {
-      const response = await this.apiClient.delete(
-        `/api/stores/${storeId}/cart`,
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add authentication token if available
+      const token = typeof CustomerAuth !== 'undefined' ? CustomerAuth.getToken() : null;
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(
+        `${window.storeConfig.apiUrl}/stores/${storeId}/cart`,
+        {
+          method: 'DELETE',
+          headers,
+        }
       );
-      return response;
+      return await response.json();
     } catch (error) {
       console.error("Error clearing cart:", error);
       throw error;
@@ -110,13 +325,25 @@ class CartService {
    */
   async syncCart(storeId, items) {
     try {
-      const response = await this.apiClient.post(
-        `/api/stores/${storeId}/cart/sync`,
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add authentication token if available
+      const token = typeof CustomerAuth !== 'undefined' ? CustomerAuth.getToken() : null;
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(
+        `${window.storeConfig.apiUrl}/stores/${storeId}/cart/sync`,
         {
-          items: items,
-        },
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ items }),
+        }
       );
-      return response;
+      return await response.json();
     } catch (error) {
       console.error("Error syncing cart:", error);
       throw error;
@@ -125,10 +352,126 @@ class CartService {
 
   /**
    * Calculate cart totals
+   * @param {Array} items - Cart items (optional, will fetch if not provided)
+   * @param {number} storeId - Store ID (optional, uses window.storeConfig if not provided)
+   * @returns {Object|Promise<Object>} Totals object with subtotal, shipping, tax, total
+   */
+  async calculateTotals(items = null, storeId = null) {
+    // If items not provided, fetch cart items
+    if (!items) {
+      storeId = this._validateStoreId(storeId);
+      
+      const cartItems = await this.getCartWithDetails(storeId);
+      items = cartItems.map(item => ({
+        price: item.product.price,
+        quantity: item.quantity
+      }));
+    }
+
+    const subtotal = items.reduce((sum, item) => {
+      return sum + parseFloat(item.price) * parseInt(item.quantity);
+    }, 0);
+
+    // No shipping or tax fees - total equals subtotal
+    const shipping = 0;
+    const tax = 0;
+    const total = subtotal;
+
+    return {
+      subtotal,
+      shipping,
+      tax,
+      total,
+      itemCount: items.reduce((sum, item) => sum + parseInt(item.quantity), 0),
+    };
+  }
+
+  /**
+   * Update quantity wrapper for templates
+   * Auto-detects store ID and handles both guest and authenticated users
+   * @param {number} productId - Product ID
+   * @param {number} quantity - New quantity
+   * @param {number} storeId - Store ID (optional)
+   */
+  async updateQuantity(productId, quantity, storeId = null) {
+    storeId = this._validateStoreId(storeId);
+    const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+
+    if (isAuthenticated) {
+      // For authenticated users, we need the cart item ID, not product ID
+      // Get the cart to find the item
+      const cart = await this.getCart(storeId);
+      
+      if (!cart.success || !cart.data || !cart.data.items) {
+        return { success: false, error: 'Failed to get cart' };
+      }
+      
+      const cartItem = cart.data.items.find(item => item.product_id === productId);
+      
+      if (cartItem) {
+        return await this.updateCartItemQuantity(storeId, cartItem.id, quantity);
+      }
+      
+      return { success: false, error: 'Item not found in cart' };
+    } else {
+      // For guest users, update localStorage
+      const cart = this.getLocalCart(storeId);
+      const itemIndex = cart.findIndex(item => item.product_id === productId);
+      
+      if (itemIndex >= 0) {
+        if (quantity <= 0) {
+          cart.splice(itemIndex, 1);
+        } else {
+          cart[itemIndex].quantity = quantity;
+        }
+        this.saveLocalCart(storeId, cart);
+        return { success: true };
+      }
+      
+      return { success: false, error: 'Item not found in cart' };
+    }
+  }
+
+  /**
+   * Remove item wrapper for templates
+   * Auto-detects store ID and handles both guest and authenticated users
+   * @param {number} productId - Product ID
+   * @param {number} storeId - Store ID (optional)
+   */
+  async removeItem(productId, storeId = null) {
+    storeId = this._validateStoreId(storeId);
+    const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+
+    if (isAuthenticated) {
+      // For authenticated users, we need the cart item ID
+      const cart = await this.getCart(storeId);
+      
+      if (!cart.success || !cart.data || !cart.data.items) {
+        return { success: false, error: 'Failed to get cart' };
+      }
+      
+      const cartItem = cart.data.items.find(item => item.product_id === productId);
+      
+      if (cartItem) {
+        return await this.removeCartItem(storeId, cartItem.id);
+      }
+      
+      return { success: false, error: 'Item not found in cart' };
+    } else {
+      // For guest users, remove from localStorage
+      const cart = this.getLocalCart(storeId);
+      const filteredCart = cart.filter(item => item.product_id !== productId);
+      this.saveLocalCart(storeId, filteredCart);
+      return { success: true };
+    }
+  }
+
+  /**
+   * Calculate cart totals (DEPRECATED - kept for backwards compatibility)
    * @param {Array} items - Cart items
    * @returns {Object} Totals object with subtotal, shipping, tax, total
    */
-  calculateTotals(items) {
+  _calculateTotalsSync(items) {
     const subtotal = items.reduce((sum, item) => {
       return sum + parseFloat(item.price) * parseInt(item.quantity);
     }, 0);
@@ -175,8 +518,11 @@ class CartService {
     try {
       const cartKey = `cart_${storeId}`;
       localStorage.setItem(cartKey, JSON.stringify(items));
-      this.updateCartBadge(storeId);
-    } catch (error) {
+      this.updateCartBadge(storeId);      
+      // Dispatch custom event for other components
+      window.dispatchEvent(new CustomEvent('cartUpdated', { 
+        detail: { storeId, items, count: items.length } 
+      }));    } catch (error) {
       console.error("Error saving local cart:", error);
     }
   }
@@ -202,7 +548,10 @@ class CartService {
    */
   updateCartBadge(storeId) {
     const count = this.getLocalCartCount(storeId);
-    const badges = document.querySelectorAll(".cart-badge");
+    
+    // Support both class and ID selectors
+    const badges = document.querySelectorAll(".cart-badge, #cart-badge");
+    
     badges.forEach((badge) => {
       badge.textContent = count;
       badge.classList.toggle("hidden", count === 0);
@@ -294,7 +643,79 @@ class CartService {
   }
 }
 
-// Export for use in other scripts
-if (typeof module !== "undefined" && module.exports) {
+// Create global CartService instance for browser use
+if (typeof window !== 'undefined') {
+  // Create a simple API client for browser use
+  const simpleApiClient = {
+    async get(endpoint) {
+      const baseURL = window.API_BASE_URL || window.location.origin;
+      const token = localStorage.getItem('customer_token');
+      
+      const response = await fetch(`${baseURL}${endpoint}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+      
+      return response.json();
+    },
+    
+    async post(endpoint, data) {
+      const baseURL = window.API_BASE_URL || window.location.origin;
+      const token = localStorage.getItem('customer_token');
+      
+      const response = await fetch(`${baseURL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify(data)
+      });
+      
+      return response.json();
+    },
+    
+    async put(endpoint, data) {
+      const baseURL = window.API_BASE_URL || window.location.origin;
+      const token = localStorage.getItem('customer_token');
+      
+      const response = await fetch(`${baseURL}${endpoint}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify(data)
+      });
+      
+      return response.json();
+    },
+    
+    async delete(endpoint) {
+      const baseURL = window.API_BASE_URL || window.location.origin;
+      const token = localStorage.getItem('customer_token');
+      
+      const response = await fetch(`${baseURL}${endpoint}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+      
+      return response.json();
+    }
+  };
+  
+  // Create singleton instance
+  window.CartService = new CartService(simpleApiClient);
+  console.log('[cart.js] CartService singleton created:', window.CartService);
+  console.log('[cart.js] CartService.addItem:', window.CartService.addItem);
+}
+
+// Export for use in other scripts (Node.js/module environments)
+if (typeof module !== 'undefined' && module.exports) {
   module.exports = CartService;
 }

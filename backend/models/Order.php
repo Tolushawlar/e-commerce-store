@@ -190,7 +190,49 @@ class Order extends Model
         $stmt = $this->db->prepare($query);
         $stmt->execute($params);
 
-        return $stmt->fetchAll();
+        $orders = $stmt->fetchAll();
+
+        // Add order items with product details and images for each order
+        foreach ($orders as &$order) {
+            // Get order items with product details
+            $stmt = $this->db->prepare("
+                SELECT 
+                    oi.*,
+                    p.name,
+                    p.description,
+                    p.price as current_price
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.id
+                WHERE oi.order_id = ?
+            ");
+            $stmt->execute([$order['id']]);
+            $items = $stmt->fetchAll();
+
+            // Fetch images for each product
+            foreach ($items as &$item) {
+                $stmt = $this->db->prepare("
+                    SELECT image_url, is_primary 
+                    FROM product_images 
+                    WHERE product_id = ? 
+                    ORDER BY is_primary DESC, id ASC
+                ");
+                $stmt->execute([$item['product_id']]);
+                $images = $stmt->fetchAll();
+                
+                // Create product object with images
+                $item['product'] = [
+                    'id' => $item['product_id'],
+                    'name' => $item['name'],
+                    'description' => $item['description'],
+                    'price' => $item['current_price'],
+                    'images' => $images
+                ];
+            }
+
+            $order['items'] = $items;
+        }
+
+        return $orders;
     }
 
     /**

@@ -19,7 +19,6 @@ class StoreCustomer extends Model
         'first_name',
         'last_name',
         'phone',
-        'is_guest',
         'email_verified',
         'status',
         'last_login_at'
@@ -52,7 +51,6 @@ class StoreCustomer extends Model
             'first_name' => $data['first_name'] ?? null,
             'last_name' => $data['last_name'] ?? null,
             'phone' => $data['phone'] ?? null,
-            'is_guest' => true,
             'status' => 'active'
         ];
 
@@ -74,7 +72,6 @@ class StoreCustomer extends Model
             'first_name' => $data['first_name'] ?? null,
             'last_name' => $data['last_name'] ?? null,
             'phone' => $data['phone'] ?? null,
-            'is_guest' => false,
             'status' => 'active'
         ];
 
@@ -86,11 +83,6 @@ class StoreCustomer extends Model
      */
     public function verifyPassword(array $customer, string $password): bool
     {
-        // Guest customers have no password
-        if ($customer['is_guest'] || empty($customer['password_hash'])) {
-            return false;
-        }
-
         return password_verify($password, $customer['password_hash']);
     }
 
@@ -148,12 +140,6 @@ class StoreCustomer extends Model
     {
         $query = "SELECT * FROM {$this->table} WHERE store_id = ?";
         $params = [$storeId];
-
-        // Filter by guest status
-        if (isset($filters['is_guest'])) {
-            $query .= " AND is_guest = ?";
-            $params[] = $filters['is_guest'] ? 1 : 0;
-        }
 
         // Filter by status
         if (!empty($filters['status'])) {
@@ -217,33 +203,12 @@ class StoreCustomer extends Model
     }
 
     /**
-     * Convert guest to registered customer
-     */
-    public function convertGuestToRegistered(int $id, string $password): bool
-    {
-        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-
-        $stmt = $this->db->prepare("
-            UPDATE {$this->table} 
-            SET password_hash = ?, is_guest = false 
-            WHERE id = ? AND is_guest = true
-        ");
-        return $stmt->execute([$passwordHash, $id]);
-    }
-
-    /**
      * Count customers by store
      */
-    public function countByStore(int $storeId, bool $guestsOnly = false): int
+    public function countByStore(int $storeId): int
     {
         $query = "SELECT COUNT(*) as count FROM {$this->table} WHERE store_id = ?";
         $params = [$storeId];
-
-        if ($guestsOnly) {
-            $query .= " AND is_guest = true";
-        } else {
-            $query .= " AND is_guest = false";
-        }
 
         $stmt = $this->db->prepare($query);
         $stmt->execute($params);

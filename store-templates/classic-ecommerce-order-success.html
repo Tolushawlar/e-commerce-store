@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - {{store_name}}</title>
+    <title>Order Confirmed - {{store_name}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -22,128 +25,268 @@
             },
         }
     </script>
-</head>
-<body class="bg-gray-100 font-sans text-gray-900">
-    <!-- Classic Top Bar -->
-    <div class="bg-primary text-white text-xs py-2">
-        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
-            <span>Welcome to {{store_name}} - Free shipping on orders over ₦5,000</span>
-            <div class="flex items-center gap-4">
-                <a href="#" class="hover:underline">Help</a>
-                <a href="orders.html" class="hover:underline">Track Order</a>
-            </div>
-        </div>
-    </div>
+    <style>
+        @keyframes checkmark {
+            0% {
+                stroke-dashoffset: 100;
+            }
 
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes circle {
+            0% {
+                stroke-dashoffset: 240;
+            }
+
+            100% {
+                stroke-dashoffset: 480;
+            }
+        }
+
+        .checkmark-circle {
+            stroke-dasharray: 240;
+            stroke-dashoffset: 480;
+            animation: circle 0.6s ease-in-out forwards;
+        }
+
+        .checkmark-check {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: checkmark 0.3s 0.6s ease-in-out forwards;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans text-gray-900">
     <!-- Classic Header -->
     <header class="bg-white border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between">
                 <a href="index.html">
                     <h1 class="text-3xl font-bold text-primary">{{store_name}}</h1>
                 </a>
-                
-                <div class="flex-1 max-w-xl mx-8 hidden md:block">
-                    <div class="flex items-center bg-gray-100 rounded-md overflow-hidden">
-                        <input type="text" placeholder="Search products..." class="flex-1 px-4 py-2 bg-transparent focus:outline-none text-sm">
-                        <button class="px-4 py-2 bg-primary text-white">
-                            <span class="material-symbols-outlined text-sm">search</span>
-                        </button>
-                    </div>
-                </div>
-                
+
+                <nav class="hidden lg:flex items-center gap-6 text-sm font-medium">
+                    <a href="index.html" class="text-gray-700 hover:text-primary">Home</a>
+                    <a href="orders.html" class="text-gray-700 hover:text-primary">My Orders</a>
+                    <a href="profile.html" class="text-gray-700 hover:text-primary">Profile</a>
+                </nav>
+
                 <div class="flex items-center gap-4">
-                    <a href="profile.html" class="flex items-center gap-1 text-gray-700 hover:text-primary">
-                        <span class="material-symbols-outlined">person</span>
-                        <span class="text-sm hidden lg:inline">Account</span>
-                    </a>
-                    <a href="cart.html" class="flex items-center gap-1 text-primary font-semibold relative">
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                        <span class="text-sm hidden lg:inline">Cart</span>
-                        <span id="cart-count" class="absolute -top-1 -right-1 bg-accent text-primary text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">0</span>
+                    <a href="index.html"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                        <span class="material-symbols-outlined">home</span>
                     </a>
                 </div>
             </div>
-            
-            <!-- Navigation Menu -->
-            <nav class="flex items-center gap-6 text-sm font-medium border-t border-gray-200 pt-3">
-                <a href="index.html" class="text-gray-700 hover:text-primary flex items-center gap-1">
-                    <span class="material-symbols-outlined text-lg">menu</span>
-                    All Categories
-                </a>
-                <a href="index.html" class="text-gray-700 hover:text-primary">New Arrivals</a>
-                <a href="index.html" class="text-gray-700 hover:text-primary">Best Sellers</a>
-                <a href="index.html" class="text-gray-700 hover:text-primary">Deals</a>
-                <a href="index.html" class="text-red-600 font-bold">Sale</a>
-            </nav>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-6">
-        <!-- Breadcrumb -->
-        <div class="text-sm text-gray-600 mb-6">
-            <a href="index.html" class="hover:text-primary">Home</a> / 
-            <span class="text-gray-900">Shopping Cart</span>
+    <!-- Success Hero Section -->
+    <section class="bg-primary py-12">
+        <div class="max-w-4xl mx-auto px-6 text-center text-white">
+            <!-- Animated Success Icon -->
+            <div class="inline-block mb-6">
+                <svg width="100" height="100" viewBox="0 0 120 120">
+                    <circle class="checkmark-circle" cx="60" cy="60" r="54" fill="none" stroke="white"
+                        stroke-width="4" />
+                    <path class="checkmark-check" d="M35 60 L50 75 L85 40" fill="none" stroke="white" stroke-width="6"
+                        stroke-linecap="round" />
+                </svg>
+            </div>
+
+            <div class="inline-block px-4 py-1 bg-accent text-primary rounded text-sm font-bold mb-4">
+                ✓ Order Confirmed
+            </div>
+
+            <h1 class="text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+                Order Placed Successfully!
+            </h1>
+            <p class="text-lg text-white/90 mb-6">
+                Thank you for your purchase. We're getting your order ready!
+            </p>
+
+            <div
+                class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/30">
+                <span class="material-symbols-outlined">confirmation_number</span>
+                <span class="font-medium">Order <span id="order-number-hero">Loading...</span></span>
+            </div>
         </div>
+    </section>
 
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+    <!-- Order Details Section -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Main Order Info -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Order Items Card -->
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">Order Items</h2>
+                        <span id="order-date" class="text-sm text-gray-500">Loading...</span>
+                    </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Cart Items -->
-            <div class="lg:col-span-2">
-                <div id="cart-items" class="space-y-4">
-                    <div class="flex items-center justify-center py-12">
-                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    <div id="order-items" class="space-y-3">
+                        <!-- Loading state -->
+                        <div class="flex items-center justify-center py-12">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Empty State -->
-                <div id="empty-cart" class="hidden bg-white rounded-lg p-12 text-center border border-gray-200">
-                    <span class="material-symbols-outlined text-6xl text-gray-300 mb-4">shopping_cart</span>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h3>
-                    <p class="text-gray-600 mb-6">Add some products to get started!</p>
-                    <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded font-medium hover:bg-primary/90">
-                        <span class="material-symbols-outlined">storefront</span>
-                        <span>Browse Products</span>
-                    </a>
+                <!-- Shipping & Contact Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">local_shipping</span>
+                            </div>
+                            <h3 class="font-bold text-gray-900">Shipping To</h3>
+                        </div>
+                        <div id="shipping-address" class="text-sm text-gray-600 space-y-1">
+                            <p id="customer-name">Loading...</p>
+                            <p id="address-line">Loading...</p>
+                            <p id="city-state">Loading...</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">contact_mail</span>
+                            </div>
+                            <h3 class="font-bold text-gray-900">Contact Info</h3>
+                        </div>
+                        <div id="contact-info" class="text-sm text-gray-600 space-y-1">
+                            <p id="customer-email">Loading...</p>
+                            <p id="customer-phone">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- What's Next -->
+                <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-2xl">info</span>
+                        What's Next?
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined text-white text-sm">mail</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 mb-1">Order Confirmation Email</h4>
+                                <p class="text-sm text-gray-600">Check your inbox for order details and tracking info</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined text-white text-sm">package</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 mb-1">Order Processing</h4>
+                                <p class="text-sm text-gray-600">We'll prepare your items with care</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined text-white text-sm">local_shipping</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 mb-1">Fast Delivery</h4>
+                                <p class="text-sm text-gray-600">Your order will be on its way soon!</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Order Summary -->
+            <!-- Order Summary Sidebar -->
             <div class="lg:col-span-1">
-                <div id="order-summary" class="bg-white rounded-lg border border-gray-200 p-6 sticky top-24">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
-                    
-                    <div class="space-y-3 mb-6">
+                <div class="bg-white rounded-lg p-6 border border-gray-200 sticky top-24">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+
+                    <div class="space-y-4 mb-6">
                         <div class="flex justify-between text-gray-600">
-                            <span>Subtotal</span>
-                            <span id="subtotal">₦0.00</span>
+                            <span>Order Number</span>
+                            <span id="order-number" class="text-primary font-bold">Loading...</span>
                         </div>
-                        <div class="flex justify-between text-gray-600">
-                            <span>Shipping</span>
-                            <span id="shipping">₦1,500.00</span>
+                        <div class="border-t border-gray-200 pt-4 space-y-3">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span id="order-subtotal">₦0.00</span>
+                            </div>
                         </div>
-                        <div class="flex justify-between text-gray-600">
-                            <span>Tax (7.5%)</span>
-                            <span id="tax">₦0.00</span>
-                        </div>
-                        <div class="border-t pt-3 flex justify-between text-lg font-bold text-gray-900">
+                        <div
+                            class="border-t border-gray-200 pt-4 flex justify-between text-lg font-bold text-gray-900">
                             <span>Total</span>
-                            <span id="total">₦0.00</span>
+                            <span id="order-total" class="text-primary">₦0.00</span>
                         </div>
                     </div>
 
-                    <a href="#" id="checkout-btn" class="block w-full text-center px-6 py-3 bg-primary text-white rounded font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Proceed to Checkout
-                    </a>
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                            <span class="material-symbols-outlined text-primary">credit_card</span>
+                            <span>Payment Method</span>
+                        </div>
+                        <p id="payment-method" class="font-bold text-gray-900">Loading...</p>
+                    </div>
 
-                    <div class="mt-6 pt-6 border-t">
-                        <div class="flex items-start gap-3 text-sm text-gray-600">
-                            <span class="material-symbols-outlined text-green-600">verified</span>
-                            <p>Secure checkout powered by industry-standard encryption</p>
+                    <div class="space-y-3">
+                        <a href="index.html"
+                            class="block w-full text-center px-6 py-3 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
+                            <span class="flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">shopping_bag</span>
+                                Continue Shopping
+                            </span>
+                        </a>
+                        <button onclick="window.print()"
+                            class="block w-full text-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                            <span class="flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">print</span>
+                                Print Receipt
+                            </span>
+                        </button>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <div class="flex items-start gap-3 text-sm">
+                            <div
+                                class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined text-green-600 text-sm">verified</span>
+                            </div>
+                            <p class="text-gray-600">Your order is secure and will be processed shortly</p>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="bg-white rounded-lg p-6 text-center border border-gray-200">
+                <span class="material-symbols-outlined text-3xl text-primary mb-2">local_shipping</span>
+                <h3 class="font-semibold text-gray-900 text-sm mb-1">Fast Delivery</h3>
+                <p class="text-xs text-gray-600">Quick shipping</p>
+            </div>
+            <div class="bg-white rounded-lg p-6 text-center border border-gray-200">
+                <span class="material-symbols-outlined text-3xl text-primary mb-2">verified_user</span>
+                <h3 class="font-semibold text-gray-900 text-sm mb-1">Secure Payment</h3>
+                <p class="text-xs text-gray-600">100% Protected</p>
+            </div>
+            <div class="bg-white rounded-lg p-6 text-center border border-gray-200">
+                <span class="material-symbols-outlined text-3xl text-primary mb-2">autorenew</span>
+                <h3 class="font-semibold text-gray-900 text-sm mb-1">Easy Returns</h3>
+                <p class="text-xs text-gray-600">30-Day Policy</p>
+            </div>
+            <div class="bg-white rounded-lg p-6 text-center border border-gray-200">
+                <span class="material-symbols-outlined text-3xl text-primary mb-2">headset_mic</span>
+                <h3 class="font-semibold text-gray-900 text-sm mb-1">24/7 Support</h3>
+                <p class="text-xs text-gray-600">Always available</p>
             </div>
         </div>
     </main>
@@ -154,173 +297,169 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 <div>
                     <h3 class="text-xl font-bold mb-4">{{store_name}}</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed">Your trusted online marketplace for quality products</p>
+                    <p class="text-sm text-gray-400 leading-relaxed">{{store_description}}</p>
                 </div>
                 <div>
                     <h4 class="font-bold mb-4">Customer Service</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
-                        <li><a href="#" class="hover:text-white">Shipping Info</a></li>
-                        <li><a href="#" class="hover:text-white">Returns</a></li>
-                        <li><a href="#" class="hover:text-white">FAQs</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Returns</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-bold mb-4">My Account</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="login.html" class="hover:text-white">Sign In</a></li>
-                        <li><a href="orders.html" class="hover:text-white">Order History</a></li>
-                        <li><a href="profile.html" class="hover:text-white">My Profile</a></li>
-                        <li><a href="orders.html" class="hover:text-white">Track Order</a></li>
+                        <li><a href="profile.html" class="hover:text-white transition-colors">My Profile</a></li>
+                        <li><a href="orders.html" class="hover:text-white transition-colors">My Orders</a></li>
+                        <li><a href="login.html" class="hover:text-white transition-colors">Login</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-bold mb-4">Newsletter</h4>
                     <p class="text-sm text-gray-400 mb-3">Subscribe for exclusive deals</p>
                     <div class="flex gap-2">
-                        <input type="email" placeholder="Email" class="flex-1 px-3 py-2 bg-gray-700 rounded text-sm focus:outline-none">
+                        <input type="email" placeholder="Email"
+                            class="flex-1 px-3 py-2 bg-gray-700 rounded text-sm focus:outline-none">
                         <button class="px-4 py-2 bg-accent text-primary font-bold rounded">Go</button>
                     </div>
                 </div>
             </div>
             <div class="border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
-                <p>© 2024 {{store_name}}. All rights reserved.</p>
-            </div>
-        </div>
+                <p
     </footer>
 
-    <script src="cart.js"></script>
-    <script src="customer-auth.js"></script>
+    <script src="checkout.js"></script>
     <script>
         const storeConfig = {
             store_id: {{store_id}},
-            apiUrl: window.location.origin + '/api'
+        apiUrl: window.location.origin + '/api'
         };
         window.storeConfig = storeConfig;
+    </script>
+    <script>
+        // Get order ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order');
 
-        document.getElementById('checkout-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            if (typeof CustomerAuth !== 'undefined' && !CustomerAuth.isAuthenticated()) {
-                showToast('Please login to proceed with checkout');
-                setTimeout(() => {
-                    window.location.href = `login.html?redirect=${encodeURIComponent('checkout.html')}`;
-                }, 1500);
-            } else {
-                window.location.href = 'checkout.html';
-            }
-        });
+        if (!orderId) {
+            window.location.href = 'index.html';
+        }
 
-        async function loadCart() {
-            const cartItems = await CartService.getCartWithDetails();
-            const cartContainer = document.getElementById('cart-items');
-            const emptyCart = document.getElementById('empty-cart');
-            const checkoutBtn = document.getElementById('checkout-btn');
+        // Load order details
+        async function loadOrderDetails() {
+            try {
+                const result = await CheckoutService.getOrder(orderId);
 
-            if (cartItems.length === 0) {
-                cartContainer.classList.add('hidden');
-                emptyCart.classList.remove('hidden');
-                checkoutBtn.disabled = true;
-                checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                return;
-            }
+                if (!result.success) {
+                    throw new Error('Order not found');
+                }
 
-            cartContainer.innerHTML = cartItems.map(item => {
-                const product = item.product;
-                const image = product.images && product.images.length > 0 ? product.images[0].image_url : '';
-                const subtotal = product.price * item.quantity;
+                const order = result.order;
 
-                return `
-                    <div class="bg-white rounded-lg border border-gray-200 p-6">
-                        <div class="flex gap-4">
-                            <div class="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-                                ${image ? `<img src="${image}" alt="${product.name}" class="w-full h-full object-cover">` : 
-                                `<div class="w-full h-full flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-gray-400">inventory_2</span>
-                                </div>`}
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between">
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900">${product.name}</h3>
-                                        <p class="text-sm text-gray-500 mt-1">${product.category_name || ''}</p>
-                                        <p class="text-lg font-bold text-primary mt-2">${CartService.formatCurrency(product.price)}</p>
-                                    </div>
-                                    <button onclick="removeItem(${product.id})" class="text-gray-400 hover:text-red-500">
-                                        <span class="material-symbols-outlined">delete</span>
-                                    </button>
+                // Display order number
+                const orderNumber = order.order_number || `#${order.id}`;
+                document.getElementById('order-number').textContent = orderNumber;
+                document.getElementById('order-number-hero').textContent = orderNumber;
+
+                // Display order date
+                document.getElementById('order-date').textContent = new Date(order.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // Display order items
+                const itemsContainer = document.getElementById('order-items');
+                let calculatedSubtotal = 0;
+
+                if (order.items && order.items.length > 0) {
+                    itemsContainer.innerHTML = order.items.map(item => {
+                        const itemTotal = item.price * item.quantity;
+                        calculatedSubtotal += itemTotal;
+
+                        // Get product image - use primary image or first image if available
+                        const primaryImage = item.images && item.images.length > 0
+                            ? item.images.find(img => img.is_primary === 1) || item.images[0]
+                            : null;
+                        const imageUrl = primaryImage ? primaryImage.image_url : null;
+
+                        return `
+                            <div class="flex gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                <div class="w-20 h-20 bg-white rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 border border-gray-200">
+                                    ${imageUrl
+                                ? `<img src="${imageUrl}" alt="${item.product_name || 'Product'}" class="w-full h-full object-cover">`
+                                : `<span class="material-symbols-outlined text-gray-400 text-3xl">inventory_2</span>`
+                            }
                                 </div>
-                                <div class="flex items-center justify-between mt-4">
-                                    <div class="flex items-center gap-3">
-                                        <button onclick="decrementQuantity(${product.id}, ${item.quantity})" class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-50">
-                                            <span class="material-symbols-outlined text-sm">remove</span>
-                                        </button>
-                                        <span class="w-12 text-center font-semibold">${item.quantity}</span>
-                                        <button onclick="incrementQuantity(${product.id}, ${item.quantity}, ${product.stock_quantity})" class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-50">
-                                            <span class="material-symbols-outlined text-sm">add</span>
-                                        </button>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-sm text-gray-500">Subtotal</p>
-                                        <p class="text-lg font-bold text-primary">${CartService.formatCurrency(subtotal)}</p>
-                                    </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-900 mb-1">${item.product_name || 'Product'}</h4>
+                                    <p class="text-sm text-gray-500">Quantity: ${item.quantity}</p>
                                 </div>
-                                ${product.stock_quantity < 10 ? `<p class="text-sm text-orange-600 mt-2">Only ${product.stock_quantity} left in stock</p>` : ''}
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-500">Unit Price</p>
+                                    <p class="font-bold text-primary">${formatCurrency(item.price)}</p>
+                                </div>
                             </div>
+                        `;
+                    }).join('');
+                } else {
+                    itemsContainer.innerHTML = '<p class="text-center textlg hover:bg-gray-100 transition-colors">
+                                <div class="w-20 h-20 bg-white rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 border border-gray-200">
+                                    ${imageUrl
+                                ? `<img src="${imageUrl}" alt="${item.product_name || 'Product'}" class="w-full h-full object-cover">`
+                                : `<span class="material-symbols-outlined text-gray-400 text-3xl">inventory_2</span>`
+                            }
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-900 mb-1">${item.product_name || 'Product'}</h4>
+                                    <p class="text-sm text-gray-500">Quantity: ${item.quantity}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-500">Unit Price</p>
+                                    <p class="font-bold
+                // Display contact info
+                document.getElementById('customer-email').textContent = order.customer_email;
+                document.getElementById('customer-phone').textContent = order.customer_phone;
+
+                // Display payment method
+                const paymentMethods = {
+                    'card': 'Debit/Credit Card',
+                    'transfer': 'Bank Transfer',
+                    'cod': 'Cash on Delivery'
+                };
+                document.getElementById('payment-method').textContent = paymentMethods[order.payment_method] || order.payment_method;
+
+            } catch (error) {
+                console.error('Error loading order:', error);
+                document.getElementById('order-items').innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="w-20 h-20 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-6">
+                            <span class="material-symbols-outlined text-red-500 text-4xl">error</span>
                         </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Order Not Found</h3>
+                        <p class="text-gray-600 mb-8">Failed to load order details</p>
+                        <a href="index.html" class="inline-flex items-center gap-3 px-8 py-4 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
+                            <span class="material-symbols-outlined">home</span>
+                            <span>Back to Store</span>
+                        </a>
                     </div>
                 `;
-            }).join('');
-
-            await updateTotals();
-        }
-
-        async function updateTotals() {
-            const totals = await CartService.calculateTotals();
-            
-            document.getElementById('subtotal').textContent = CartService.formatCurrency(totals.subtotal);
-            document.getElementById('shipping').textContent = CartService.formatCurrency(totals.shipping);
-            document.getElementById('tax').textContent = CartService.formatCurrency(totals.tax);
-            document.getElementById('total').textContent = CartService.formatCurrency(totals.total);
-        }
-
-        function incrementQuantity(productId, currentQty, maxStock) {
-            if (currentQty >= maxStock) {
-                showToast('Maximum stock reached');
-                return;
-            }
-            CartService.updateQuantity(productId, currentQty + 1);
-            loadCart();
-        }
-
-        function decrementQuantity(productId, currentQty) {
-            if (currentQty <= 1) {
-                removeItem(productId);
-                return;
-            }
-            CartService.updateQuantity(productId, currentQty - 1);
-            loadCart();
-        }
-
-        function removeItem(productId) {
-            if (confirm('Remove this item from your cart?')) {
-                CartService.removeItem(productId);
-                loadCart();
-                showToast('Item removed from cart');
             }
         }
 
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 transition-opacity duration-300';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-NG', {
+                style: 'currency',
+                currency: 'NGN',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
         }
 
-        loadCart();
+        // Load order on page load
+        loadOrderDetails();
     </script>
 </body>
+
 </html>

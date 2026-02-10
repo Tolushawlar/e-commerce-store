@@ -1009,7 +1009,11 @@ include '../shared/header-client.php';
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Shipping Address</h3>
                             <span class="text-xs">${getStatusBadge(order.status)}</span>
                         </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">${order.shipping_address}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">${
+                            typeof order.shipping_address === 'object' 
+                                ? `${order.shipping_address.address_line1 || ''}${order.shipping_address.address_line2 ? '\n' + order.shipping_address.address_line2 : ''}\n${order.shipping_address.city || ''}, ${order.shipping_address.state || ''} ${order.shipping_address.postal_code || ''}\n${order.shipping_address.country || ''}`
+                                : order.shipping_address
+                        }</p>
                     </div>
                 ` : ''}
 

@@ -350,40 +350,110 @@ function initializeQuantityControls() {
 function initializeCartButton() {
   const addToCartBtn = document.getElementById("add-to-cart");
 
-  addToCartBtn.addEventListener("click", () => {
+  addToCartBtn.addEventListener("click", async () => {
     const quantity = parseInt(document.getElementById("quantity").value);
     const productId = getProductIdFromUrl();
 
-    // Get cart from localStorage
-    let cart = JSON.parse(
-      localStorage.getItem(`cart_${storeConfig.store_id}`) || "[]",
-    );
+    try {
+      // Check if user is authenticated
+      const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+      
+      console.log('[Product Detail] Add to cart - authenticated:', isAuthenticated);
 
-    // Check if product already in cart
-    const existingItemIndex = cart.findIndex(
-      (item) => item.productId === productId,
-    );
+      if (isAuthenticated && typeof window.CartService !== 'undefined') {
+        // Use CartService for authenticated users
+        console.log('[Product Detail] Using CartService API');
+        console.log('[Product Detail] window.CartService:', window.CartService);
+        console.log('[Product Detail] window.CartService.addItem:', window.CartService.addItem);
+        
+        const result = await window.CartService.addItem(
+          storeConfig.store_id,
+          productId,
+          quantity
+        );
 
-    if (existingItemIndex > -1) {
-      cart[existingItemIndex].quantity += quantity;
-    } else {
-      cart.push({
-        productId,
-        quantity,
-        addedAt: new Date().toISOString(),
-      });
+        console.log('[Product Detail] CartService result:', result);
+
+        if (result.success) {
+          // Update cart badge
+          if (result.data && result.data.items) {
+            const totalItems = result.data.items.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+            const badge = document.getElementById("cart-badge");
+            if (badge) {
+              badge.textContent = totalItems;
+              badge.classList.toggle("hidden", totalItems === 0);
+            }
+          }
+
+          // Dispatch event for other components
+          window.dispatchEvent(new CustomEvent('cartUpdated', {
+            detail: { storeId: storeConfig.store_id, items: result.data.items }
+          }));
+
+          showSuccessMessage(`Added ${quantity} item(s) to cart!`);
+        } else {
+          showError(result.message || "Failed to add to cart");
+        }
+      } else {
+        // Guest user - use localStorage
+        console.log('[Product Detail] Using localStorage for guest user');
+        
+        // Fetch current product data to ensure we have all details
+        const response = await fetch(`${API_BASE_URL}/api/products/${productId}`);
+        const data = await response.json();
+
+        if (!data.success || !data.data) {
+          showError("Failed to add to cart");
+          return;
+        }
+
+        const product = data.data;
+
+        // Get cart from localStorage
+        let cart = JSON.parse(
+          localStorage.getItem(`cart_${storeConfig.store_id}`) || "[]",
+        );
+
+        // Check if product already in cart
+        const existingItemIndex = cart.findIndex(
+          (item) => item.product_id === parseInt(productId),
+        );
+
+        if (existingItemIndex > -1) {
+          cart[existingItemIndex].quantity += quantity;
+        } else {
+          // Use consistent structure with cart.service.js
+          cart.push({
+            product_id: parseInt(productId),
+            product_name: product.name,
+            price: parseFloat(product.price),
+            quantity: quantity,
+            image_url: product.image_url || product.images?.[0]?.image_url,
+            stock_quantity: product.stock_quantity
+          });
+        }
+
+        // Save cart
+        localStorage.setItem(`cart_${storeConfig.store_id}`, JSON.stringify(cart));
+
+        // Update cart badge
+        updateCartBadge(cart);
+
+        // Dispatch event for other components
+        window.dispatchEvent(new CustomEvent('cartUpdated', {
+          detail: { storeId: storeConfig.store_id, items: cart }
+        }));
+
+        // Show success message
+        showSuccessMessage(`Added ${quantity} item(s) to cart!`);
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      showError("Failed to add to cart. Please try again.");
     }
-
-    // Save cart
-    localStorage.setItem(`cart_${storeConfig.store_id}`, JSON.stringify(cart));
-
-    // Update cart badge
-    updateCartBadge(cart);
-
-    // Show success message
-    showSuccessMessage(`Added ${quantity} item(s) to cart!`);
   });
 }
+
 
 // Update cart badge
 function updateCartBadge(cart = null) {
@@ -394,7 +464,7 @@ function updateCartBadge(cart = null) {
   }
 
   const badge = document.getElementById("cart-badge");
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
 
   if (totalItems > 0) {
     badge.textContent = totalItems;

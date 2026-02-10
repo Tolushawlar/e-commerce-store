@@ -230,33 +230,84 @@
         </div>
     </footer>
 
+       <!-- Store Configuration (MUST be before other scripts) -->
+    <script>
+        window.API_BASE_URL = window.location.origin;
+        window.storeConfig = {
+            store_id: {{store_id}},
+        apiUrl: window.location.origin + '/api',
+            groupByCategory: {{group_by_category}},
+        productGridColumns: {{product_grid_columns}},
+        showCategoryImages: {{show_category_images}}
+        };
+    </script>
+
+    <!-- JavaScript files (copied to store folder during generation) -->
     <script src="customer-auth.js"></script>
+    <script src="cart.js"></script>
     <script src="profile-header.js"></script>
     <script src="store.js"></script>
+
+    <!-- Initialize Cart Badge -->
     <script>
-        // @ts-nocheck - Template placeholders will be replaced during generation
-        const storeConfig = {
-            storeId: {{store_id}},
-            apiUrl: window.location.origin + '/api',
-            groupByCategory: false,
-            productGridColumns: 3,
-            showCategoryImages: false
-        };
-        
+        document.addEventListener('DOMContentLoaded', async function () {
+            const storeId = window.storeConfig.store_id;
+            const cartKey = `cart_${storeId}`;
+
+            async function updateCartBadge() {
+                try {
+                    const badge = document.getElementById('cart-badge');
+                    if (!badge) return;
+
+                    // Check if user is authenticated
+                    const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+                    console.log('[Cart Badge] Auth status:', isAuthenticated);
+
+                    if (isAuthenticated) {
+                        // For authenticated users, get count from API
+                        const cartService = window.CartService;
+                        const cartItems = await cartService.getCartWithDetails(storeId, true);
+                        console.log('[Cart Badge] API cart items:', cartItems);
+                        const count = cartItems.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    } else {
+                        // For guest users, get count from localStorage
+                        const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                        console.log('[Cart Badge] LocalStorage cart:', cart);
+                        const count = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    }
+                } catch (error) {
+                    console.error('Error updating cart badge:', error);
+                }
+            }
+
+            await updateCartBadge();
+            window.addEventListener('storage', updateCartBadge);
+            window.addEventListener('cartUpdated', updateCartBadge);
+        });
+    </script>
+
+    <!-- Load Products -->
+    <script>
         if (typeof loadProducts === 'function') {
-            loadProducts(storeConfig);
+            loadProducts(window.storeConfig);
         } else {
             fetch('/api/products/featured')
                 .then(response => response.json())
                 .then(products => {
                     const container = document.getElementById('featured-products');
                     container.innerHTML = products.map(product => `
-                        <a href="product.html?id=${product.id}" class="group block">
-                            <div class="aspect-[3/4] bg-neutral-100 mb-6 overflow-hidden">
-                                <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <a href="product.html?id=${product.id}" class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all hover:-translate-y-1">
+                            <div class="aspect-square bg-gray-100 overflow-hidden">
+                                <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                             </div>
-                            <h3 class="text-lg font-serif font-light text-gray-900 mb-2">${product.name}</h3>
-                            <p class="text-primary font-light tracking-wider">₦${product.price}</p>
+                            <div class="p-4">
+                                <h3 class="font-bold text-gray-900 mb-2">${product.name}</h3>
+                                <p class="text-primary font-black text-xl">₦${product.price}</p>
+                            </div>
                         </a>
                     `).join('');
                 });

@@ -91,26 +91,12 @@ class CustomerController extends Controller
 
         // Check if email already exists for this store
         $existing = $this->customerModel->findByEmailAndStore($data['email'], $storeId);
-        if ($existing && !$existing['is_guest']) {
+        if ($existing) {
             $this->error('Email already registered for this store', 409);
         }
 
-        // If guest exists with same email, convert to registered
-        if ($existing && $existing['is_guest']) {
-            $success = $this->customerModel->convertGuestToRegistered(
-                $existing['id'],
-                $data['password']
-            );
-
-            if (!$success) {
-                $this->error('Failed to upgrade guest account', 500);
-            }
-
-            $customerId = $existing['id'];
-        } else {
-            // Create new customer
-            $customerId = $this->customerModel->createRegistered($storeId, $data);
-        }
+       // Create new customer
+       $customerId = $this->customerModel->createRegistered($storeId, $data);
 
         if (!$customerId) {
             $this->error('Failed to create customer account', 500);
@@ -201,11 +187,6 @@ class CustomerController extends Controller
 
         if (!$customer) {
             $this->error('Invalid email or password', 401);
-        }
-
-        // Check if guest account
-        if ($customer['is_guest']) {
-            $this->error('This email is registered as guest. Please complete registration first.', 400);
         }
 
         // Verify password
@@ -457,10 +438,6 @@ class CustomerController extends Controller
         // Verify store matches
         if ($authUser['store_id'] != $storeId) {
             $this->error('Invalid store', 403);
-        }
-
-        if ($authUser['is_guest']) {
-            $this->error('Guest accounts cannot change password', 400);
         }
 
         $data = json_decode(file_get_contents('php://input'), true);

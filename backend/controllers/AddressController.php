@@ -74,7 +74,7 @@ class AddressController extends Controller
             $this->error('Invalid store', 403);
         }
 
-        $addresses = $this->addressModel->getByCustomer($customerPayload['customer_id']);
+        $addresses = $this->addressModel->getByCustomer($customerPayload['id']);
 
         $this->success($addresses);
     }
@@ -125,7 +125,7 @@ class AddressController extends Controller
 
         $address = $this->addressModel->find($id);
 
-        if (!$address || $address['customer_id'] != $customerPayload['customer_id']) {
+        if (!$address || $address['customer_id'] != $customerPayload['id']) {
             $this->error('Address not found', 404);
         }
 
@@ -197,7 +197,7 @@ class AddressController extends Controller
         }
 
         // Add customer_id to data
-        $data['customer_id'] = $customerPayload['customer_id'];
+        $data['customer_id'] = $customerPayload['id'];
 
         // Set default values
         $data['address_type'] = $data['address_type'] ?? 'shipping';
@@ -275,14 +275,14 @@ class AddressController extends Controller
 
         // Validate ownership
         $address = $this->addressModel->find($id);
-        if (!$address || $address['customer_id'] != $customerPayload['customer_id']) {
+        if (!$address || $address['customer_id'] != $customerPayload['id']) {
             $this->error('Address not found', 404);
         }
 
         // Update address
         $success = $this->addressModel->updateAddress(
             $id,
-            $customerPayload['customer_id'],
+            $customerPayload['id'],
             $data
         );
 
@@ -341,7 +341,7 @@ class AddressController extends Controller
 
         $success = $this->addressModel->deleteAddress(
             $id,
-            $customerPayload['customer_id']
+            $customerPayload['id']
         );
 
         if (!$success) {
@@ -398,11 +398,11 @@ class AddressController extends Controller
 
         // Validate ownership
         $address = $this->addressModel->find($id);
-        if (!$address || $address['customer_id'] != $customerPayload['customer_id']) {
+        if (!$address || $address['customer_id'] != $customerPayload['id']) {
             $this->error('Address not found', 404);
         }
 
-        $success = $this->addressModel->setAsDefault($id, $customerPayload['customer_id']);
+        $success = $this->addressModel->setAsDefault($id, $customerPayload['id']);
 
         if (!$success) {
             $this->error('Failed to set default address', 500);

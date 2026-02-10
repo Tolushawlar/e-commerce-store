@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart - {{store_name}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -16,49 +16,44 @@
                         "accent": "{{accent_color}}",
                     },
                     fontFamily: {
-                        "display": ["Poppins", "sans-serif"]
+                        "serif": ["Playfair Display", "serif"],
+                        "sans": ["Lato", "sans-serif"]
                     },
                 },
             },
         }
     </script>
 </head>
-<body class="bg-gray-50 font-display text-gray-900 antialiased">
-    <!-- Bold Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex items-center justify-between h-20">
-                <div class="flex items-center gap-3">
-                    <a href="index.html" class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white text-2xl font-bold">bolt</span>
-                        </div>
-                        <span class="text-2xl font-black text-primary uppercase tracking-tight">{{store_name}}</span>
-                    </a>
-                </div>
-                
-                <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">NEW IN</a>
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">TRENDING</a>
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">SALE</a>
+<body class="bg-neutral-50 text-gray-900 antialiased">
+    <!-- Elegant Header -->
+    <header class="bg-primary text-white">
+        <div class="max-w-[1400px] mx-auto px-8">
+            <div class="flex items-center justify-between h-24">
+                <nav class="hidden lg:flex items-center gap-8 text-sm tracking-widest font-light">
+                    <a href="index.html" class="hover:text-accent transition-colors">COLLECTIONS</a>
+                    <a href="index.html" class="hover:text-accent transition-colors">NEW ARRIVALS</a>
                 </nav>
                 
-                <div class="flex items-center gap-2">
-                    <a href="index.html" class="px-4 py-2 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition-all">
+                <div class="flex-1 flex justify-center">
+                    <h1 class="text-3xl font-serif font-light tracking-wider">{{store_name}}</h1>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <a href="index.html" class="hover:text-accent transition-colors">
                         <span class="material-symbols-outlined">arrow_back</span>
                     </a>
-                    <button class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
-                        <span class="material-symbols-outlined">shopping_cart</span>
+                    <button class="hover:text-accent transition-colors">
+                        <span class="material-symbols-outlined">shopping_bag</span>
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-8">
-        <div class="mb-8">
-            <h1 class="text-4xl font-black text-gray-900 mb-2">SHOPPING CART</h1>
-            <div class="w-20 h-1 bg-primary rounded-full"></div>
+    <main class="max-w-[1400px] mx-auto px-8 py-16">
+        <div class="mb-12 text-center">
+            <h1 class="text-4xl font-serif font-light text-gray-900 mb-4">Shopping Cart</h1>
+            <div class="w-24 h-px bg-accent mx-auto"></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -66,58 +61,57 @@
             <div class="lg:col-span-2">
                 <div id="cart-items" class="space-y-6">
                     <div class="flex items-center justify-center py-12">
-                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                        <div class="animate-spin rounded-full h-10 w-10 border-b border-primary"></div>
                     </div>
                 </div>
 
                 <!-- Empty State -->
-                <div id="empty-cart" class="hidden bg-white rounded-2xl p-12 text-center shadow-md">
-                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <span class="material-symbols-outlined text-gray-400 text-4xl">shopping_cart</span>
+                <div id="empty-cart" class="hidden bg-white border border-gray-200 p-12 text-center">
+                    <div class="w-16 h-16 border border-gray-200 flex items-center justify-center mx-auto mb-6">
+                        <span class="material-symbols-outlined text-gray-400 text-2xl">shopping_bag</span>
                     </div>
-                    <h3 class="text-2xl font-black text-gray-900 mb-3">CART IS EMPTY</h3>
-                    <p class="text-gray-600 mb-8 font-semibold">Add some amazing products to get started!</p>
-                    <a href="index.html" class="inline-flex items-center gap-3 px-8 py-4 bg-primary text-white font-black rounded-xl hover:scale-105 transition-transform shadow-lg">
-                        <span class="material-symbols-outlined">bolt</span>
-                        <span>START SHOPPING</span>
+                    <h3 class="text-2xl font-serif font-light text-gray-900 mb-3">Your Cart is Empty</h3>
+                    <p class="text-gray-600 mb-8 font-light">Discover our curated collection</p>
+                    <a href="index.html" class="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-light tracking-wider hover:bg-primary/90 transition-all">
+                        <span>EXPLORE COLLECTION</span>
                     </a>
                 </div>
             </div>
 
             <!-- Order Summary -->
             <div class="lg:col-span-1">
-                <div id="order-summary" class="bg-white rounded-2xl shadow-md p-8 sticky top-24">
-                    <h2 class="text-2xl font-black text-gray-900 mb-6">ORDER SUMMARY</h2>
+                <div id="order-summary" class="bg-white border border-gray-200 p-8 sticky top-24">
+                    <h2 class="text-2xl font-serif font-light text-gray-900 mb-6">Order Summary</h2>
                     
-                    <div class="space-y-4 mb-8">
-                        <div class="flex justify-between text-gray-600 font-semibold">
-                            <span>Subtotal</span>
+                    <div class="space-y-3 mb-8 text-sm">
+                        <div class="flex justify-between font-light">
+                            <span class="text-gray-600">Subtotal</span>
                             <span id="subtotal">₦0.00</span>
                         </div>
-                        <div class="flex justify-between text-gray-600 font-semibold">
-                            <span>Shipping</span>
+                        <div class="flex justify-between font-light">
+                            <span class="text-gray-600">Shipping</span>
                             <span id="shipping">₦1,500.00</span>
                         </div>
-                        <div class="flex justify-between text-gray-600 font-semibold">
-                            <span>Tax (7.5%)</span>
+                        <div class="flex justify-between font-light">
+                            <span class="text-gray-600">Tax (7.5%)</span>
                             <span id="tax">₦0.00</span>
                         </div>
-                        <div class="border-t-2 border-gray-200 pt-4 flex justify-between text-xl font-black text-gray-900">
-                            <span>TOTAL</span>
-                            <span id="total">₦0.00</span>
+                        <div class="border-t border-gray-200 pt-3 flex justify-between text-base">
+                            <span class="font-serif">Total</span>
+                            <span id="total" class="font-serif">₦0.00</span>
                         </div>
                     </div>
 
-                    <a href="#" id="checkout-btn" class="block w-full text-center px-8 py-4 bg-primary text-white font-black rounded-xl hover:scale-105 transition-transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-                        CHECKOUT NOW
+                    <a href="#" id="checkout-btn" class="block w-full text-center px-8 py-3 bg-primary text-white font-light tracking-wider hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        PROCEED TO CHECKOUT
                     </a>
 
                     <div class="mt-8 pt-6 border-t border-gray-200">
-                        <div class="flex items-start gap-3 text-sm">
-                            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span class="material-symbols-outlined text-green-600 text-sm">verified</span>
+                        <div class="flex items-start gap-3 text-xs">
+                            <div class="w-5 h-5 border border-green-500 flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined text-green-600 text-xs">check</span>
                             </div>
-                            <p class="text-gray-600 font-semibold">Secure checkout with industry-standard encryption</p>
+                            <p class="text-gray-600 font-light">Secure checkout with industry-standard encryption</p>
                         </div>
                     </div>
                 </div>
@@ -156,66 +150,111 @@
         </div>
     </main>
 
-    <!-- Bold Footer -->
-    <footer class="bg-gray-900 text-white py-12 mt-16">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <!-- Elegant Footer -->
+    <footer class="bg-neutral-900 text-white py-16">
+        <div class="max-w-[1400px] mx-auto px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                            <span class="material-symbols-outlined text-primary font-bold">bolt</span>
-                        </div>
-                        <span class="text-xl font-black uppercase">{{store_name}}</span>
-                    </div>
-                    <p class="text-sm text-gray-400">Your premium marketplace for amazing products</p>
+                    <h3 class="text-2xl font-serif font-light mb-6">{{store_name}}</h3>
+                    <p class="text-sm font-light text-gray-400 leading-relaxed">
+                        Your premium marketplace for amazing products
+                    </p>
                 </div>
                 <div>
-                    <h4 class="font-bold text-accent mb-4">SHOP</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="index.html" class="hover:text-white transition-colors">All Products</a></li>
-                        <li><a href="index.html" class="hover:text-white transition-colors">Best Sellers</a></li>
-                        <li><a href="index.html" class="hover:text-white transition-colors">Sale</a></li>
+                    <h4 class="text-sm tracking-widest mb-6 text-accent">CUSTOMER CARE</h4>
+                    <ul class="space-y-3 text-sm font-light text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Shipping & Returns</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Size Guide</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Care Instructions</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-accent mb-4">ACCOUNT</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
+                    <h4 class="text-sm tracking-widest mb-6 text-accent">ABOUT</h4>
+                    <ul class="space-y-3 text-sm font-light text-gray-400">
+                        <li><a href="index.html" class="hover:text-white transition-colors">Our Story</a></li>
                         <li><a href="profile.html" class="hover:text-white transition-colors">My Profile</a></li>
                         <li><a href="orders.html" class="hover:text-white transition-colors">My Orders</a></li>
                         <li><a href="login.html" class="hover:text-white transition-colors">Login</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-accent mb-4">CONNECT</h4>
-                    <div class="flex gap-3">
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
-                            <span class="material-symbols-outlined">tag</span>
+                    <h4 class="text-sm tracking-widest mb-6 text-accent">FOLLOW US</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 border border-white/20 flex items-center justify-center hover:border-accent hover:text-accent transition-all">
+                            <span class="material-symbols-outlined text-sm">tag</span>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
-                            <span class="material-symbols-outlined">share</span>
+                        <a href="#" class="w-10 h-10 border border-white/20 flex items-center justify-center hover:border-accent hover:text-accent transition-all">
+                            <span class="material-symbols-outlined text-sm">language</span>
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="border-t border-white/10 pt-8 text-center">
-                <p class="text-xs text-gray-500">© 2024 {{store_name}}. All rights reserved.</p>
+            <div class="border-t border-white/10 pt-8 flex items-center justify-between text-xs font-light text-gray-500">
+                <p>© 2024 {{store_name}}. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
             </div>
         </div>
     </footer>
 
+    <script>
+        // Initialize global configuration
+        window.API_BASE_URL = window.location.origin;
+        window.storeConfig = {
+            store_id: {{store_id}},
+        apiUrl: window.location.origin + '/api'
+        };
+    </script>
     <script src="cart.js"></script>
     <script src="customer-auth.js"></script>
+    <!-- Initialize Cart Badge -->
     <script>
-        const storeConfig = {
-            store_id: {{store_id}},
-            apiUrl: window.location.origin + '/api'
-        };
-        window.storeConfig = storeConfig;
+        // Global cart badge update function
+        async function updateCartBadge() {
+            try {
+                const badge = document.getElementById('cart-badge');
+                if (!badge) return;
 
+                const storeId = window.storeConfig.store_id;
+                const cartKey = `cart_${storeId}`;
+
+                // Check if user is authenticated
+                const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+
+                if (isAuthenticated && typeof window.CartService !== 'undefined') {
+                    // For authenticated users, get count from API
+                    const cartService = window.CartService;
+                    const cartItems = await cartService.getCartWithDetails(storeId, true);
+                    const count = cartItems.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                    badge.textContent = count;
+                    badge.classList.toggle('hidden', count === 0);
+                } else {
+                    // For guest users, get count from localStorage
+                    const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                    const count = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                    badge.textContent = count;
+                    badge.classList.toggle('hidden', count === 0);
+                }
+            } catch (error) {
+                console.error('Error updating cart badge:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            await updateCartBadge();
+            window.addEventListener('storage', updateCartBadge);
+            window.addEventListener('cartUpdated', updateCartBadge);
+        });
+    </script>
+    <script>
+        const cartService = window.CartService;
         document.getElementById('checkout-btn').addEventListener('click', (e) => {
             e.preventDefault();
             if (typeof CustomerAuth !== 'undefined' && !CustomerAuth.isAuthenticated()) {
-                showToast('Please login to proceed with checkout');
+                showToast('Please sign in to proceed with checkout');
                 setTimeout(() => {
                     window.location.href = `login.html?redirect=${encodeURIComponent('checkout.html')}`;
                 }, 1500);
@@ -225,7 +264,10 @@
         });
 
         async function loadCart() {
-            const cartItems = await CartService.getCartWithDetails();
+            console.log('[Cart Page] Loading cart...');
+            console.log('[Cart Page] Auth status:', typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated());
+            const cartItems = await cartService.getCartWithDetails(storeConfig.store_id);
+            console.log('[Cart Page] Cart items loaded:', cartItems);
             const cartContainer = document.getElementById('cart-items');
             const emptyCart = document.getElementById('empty-cart');
             const checkoutBtn = document.getElementById('checkout-btn');
@@ -244,41 +286,41 @@
                 const subtotal = product.price * item.quantity;
 
                 return `
-                    <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="bg-white border border-gray-200 p-6 hover:border-gray-300 transition-all">
                         <div class="flex gap-6">
-                            <div class="w-32 h-32 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden">
-                                ${image ? `<img src="${image}" alt="${product.name}" class="w-full h-full object-cover">` : 
-                                `<div class="w-full h-full flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-gray-400 text-2xl">inventory_2</span>
+                            <div class="w-28 h-28 flex-shrink-0 bg-neutral-50 overflow-hidden">
+                                ${image ? `<img src="${image}" alt="${product.name}" class="w-full h-full object-cover">` :
+                        `<div class="w-full h-full flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-gray-400">inventory_2</span>
                                 </div>`}
                             </div>
                             <div class="flex-1">
                                 <div class="flex justify-between items-start mb-4">
                                     <div>
-                                        <h3 class="text-xl font-black text-gray-900">${product.name}</h3>
-                                        <p class="text-sm text-gray-500 font-semibold mt-1">${product.category_name || ''}</p>
-                                        <p class="text-2xl font-black text-primary mt-2">${CartService.formatCurrency(product.price)}</p>
+                                        <h3 class="text-lg font-serif text-gray-900">${product.name}</h3>
+                                        <p class="text-xs text-gray-500 font-light mt-1">${product.category_name || ''}</p>
+                                        <p class="text-xl font-light text-gray-900 mt-2">${cartService.formatCurrency(product.price)}</p>
                                     </div>
-                                    <button onclick="removeItem(${product.id})" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
-                                        <span class="material-symbols-outlined">delete</span>
+                                    <button onclick="removeItem(${product.id})" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                                        <span class="material-symbols-outlined text-sm">close</span>
                                     </button>
                                 </div>
                                 <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-4">
-                                        <button onclick="decrementQuantity(${product.id}, ${item.quantity})" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center font-bold transition-colors">
-                                            <span class="material-symbols-outlined">remove</span>
+                                    <div class="flex items-center gap-3">
+                                        <button onclick="decrementQuantity(${product.id}, ${item.quantity})" class="w-8 h-8 border border-gray-200 hover:border-gray-400 flex items-center justify-center font-light transition-colors">
+                                            <span class="material-symbols-outlined text-sm">remove</span>
                                         </button>
-                                        <span class="w-16 text-center font-black text-lg">${item.quantity}</span>
-                                        <button onclick="incrementQuantity(${product.id}, ${item.quantity}, ${product.stock_quantity})" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center font-bold transition-colors">
-                                            <span class="material-symbols-outlined">add</span>
+                                        <span class="w-12 text-center font-light">${item.quantity}</span>
+                                        <button onclick="incrementQuantity(${product.id}, ${item.quantity}, ${product.stock_quantity})" class="w-8 h-8 border border-gray-200 hover:border-gray-400 flex items-center justify-center font-light transition-colors">
+                                            <span class="material-symbols-outlined text-sm">add</span>
                                         </button>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-sm text-gray-500 font-semibold">SUBTOTAL</p>
-                                        <p class="text-2xl font-black text-primary">${CartService.formatCurrency(subtotal)}</p>
+                                        <p class="text-xs text-gray-500 font-light tracking-wide">Subtotal</p>
+                                        <p class="text-lg font-light text-gray-900">${cartService.formatCurrency(subtotal)}</p>
                                     </div>
                                 </div>
-                                ${product.stock_quantity < 10 ? `<p class="text-sm text-orange-600 font-semibold mt-3 flex items-center gap-1"><span class="material-symbols-outlined text-sm">warning</span>Only ${product.stock_quantity} left in stock</p>` : ''}
+                                ${product.stock_quantity < 10 ? `<p class="text-xs text-orange-600 font-light mt-3 flex items-center gap-1"><span class="material-symbols-outlined text-xs">info</span>Only ${product.stock_quantity} remaining</p>` : ''}
                             </div>
                         </div>
                     </div>
@@ -289,43 +331,47 @@
         }
 
         async function updateTotals() {
-            const totals = await CartService.calculateTotals();
-            
-            document.getElementById('subtotal').textContent = CartService.formatCurrency(totals.subtotal);
-            document.getElementById('shipping').textContent = CartService.formatCurrency(totals.shipping);
-            document.getElementById('tax').textContent = CartService.formatCurrency(totals.tax);
-            document.getElementById('total').textContent = CartService.formatCurrency(totals.total);
+            const totals = await cartService.calculateTotals();
+
+            document.getElementById('subtotal').textContent = cartService.formatCurrency(totals.subtotal);
+            document.getElementById('total').textContent = cartService.formatCurrency(totals.total);
         }
 
-        function incrementQuantity(productId, currentQty, maxStock) {
+        async function incrementQuantity(productId, currentQty, maxStock) {
             if (currentQty >= maxStock) {
                 showToast('Maximum stock reached');
                 return;
             }
-            CartService.updateQuantity(productId, currentQty + 1);
-            loadCart();
+            await cartService.updateQuantity(productId, currentQty + 1);
+            await loadCart();
+            updateCartBadge();
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
         }
 
-        function decrementQuantity(productId, currentQty) {
+        async function decrementQuantity(productId, currentQty) {
             if (currentQty <= 1) {
-                removeItem(productId);
+                await removeItem(productId);
                 return;
             }
-            CartService.updateQuantity(productId, currentQty - 1);
-            loadCart();
+            await cartService.updateQuantity(productId, currentQty - 1);
+            await loadCart();
+            updateCartBadge();
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
         }
 
-        function removeItem(productId) {
+        async function removeItem(productId) {
             if (confirm('Remove this item from your cart?')) {
-                CartService.removeItem(productId);
-                loadCart();
+                await cartService.removeItem(productId);
+                await loadCart();
+                updateCartBadge();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
                 showToast('Item removed from cart');
             }
         }
 
         function showToast(message) {
             const toast = document.createElement('div');
-            toast.className = 'fixed top-4 right-4 bg-primary text-white px-6 py-3 rounded-xl shadow-lg z-50 transition-opacity duration-300 font-bold';
+            toast.className = 'fixed top-4 right-4 bg-primary text-white px-6 py-3 border border-white/20 shadow-lg z-50 transition-opacity duration-300 font-light tracking-wide';
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => {

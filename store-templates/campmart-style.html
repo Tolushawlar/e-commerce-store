@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>{{store_name}} | Custom Ecommerce Store</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -24,7 +27,14 @@
             },
         }
     </script>
+    <style>
+        :root {
+            --primary: {{primary_color}};
+            --accent: {{accent_color}};
+        }
+    </style>
 </head>
+
 <body class="bg-white font-display text-slate-900 antialiased">
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-white border-b border-slate-100">
@@ -35,25 +45,27 @@
                 </div>
                 <span class="text-2xl font-extrabold tracking-tight text-primary uppercase">{{store_name}}</span>
             </a>
-            
-            <div class="hidden lg:flex flex-1 max-w-2xl items-center bg-slate-50 rounded-full border border-slate-200 p-1">
+
+            <div
+                class="hidden lg:flex flex-1 max-w-2xl items-center bg-slate-50 rounded-full border border-slate-200 p-1">
                 <div class="flex-1 flex items-center px-4">
                     <span class="material-symbols-outlined text-slate-400 mr-2">search</span>
-                    <input class="w-full bg-transparent border-none focus:ring-0 text-sm placeholder:text-slate-400" placeholder="Search products..." type="text"/>
+                    <input id="search-input"
+                        class="w-full bg-transparent border-none focus:ring-0 text-sm placeholder:text-slate-400"
+                        placeholder="Search products..." type="text" />
                 </div>
-                <button class="bg-primary text-white p-2 rounded-full mr-1">
+                <button id="search-button" class="bg-primary text-white p-2 rounded-full mr-1">
                     <span class="material-symbols-outlined text-xl">search</span>
                 </button>
             </div>
-            
+
             <div class="flex items-center gap-2">
-                <button class="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-full relative">
+                <a href="cart.html"
+                    class="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-full relative">
                     <span class="material-symbols-outlined">shopping_cart</span>
-                    <span class="absolute top-2.5 right-2.5 size-2 bg-accent rounded-full border-2 border-white"></span>
-                </button>
-                <button class="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-full">
-                    <span class="material-symbols-outlined">person</span>
-                </button>
+                    <span id="cart-badge"
+                        class="absolute -top-1 -right-1 px-2 py-0.5 bg-accent text-primary text-xs font-black rounded-full hidden">0</span>
+                </a>
             </div>
         </div>
     </header>
@@ -64,16 +76,19 @@
             <div class="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/40 to-primary/80"></div>
             <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
                 <h1 class="text-5xl md:text-7xl font-extrabold text-white leading-none mb-8">
-                    Welcome to <br/><span class="text-accent underline decoration-4 underline-offset-8">{{store_name}}</span>
+                    Welcome to <br /><span
+                        class="text-accent underline decoration-4 underline-offset-8">{{store_name}}</span>
                 </h1>
                 <p class="text-xl md:text-2xl text-slate-100/90 mb-12 max-w-2xl mx-auto font-light">
                     {{store_description}}
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-                    <button class="bg-accent text-primary px-12 py-4 rounded-lg font-bold hover:brightness-105 transition-all text-lg w-full sm:w-auto">
+                    <button
+                        class="bg-accent text-primary px-12 py-4 rounded-lg font-bold hover:brightness-105 transition-all text-lg w-full sm:w-auto">
                         Shop Now
                     </button>
-                    <button class="bg-white/10 text-white border border-white/20 px-12 py-4 rounded-lg font-bold hover:bg-white/20 backdrop-blur-md transition-all text-lg w-full sm:w-auto">
+                    <button
+                        class="bg-white/10 text-white border border-white/20 px-12 py-4 rounded-lg font-bold hover:bg-white/20 backdrop-blur-md transition-all text-lg w-full sm:w-auto">
                         Learn More
                     </button>
                 </div>
@@ -82,35 +97,17 @@
 
         <div class="max-w-[1440px] mx-auto px-6 py-12">
             <!-- Categories -->
-            <section class="mb-20">
+            <section id="categories-section" class="mb-20">
                 <h2 class="text-3xl font-extrabold text-primary mb-8">Shop by Category</h2>
-                <div class="flex gap-4 overflow-x-auto pb-4">
-                    <div class="flex flex-col items-center gap-3 p-4 rounded-2xl border border-slate-100 bg-white hover:border-primary hover:shadow-md transition-all cursor-pointer min-w-[140px]">
-                        <div class="size-14 rounded-full bg-slate-50 flex items-center justify-center text-primary">
-                            <span class="material-symbols-outlined text-3xl">devices</span>
-                        </div>
-                        <span class="text-sm font-bold">Electronics</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-3 p-4 rounded-2xl border border-slate-100 bg-white hover:border-primary hover:shadow-md transition-all cursor-pointer min-w-[140px]">
-                        <div class="size-14 rounded-full bg-slate-50 flex items-center justify-center text-primary">
-                            <span class="material-symbols-outlined text-3xl">apparel</span>
-                        </div>
-                        <span class="text-sm font-bold">Fashion</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-3 p-4 rounded-2xl border border-slate-100 bg-white hover:border-primary hover:shadow-md transition-all cursor-pointer min-w-[140px]">
-                        <div class="size-14 rounded-full bg-slate-50 flex items-center justify-center text-primary">
-                            <span class="material-symbols-outlined text-3xl">chair</span>
-                        </div>
-                        <span class="text-sm font-bold">Furniture</span>
-                    </div>
+                <div id="categories-container" class="flex gap-4 overflow-x-auto pb-4">
+                    <!-- Categories will be loaded here -->
                 </div>
             </section>
 
             <!-- Featured Products -->
-            <section class="mb-20">
+            <section class="mb-20" id="products-section">
                 <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-3xl font-extrabold text-primary">Featured Products</h2>
-                    <a href="/products" class="text-primary font-semibold hover:underline">View All</a>
+                    <h2 id="products-section-title" class="text-3xl font-extrabold text-primary">Featured Products</h2>
                 </div>
                 <div id="products-container">
                     <!-- Products will be loaded here -->
@@ -149,18 +146,6 @@
                         <h3 class="font-bold text-slate-900 mb-2">24/7 Support</h3>
                         <p class="text-sm text-slate-600">Always here to help</p>
                     </div>
-                </div>
-            </section>
-
-            <!-- Newsletter -->
-            <section class="mb-20 bg-primary rounded-3xl p-12 text-center text-white">
-                <h2 class="text-3xl font-extrabold mb-4">Stay Updated</h2>
-                <p class="text-lg mb-8 opacity-90">Subscribe to get special offers and updates</p>
-                <div class="flex gap-4 max-w-md mx-auto">
-                    <input type="email" placeholder="Enter your email" class="flex-1 px-6 py-3 rounded-lg text-slate-900 focus:outline-none">
-                    <button class="bg-accent text-primary px-8 py-3 rounded-lg font-bold hover:brightness-105">
-                        Subscribe
-                    </button>
                 </div>
             </section>
         </div>
@@ -202,10 +187,12 @@
                 <div>
                     <h4 class="font-bold text-accent text-lg mb-4">Connect</h4>
                     <div class="flex gap-4">
-                        <a href="#" class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-accent transition-colors">
+                        <a href="#"
+                            class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-accent transition-colors">
                             <span class="material-symbols-outlined text-sm">public</span>
                         </a>
-                        <a href="#" class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-accent transition-colors">
+                        <a href="#"
+                            class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-accent transition-colors">
                             <span class="material-symbols-outlined text-sm">alternate_email</span>
                         </a>
                     </div>
@@ -217,46 +204,119 @@
         </div>
     </footer>
 
-    <!-- Store JavaScript for product loading -->
+    <!-- Store Configuration (MUST be before other scripts) -->
+    <script>
+        window.API_BASE_URL = window.location.origin;
+        window.storeConfig = {
+            store_id: {{store_id}},
+        apiUrl: window.location.origin + '/api',
+            groupByCategory: {{group_by_category}},
+        productGridColumns: {{product_grid_columns}},
+        showCategoryImages: {{show_category_images}}
+        };
+    </script>
+
+    <!-- JavaScript files (copied to store folder during generation) -->
     <script src="customer-auth.js"></script>
+    <script src="cart.js"></script>
     <script src="profile-header.js"></script>
     <script src="store.js"></script>
+
+    <!-- Initialize Cart Badge -->
     <script>
-        // @ts-nocheck - Template placeholders will be replaced during generation
-        // Initialize store with configuration
-        const storeConfig = {
-            storeId: {{store_id}},
-            apiUrl: window.location.origin + '/api',
-            groupByCategory: false,
-            productGridColumns: 4,
-            showCategoryImages: false
-        };
-        
-        // Load products when page loads
-        if (typeof loadProducts === 'function') {
-            loadProducts(storeConfig);
-        } else {
-            // Fallback: Load featured products
-            fetch('/api/products/featured')
-                .then(response => response.json())
-                .then(products => {
-                    const container = document.getElementById('featured-products');
-                    container.innerHTML = products.map(product => `
-                        <a href="product.html?id=${product.id}" class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow block">
-                            <div class="aspect-square bg-gray-200">
-                                <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-bold text-slate-800 mb-2">${product.name}</h3>
-                                <p class="text-primary font-black text-lg">₦${product.price}</p>
-                                <button onclick="event.preventDefault(); event.stopPropagation();" class="w-full mt-3 bg-primary text-white py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors">
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </a>
-                    `).join('');
-                });
-        }
+        document.addEventListener('DOMContentLoaded', async function () {
+            const storeId = window.storeConfig.store_id;
+            const cartKey = `cart_${storeId}`;
+
+            async function updateCartBadge() {
+                try {
+                    const badge = document.getElementById('cart-badge');
+                    if (!badge) return;
+
+                    // Check if user is authenticated
+                    const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+                    console.log('[Cart Badge] Auth status:', isAuthenticated);
+
+                    if (isAuthenticated) {
+                        // For authenticated users, get count from API
+                        const cartService = window.CartService;
+                        const cartItems = await cartService.getCartWithDetails(storeId, true);
+                        console.log('[Cart Badge] API cart items:', cartItems);
+                        const count = cartItems.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    } else {
+                        // For guest users, get count from localStorage
+                        const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                        console.log('[Cart Badge] LocalStorage cart:', cart);
+                        const count = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    }
+                } catch (error) {
+                    console.error('Error updating cart badge:', error);
+                }
+            }
+
+            await updateCartBadge();
+            window.addEventListener('storage', updateCartBadge);
+            window.addEventListener('cartUpdated', updateCartBadge);
+        });
+    </script>
+
+    <!-- Load Products and Categories -->
+    <script>
+        const storeConfig = window.storeConfig;
+
+        // Load categories and products when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            // Only load and show categories if groupByCategory is enabled
+            if (storeConfig.groupByCategory && typeof loadCategories === 'function') {
+                console.log('[Store] Loading categories - groupByCategory is enabled');
+                loadCategories(storeConfig.store_id);
+            } else {
+                // Hide categories section if not grouping by category
+                console.log('[Store] Hiding categories - groupByCategory is disabled');
+                const categoriesSection = document.getElementById('categories-section');
+                if (categoriesSection) {
+                    categoriesSection.style.display = 'none';
+                }
+            }
+
+            // Load products
+            if (typeof loadProducts === 'function') {
+                loadProducts(storeConfig);
+            } else {
+                // Fallback: Load featured products
+                fetch('/api/products/featured')
+                    .then(response => response.json())
+                    .then(products => {
+                        const container = document.getElementById('products-container');
+                        if (container) {
+                            container.innerHTML = products.map(product => `
+                                <a href="product.html?id=${product.id}" class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow block">
+                                    <div class="aspect-square bg-gray-200">
+                                        <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-bold text-slate-800 mb-2">${product.name}</h3>
+                                        <p class="text-primary font-black text-lg">₦${product.price}</p>
+                                        <button onclick="event.preventDefault(); event.stopPropagation();" class="w-full mt-3 bg-primary text-white py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors">
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </a>
+                            `).join('');
+                        }
+                    });
+            }
+
+            // Initialize search listeners
+            if (typeof initSearchListeners === 'function') {
+                initSearchListeners();
+            }
+        });
     </script>
 </body>
+
 </html>

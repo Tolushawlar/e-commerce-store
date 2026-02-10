@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>{{store_name}} - Bold & Modern</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
     <script>
         tailwind.config = {
             theme: {
@@ -22,29 +25,40 @@
             },
         }
     </script>
+    <style>
+        :root {
+            --primary: {{primary_color}};
+            --accent: {{accent_color}};
+        }
+    </style>
 </head>
+
 <body class="bg-gray-50 font-display text-gray-900 antialiased">
     <!-- Bold Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
                         <span class="material-symbols-outlined text-white text-2xl font-bold">bolt</span>
                     </div>
                     <span class="text-2xl font-black text-primary uppercase tracking-tight">{{store_name}}</span>
                 </div>
-                
+
                 <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
                     <a href="#" class="text-gray-700 hover:text-primary transition-colors">NEW IN</a>
                     <a href="#" class="text-gray-700 hover:text-primary transition-colors">TRENDING</a>
                     <a href="#" class="text-gray-700 hover:text-primary transition-colors">SALE</a>
                 </nav>
-                
+
                 <div class="flex items-center gap-2">
-                    <button class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
+                    <a href="cart.html"
+                        class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all relative">
                         <span class="material-symbols-outlined">shopping_cart</span>
-                    </button>
+                        <span id="cart-badge"
+                            class="absolute -top-1 -right-1 bg-accent text-primary text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold hidden">0</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -66,15 +80,17 @@
                             {{store_description}}
                         </p>
                         <div class="flex gap-4">
-                            <button class="px-8 py-4 bg-accent text-primary font-black rounded-xl hover:scale-105 transition-transform shadow-lg">
+                            <button
+                                class="px-8 py-4 bg-accent text-primary font-black rounded-xl hover:scale-105 transition-transform shadow-lg">
                                 SHOP NOW
                             </button>
-                            <button class="px-8 py-4 bg-white/20 text-white backdrop-blur-sm font-bold rounded-xl hover:bg-white/30 transition-colors border-2 border-white/30">
+                            <button
+                                class="px-8 py-4 bg-white/20 text-white backdrop-blur-sm font-bold rounded-xl hover:bg-white/30 transition-colors border-2 border-white/30">
                                 EXPLORE
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="hidden lg:flex items-center justify-center">
                         <div class="relative">
                             <div class="w-80 h-80 bg-accent/30 rounded-full blur-3xl absolute -top-10 -right-10"></div>
@@ -119,7 +135,7 @@
                     <h2 class="text-4xl font-black text-gray-900 mb-3">FEATURED COLLECTION</h2>
                     <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
                 </div>
-                
+
                 <div id="products-container">
                     <!-- Products will be loaded here -->
                 </div>
@@ -130,28 +146,32 @@
         <section class="py-16 bg-white">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div class="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-8 text-center hover:scale-105 transition-transform">
+                    <div
+                        class="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-8 text-center hover:scale-105 transition-transform">
                         <div class="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
                             <span class="material-symbols-outlined text-white text-3xl">rocket_launch</span>
                         </div>
                         <h3 class="font-black text-gray-900 mb-2 uppercase tracking-wide">FAST SHIPPING</h3>
                         <p class="text-sm text-gray-600 font-semibold">Lightning-fast delivery</p>
                     </div>
-                    <div class="bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-8 text-center hover:scale-105 transition-transform">
+                    <div
+                        class="bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-8 text-center hover:scale-105 transition-transform">
                         <div class="w-16 h-16 bg-accent rounded-xl flex items-center justify-center mx-auto mb-4">
                             <span class="material-symbols-outlined text-primary text-3xl">verified</span>
                         </div>
                         <h3 class="font-black text-gray-900 mb-2 uppercase tracking-wide">AUTHENTIC</h3>
                         <p class="text-sm text-gray-600 font-semibold">100% genuine products</p>
                     </div>
-                    <div class="bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl p-8 text-center hover:scale-105 transition-transform">
+                    <div
+                        class="bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl p-8 text-center hover:scale-105 transition-transform">
                         <div class="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
                             <span class="material-symbols-outlined text-white text-3xl">autorenew</span>
                         </div>
                         <h3 class="font-black text-gray-900 mb-2 uppercase tracking-wide">EASY RETURNS</h3>
                         <p class="text-sm text-gray-600 font-semibold">Hassle-free returns</p>
                     </div>
-                    <div class="bg-gradient-to-br from-orange-100 to-orange-50 rounded-2xl p-8 text-center hover:scale-105 transition-transform">
+                    <div
+                        class="bg-gradient-to-br from-orange-100 to-orange-50 rounded-2xl p-8 text-center hover:scale-105 transition-transform">
                         <div class="w-16 h-16 bg-orange-600 rounded-xl flex items-center justify-center mx-auto mb-4">
                             <span class="material-symbols-outlined text-white text-3xl">support_agent</span>
                         </div>
@@ -191,9 +211,10 @@
             <div class="max-w-7xl mx-auto px-6 text-center text-white">
                 <h3 class="text-3xl font-black mb-4">JOIN THE MOVEMENT</h3>
                 <p class="text-lg mb-8 opacity-90">Get exclusive deals and early access to new drops</p>
-                <button class="px-10 py-4 bg-accent text-primary font-black rounded-xl hover:scale-105 transition-transform shadow-lg">
+                <a href="login.html"
+                    class="px-10 py-4 bg-accent text-primary font-black rounded-xl hover:scale-105 transition-transform shadow-lg">
                     SIGN UP NOW
-                </button>
+                </a>
             </div>
         </section>
     </main>
@@ -230,10 +251,12 @@
                 <div>
                     <h4 class="font-bold text-accent mb-4">CONNECT</h4>
                     <div class="flex gap-3">
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
+                        <a href="#"
+                            class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
                             <span class="material-symbols-outlined">tag</span>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
+                        <a href="#"
+                            class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
                             <span class="material-symbols-outlined">share</span>
                         </a>
                     </div>
@@ -245,21 +268,70 @@
         </div>
     </footer>
 
+    <!-- Store Configuration (MUST be before other scripts) -->
+    <script>
+        window.API_BASE_URL = window.location.origin;
+        window.storeConfig = {
+            store_id: {{store_id}},
+        apiUrl: window.location.origin + '/api',
+            groupByCategory: {{group_by_category}},
+        productGridColumns: {{product_grid_columns}},
+        showCategoryImages: {{show_category_images}}
+        };
+    </script>
+
+    <!-- JavaScript files (copied to store folder during generation) -->
     <script src="customer-auth.js"></script>
+    <script src="cart.js"></script>
     <script src="profile-header.js"></script>
     <script src="store.js"></script>
+
+    <!-- Initialize Cart Badge -->
     <script>
-        // @ts-nocheck - Template placeholders will be replaced during generation
-        const storeConfig = {
-            storeId: {{store_id}},
-            apiUrl: window.location.origin + '/api',
-            groupByCategory: false,
-            productGridColumns: 4,
-            showCategoryImages: false
-        };
-        
+        document.addEventListener('DOMContentLoaded', async function () {
+            const storeId = window.storeConfig.store_id;
+            const cartKey = `cart_${storeId}`;
+
+            async function updateCartBadge() {
+                try {
+                    const badge = document.getElementById('cart-badge');
+                    if (!badge) return;
+
+                    // Check if user is authenticated
+                    const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+                    console.log('[Cart Badge] Auth status:', isAuthenticated);
+
+                    if (isAuthenticated) {
+                        // For authenticated users, get count from API
+                        const cartService = window.CartService;
+                        const cartItems = await cartService.getCartWithDetails(storeId, true);
+                        console.log('[Cart Badge] API cart items:', cartItems);
+                        const count = cartItems.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    } else {
+                        // For guest users, get count from localStorage
+                        const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                        console.log('[Cart Badge] LocalStorage cart:', cart);
+                        const count = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    }
+                } catch (error) {
+                    console.error('Error updating cart badge:', error);
+                }
+            }
+
+            await updateCartBadge();
+            window.addEventListener('storage', updateCartBadge);
+            window.addEventListener('cartUpdated', updateCartBadge);
+        });
+    </script>
+
+    <!-- Load Products -->
+    <script>
         if (typeof loadProducts === 'function') {
-            loadProducts(storeConfig);
+            loadProducts(window.storeConfig);
         } else {
             fetch('/api/products/featured')
                 .then(response => response.json())
@@ -280,4 +352,5 @@
         }
     </script>
 </body>
+
 </html>

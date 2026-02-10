@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - {{store_name}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -16,43 +19,54 @@
                         "accent": "{{accent_color}}",
                     },
                     fontFamily: {
-                        "display": ["Poppins", "sans-serif"]
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
                     },
                 },
             },
         }
     </script>
     <style>
-        .step-active { color: var(--tw-color-primary); border-color: var(--tw-color-primary); }
-        .step-complete { background-color: var(--tw-color-primary); color: white; }
+        .step-active {
+            color: var(--tw-color-primary);
+            border-color: var(--tw-color-primary);
+        }
+
+        .step-complete {
+            background-color: var(--tw-color-primary);
+            color: white;
+        }
     </style>
 </head>
-<body class="bg-gray-50 font-display text-gray-900 antialiased">
-    <!-- Bold Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
+
+<body class="bg-white font-display text-slate-900 antialiased">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center gap-3">
                     <a href="index.html" class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white text-2xl font-bold">bolt</span>
+                        <div
+                            class="size-10 flex items-center justify-center bg-primary text-accent rounded-lg shadow-inner">
+                            <span class="material-symbols-outlined font-bold text-2xl">shopping_bag</span>
                         </div>
-                        <span class="text-2xl font-black text-primary uppercase tracking-tight">{{store_name}}</span>
+                        <span class="text-2xl font-extrabold tracking-tight text-primary uppercase">{{store_name}}</span>
                     </a>
                 </div>
-                
+
                 <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">NEW IN</a>
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">TRENDING</a>
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">SALE</a>
+                    <a href="index.html" class="text-slate-700 hover:text-primary transition-colors">New In</a>
+                    <a href="index.html" class="text-slate-700 hover:text-primary transition-colors">Trending</a>
+                    <a href="index.html" class="text-slate-700 hover:text-primary transition-colors">Sale</a>
                 </nav>
-                
+
                 <div class="flex items-center gap-4">
-                    <a href="cart.html" class="px-4 py-2 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition-all flex items-center gap-2">
+                    <a href="cart.html"
+                        class="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-lg hover:bg-slate-200 transition-all flex items-center gap-2">
                         <span class="material-symbols-outlined">shopping_cart</span>
-                        <span class="hidden sm:inline">BACK TO CART</span>
+                        <span class="hidden sm:inline">Back to Cart</span>
                     </a>
-                    <button class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
+                    <button
+                        class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
                         <span class="material-symbols-outlined">person</span>
                     </button>
                 </div>
@@ -61,22 +75,27 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-8">
-        <!-- Bold Progress Steps -->
+        <!-- Progress Steps -->
         <div class="mb-12">
             <div class="flex items-center justify-center gap-6">
                 <div id="step-1" class="flex items-center gap-3 step-active">
-                    <div class="w-12 h-12 rounded-xl border-2 flex items-center justify-center font-black text-lg">1</div>
-                    <span class="hidden sm:inline font-black text-sm">CONTACT</span>
+                    <div class="w-12 h-12 rounded-lg border-2 flex items-center justify-center font-extrabold text-lg">1
+                    </div>
+                    <span class="hidden sm:inline font-bold text-sm">Contact</span>
                 </div>
-                <div class="w-16 h-1 bg-gray-300 rounded-full"></div>
-                <div id="step-2" class="flex items-center gap-3 text-gray-400">
-                    <div class="w-12 h-12 rounded-xl border-2 border-gray-300 flex items-center justify-center font-black text-lg">2</div>
-                    <span class="hidden sm:inline font-black text-sm">SHIPPING</span>
+                <div class="w-16 h-1 bg-slate-300 rounded-full"></div>
+                <div id="step-2" class="flex items-center gap-3 text-slate-400">
+                    <div
+                        class="w-12 h-12 rounded-lg border-2 border-slate-300 flex items-center justify-center font-extrabold text-lg">
+                        2</div>
+                    <span class="hidden sm:inline font-bold text-sm">Shipping</span>
                 </div>
-                <div class="w-16 h-1 bg-gray-300 rounded-full"></div>
-                <div id="step-3" class="flex items-center gap-3 text-gray-400">
-                    <div class="w-12 h-12 rounded-xl border-2 border-gray-300 flex items-center justify-center font-black text-lg">3</div>
-                    <span class="hidden sm:inline font-black text-sm">PAYMENT</span>
+                <div class="w-16 h-1 bg-slate-300 rounded-full"></div>
+                <div id="step-3" class="flex items-center gap-3 text-slate-400">
+                    <div
+                        class="w-12 h-12 rounded-lg border-2 border-slate-300 flex items-center justify-center font-extrabold text-lg">
+                        3</div>
+                    <span class="hidden sm:inline font-bold text-sm">Payment</span>
                 </div>
             </div>
         </div>
@@ -86,53 +105,85 @@
             <div class="lg:col-span-2">
                 <form id="checkout-form" class="space-y-8">
                     <!-- Step 1: Contact Information -->
-                    <div id="contact-step" class="bg-white rounded-2xl shadow-md p-8" style="display: block;">
-                        <h2 class="text-3xl font-black text-gray-900 mb-8">CONTACT INFO</h2>
+                    <div id="contact-step" class="bg-white rounded-3xl border border-slate-200 p-8" style="display: block;">
+                        <h2 class="text-3xl font-extrabold text-slate-900 mb-8">Contact Information</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">First Name *</label>
-                                <input type="text" id="firstName" name="firstName" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-semibold">
-                                <p class="text-red-500 text-sm mt-2 hidden font-semibold" id="firstName-error"></p>
+                                <label class="block text-sm font-bold text-slate-700 mb-3">First
+                                    Name *</label>
+                                <input type="text" id="firstName" name="firstName" required
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-medium">
+                                <p class="text-red-500 text-sm mt-2 hidden font-medium" id="firstName-error"></p>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Last Name *</label>
-                                <input type="text" id="lastName" name="lastName" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-semibold">
-                                <p class="text-red-500 text-sm mt-2 hidden font-semibold" id="lastName-error"></p>
+                                <label class="block text-sm font-bold text-slate-700 mb-3">Last
+                                    Name *</label>
+                                <input type="text" id="lastName" name="lastName" required
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-medium">
+                                <p class="text-red-500 text-sm mt-2 hidden font-medium" id="lastName-error"></p>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Email *</label>
-                                <input type="email" id="email" name="email" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-semibold">
-                                <p class="text-red-500 text-sm mt-2 hidden font-semibold" id="email-error"></p>
+                                <label class="block text-sm font-bold text-slate-700 mb-3">Email
+                                    *</label>
+                                <input type="email" id="email" name="email" required
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-medium">
+                                <p class="text-red-500 text-sm mt-2 hidden font-medium" id="email-error"></p>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Phone *</label>
-                                <input type="tel" id="phone" name="phone" required placeholder="08012345678" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-semibold">
-                                <p class="text-red-500 text-sm mt-2 hidden font-semibold" id="phone-error"></p>
+                                <label class="block text-sm font-bold text-slate-700 mb-3">Phone
+                                    *</label>
+                                <input type="tel" id="phone" name="phone" required placeholder="08012345678"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-medium">
+                                <p class="text-red-500 text-sm mt-2 hidden font-medium" id="phone-error"></p>
                             </div>
                         </div>
-                        <button type="button" onclick="nextStep(1)" class="mt-8 px-10 py-4 bg-primary text-white font-black rounded-xl hover:scale-105 transition-transform shadow-lg uppercase tracking-wide">
-                            CONTINUE TO SHIPPING
+                        <button type="button" onclick="nextStep(1)"
+                            class="mt-8 px-10 py-4 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
+                            Continue to Shipping
                         </button>
                     </div>
 
                     <!-- Step 2: Shipping Address -->
-                    <div id="shipping-step" class="bg-white rounded-2xl shadow-md p-8" style="display: none;">
-                        <h2 class="text-3xl font-black text-gray-900 mb-8">SHIPPING ADDRESS</h2>
+                    <div id="shipping-step" class="bg-white rounded-3xl border border-slate-200 p-8" style="display: none;">
+                        <h2 class="text-3xl font-extrabold text-slate-900 mb-8">Shipping Address</h2>
+
+                        <!-- Saved Addresses Section -->
+                        <div id="saved-addresses-section" class="mb-8 hidden">
+                            <h3 class="text-lg font-extrabold text-slate-900 mb-4">Saved Addresses
+                            </h3>
+                            <div id="saved-addresses-list" class="space-y-3 mb-4">
+                                <!-- Saved addresses will be loaded here -->
+                            </div>
+                            <button type="button" onclick="useNewAddress()"
+                                class="text-primary font-bold text-sm hover:underline">
+                                + Use New Address
+                            </button>
+                            <div class="h-px bg-slate-300 my-6"></div>
+                        </div>
+
                         <div class="space-y-6">
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Street Address *</label>
-                                <input type="text" id="address" name="address" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-semibold">
-                                <p class="text-red-500 text-sm mt-2 hidden font-semibold" id="address-error"></p>
+                                <label class="block text-sm font-bold text-slate-700 mb-3">Street
+                                    Address *</label>
+                                <input type="text" id="address" name="address" required
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-medium">
+                                <p class="text-red-500 text-sm mt-2 hidden font-medium" id="address-error"></p>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">City *</label>
-                                    <input type="text" id="city" name="city" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-semibold">
-                                    <p class="text-red-500 text-sm mt-2 hidden font-semibold" id="city-error"></p>
+                                    <label
+                                        class="block text-sm font-bold text-slate-700 mb-3">City
+                                        *</label>
+                                    <input type="text" id="city" name="city" required
+                                        class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-medium">
+                                    <p class="text-red-500 text-sm mt-2 hidden font-medium" id="city-error"></p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">State *</label>
-                                    <select id="state" name="state" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-semibold">
+                                    <label
+                                        class="block text-sm font-bold text-slate-700 mb-3">State
+                                        *</label>
+                                    <select id="state" name="state" required
+                                        class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-medium">
                                         <option value="">Select State</option>
                                         <option value="Lagos">Lagos</option>
                                         <option value="Abuja">Abuja</option>
@@ -141,81 +192,94 @@
                                         <option value="Ibadan">Ibadan</option>
                                         <option value="Other">Other</option>
                                     </select>
-                                    <p class="text-red-500 text-sm mt-2 hidden font-semibold" id="state-error"></p>
+                                    <p class="text-red-500 text-sm mt-2 hidden font-medium" id="state-error"></p>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Postal Code *</label>
-                                <input type="text" id="postalCode" name="postalCode" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-semibold">
-                                <p class="text-red-500 text-sm mt-2 hidden font-semibold" id="postalCode-error"></p>
+                                <label class="block text-sm font-bold text-slate-700 mb-3">Postal
+                                    Code *</label>
+                                <input type="text" id="postalCode" name="postalCode" required
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-medium">
+                                <p class="text-red-500 text-sm mt-2 hidden font-medium" id="postalCode-error"></p>
                             </div>
                         </div>
-                        
-                        <div id="save-details-container" class="mt-6 p-6 bg-accent/10 border-2 border-accent/20 rounded-xl hidden">
+
+                        <div id="save-address-container"
+                            class="mt-6 p-6 bg-accent/10 border border-accent/20 rounded-lg hidden">
                             <label class="flex items-start gap-4 cursor-pointer">
-                                <input type="checkbox" id="saveDetails" name="saveDetails" class="mt-1 w-5 h-5 rounded text-primary">
+                                <input type="checkbox" id="saveAddress" name="saveAddress"
+                                    class="mt-1 w-5 h-5 rounded text-primary">
                                 <div class="flex-1">
-                                    <span class="font-black text-gray-900 uppercase tracking-wide">Save Details</span>
-                                    <p class="text-sm text-gray-600 mt-1 font-semibold">Securely save your info for faster checkout next time</p>
+                                    <span class="font-extrabold text-slate-900">Save Address</span>
+                                    <p class="text-sm text-slate-600 mt-1 font-medium">Save this address for faster
+                                        checkout next time</p>
                                 </div>
                             </label>
                         </div>
-                        
+
                         <div class="flex gap-4 mt-8">
-                            <button type="button" onclick="prevStep(2)" class="px-8 py-4 border-2 border-gray-300 rounded-xl text-gray-700 font-black hover:bg-gray-50 uppercase tracking-wide">
-                                BACK
+                            <button type="button" onclick="prevStep(2)"
+                                class="px-8 py-4 border border-slate-300 rounded-lg text-slate-700 font-bold hover:bg-slate-50">
+                                Back
                             </button>
-                            <button type="button" onclick="nextStep(2)" class="flex-1 px-8 py-4 bg-primary text-white font-black rounded-xl hover:scale-105 transition-transform shadow-lg uppercase tracking-wide">
-                                CONTINUE TO PAYMENT
+                            <button type="button" onclick="nextStep(2)"
+                                class="flex-1 px-8 py-4 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
+                                Continue to Payment
                             </button>
                         </div>
                     </div>
 
                     <!-- Step 3: Payment -->
-                    <div id="payment-step" class="bg-white rounded-2xl shadow-md p-8" style="display: none;">
-                        <h2 class="text-3xl font-black text-gray-900 mb-8">PAYMENT METHOD</h2>
+                    <div id="payment-step" class="bg-white rounded-3xl border border-slate-200 p-8" style="display: none;">
+                        <h2 class="text-3xl font-extrabold text-slate-900 mb-8">Payment Method</h2>
                         <div id="payment-options" class="space-y-4 mb-8">
                             <!-- Payment options will be dynamically loaded -->
                         </div>
 
-                        <div id="bank-transfer-details" class="mt-8 p-6 bg-blue-50 border-2 border-blue-200 rounded-xl hidden">
-                            <h4 class="font-black text-gray-900 mb-4 flex items-center gap-3 uppercase tracking-wide">
+                        <div id="bank-transfer-details"
+                            class="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg hidden">
+                            <h4 class="font-extrabold text-slate-900 mb-4 flex items-center gap-3">
                                 <span class="material-symbols-outlined text-blue-600">account_balance</span>
-                                BANK TRANSFER DETAILS
+                                Bank Transfer Details
                             </h4>
-                            <div class="space-y-3 text-sm font-semibold">
+                            <div class="space-y-3 text-sm font-medium">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Bank Name:</span>
-                                    <span id="bank-name" class="font-black text-gray-900">-</span>
+                                    <span class="text-slate-600">Bank Name:</span>
+                                    <span id="bank-name" class="font-extrabold text-slate-900">-</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Account Number:</span>
-                                    <span id="account-number" class="font-black text-gray-900">-</span>
+                                    <span class="text-slate-600">Account Number:</span>
+                                    <span id="account-number" class="font-extrabold text-slate-900">-</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Account Name:</span>
-                                    <span id="account-name" class="font-black text-gray-900">-</span>
+                                    <span class="text-slate-600">Account Name:</span>
+                                    <span id="account-name" class="font-extrabold text-slate-900">-</span>
                                 </div>
                                 <div class="mt-4 p-3 bg-white rounded-lg border border-blue-300">
-                                    <p class="text-xs text-gray-600 font-semibold">
+                                    <p class="text-xs text-slate-600 font-medium">
                                         <strong>NOTE:</strong> Your order will be processed once payment is confirmed.
                                     </p>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="mt-8">
-                            <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Order Notes (Optional)</label>
-                            <textarea id="notes" name="notes" rows="3" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary font-semibold" placeholder="Any special instructions for your order?"></textarea>
+                            <label class="block text-sm font-bold text-slate-700 mb-3">Order
+                                Notes (Optional)</label>
+                            <textarea id="notes" name="notes" rows="3"
+                                class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary font-medium"
+                                placeholder="Any special instructions for your order?"></textarea>
                         </div>
-                        
+
                         <div class="flex gap-4 mt-8">
-                            <button type="button" onclick="prevStep(3)" class="px-8 py-4 border-2 border-gray-300 rounded-xl text-gray-700 font-black hover:bg-gray-50 uppercase tracking-wide">
-                                BACK
+                            <button type="button" onclick="prevStep(3)"
+                                class="px-8 py-4 border border-slate-300 rounded-lg text-slate-700 font-bold hover:bg-slate-50">
+                                Back
                             </button>
-                            <button type="submit" id="place-order-btn" class="flex-1 px-8 py-4 bg-primary text-white font-black rounded-xl hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-3 uppercase tracking-wide">
-                                <span class="material-symbols-outlined">bolt</span>
-                                <span>PLACE ORDER</span>
+                            <button type="submit" id="place-order-btn"
+                                class="flex-1 px-8 py-4 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-3">
+                                <span class="material-symbols-outlined">shopping_cart</span>
+                                <span>Place Order</span>
                             </button>
                         </div>
                     </div>
@@ -224,28 +288,29 @@
 
             <!-- Order Summary -->
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-2xl shadow-md p-8 sticky top-24">
-                    <h2 class="text-2xl font-black text-gray-900 mb-6 uppercase tracking-wide">ORDER SUMMARY</h2>
-                    
+                <div class="bg-white rounded-3xl border border-slate-200 p-8 sticky top-24">
+                    <h2 class="text-2xl font-extrabold text-slate-900 mb-6">Order Summary</h2>
+
                     <div id="order-items" class="space-y-4 mb-8 max-h-64 overflow-y-auto">
                         <!-- Items loaded here -->
                     </div>
 
-                    <div class="space-y-4 mb-8 pt-6 border-t-2 border-gray-200">
-                        <div class="flex justify-between text-gray-600 font-semibold">
+                    <div class="space-y-4 mb-8 pt-6 border-t border-slate-200">
+                        <div class="flex justify-between text-slate-600 font-medium">
                             <span>Subtotal</span>
                             <span id="summary-subtotal">₦0.00</span>
                         </div>
-                        <div class="flex justify-between text-gray-600 font-semibold">
+                        <div class="flex justify-between text-slate-600 font-medium">
                             <span>Shipping</span>
                             <span id="summary-shipping">₦1,500.00</span>
                         </div>
-                        <div class="flex justify-between text-gray-600 font-semibold">
+                        <div class="flex justify-between text-slate-600 font-medium">
                             <span>Tax (7.5%)</span>
                             <span id="summary-tax">₦0.00</span>
                         </div>
-                        <div class="border-t-2 border-gray-200 pt-4 flex justify-between text-xl font-black text-gray-900">
-                            <span>TOTAL</span>
+                        <div
+                            class="border-t border-slate-200 pt-4 flex justify-between text-xl font-extrabold text-slate-900">
+                            <span>Total</span>
                             <span id="summary-total">₦0.00</span>
                         </div>
                     </div>
@@ -267,12 +332,573 @@
 
         const storeConfig = {
             store_id: {{store_id}},
-            apiUrl: window.location.origin + '/api'
+        apiUrl: window.location.origin + '/api'
         };
         window.storeConfig = storeConfig;
-        
-        // Include the same checkout logic as the original but with Bold Modern styling
-        // [Rest of the checkout JavaScript logic would be the same as the original checkout.html]
+    </script>
+
+    <script>
+        const cartService = window.CartService;
+        let currentStep = 1;
+        let orderData = {
+            contact: {},
+            shipping: {},
+            payment: { method: null },
+            items: [],
+            totals: {}
+        };
+        let paymentConfig = null;
+
+        // Load payment options based on store configuration
+        async function loadPaymentOptions() {
+            try {
+                const storeId = window.storeConfig.store_id;
+                const apiBase = window.storeConfig.apiUrl;
+                const response = await fetch(`${apiBase}/stores/${storeId}/payment/config`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error('Failed to load payment configuration');
+                }
+
+                paymentConfig = data.data;
+                const paymentContainer = document.getElementById('payment-options');
+                let paymentHTML = '';
+                let firstEnabled = null;
+
+                // Card/Paystack option
+                if (paymentConfig.paystack && paymentConfig.paystack.enabled) {
+                    paymentHTML += `
+                        <label class="flex items-center gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:border-slate-300 payment-option">
+                            <input type="radio" name="payment" value="card" class="w-5 h-5" ${!firstEnabled ? 'checked' : ''}>
+                            <span class="material-symbols-outlined" style="color: var(--primary);">credit_card</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-900">Debit/Credit Card</p>
+                                <p class="text-sm text-slate-500">Pay securely with your card</p>
+                            </div>
+                        </label>
+                    `;
+                    firstEnabled = firstEnabled || 'card';
+                }
+
+                // Bank Transfer option
+                if (paymentConfig.bank_transfer && paymentConfig.bank_transfer.enabled) {
+                    paymentHTML += `
+                        <label class="flex items-center gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:border-slate-300 payment-option">
+                            <input type="radio" name="payment" value="transfer" class="w-5 h-5" ${!firstEnabled ? 'checked' : ''}>
+                            <span class="material-symbols-outlined" style="color: var(--primary);">account_balance</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-900">Bank Transfer</p>
+                                <p class="text-sm text-slate-500">Transfer to our account</p>
+                            </div>
+                        </label>
+                    `;
+                    firstEnabled = firstEnabled || 'transfer';
+                }
+
+                // Cash on Delivery option
+                if (paymentConfig.cod && paymentConfig.cod.enabled) {
+                    paymentHTML += `
+                        <label class="flex items-center gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:border-slate-300 payment-option">
+                            <input type="radio" name="payment" value="cod" class="w-5 h-5" ${!firstEnabled ? 'checked' : ''}>
+                            <span class="material-symbols-outlined" style="color: var(--primary);">local_shipping</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-900">Cash on Delivery</p>
+                                <p class="text-sm text-slate-500">Pay when you receive</p>
+                            </div>
+                        </label>
+                    `;
+                    firstEnabled = firstEnabled || 'cod';
+                }
+
+                if (!paymentHTML) {
+                    paymentHTML = `
+                        <div class="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
+                            <p class="text-red-800">No payment methods configured. Please contact store support.</p>
+                        </div>
+                    `;
+                }
+
+                paymentContainer.innerHTML = paymentHTML;
+                orderData.payment.method = firstEnabled;
+
+                // Add event listeners to payment options
+                document.querySelectorAll('input[name="payment"]').forEach(radio => {
+                    radio.addEventListener('change', handlePaymentMethodChange);
+                });
+
+                // If bank transfer is selected by default, show details
+                if (firstEnabled === 'transfer') {
+                    showBankTransferDetails();
+                }
+
+            } catch (error) {
+                console.error('Error loading payment options:', error);
+                const paymentContainer = document.getElementById('payment-options');
+                paymentContainer.innerHTML = `
+                    <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <p class="text-red-800">Failed to load payment options. Please refresh the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle payment method change
+        function handlePaymentMethodChange(event) {
+            const method = event.target.value;
+            orderData.payment.method = method;
+
+            // Show/hide bank transfer details
+            if (method === 'transfer') {
+                showBankTransferDetails();
+            } else {
+                document.getElementById('bank-transfer-details').classList.add('hidden');
+            }
+        }
+
+        // Show bank transfer details
+        function showBankTransferDetails() {
+            if (paymentConfig && paymentConfig.bank_transfer) {
+                document.getElementById('bank-name').textContent = paymentConfig.bank_transfer.bank_name || '-';
+                document.getElementById('account-number').textContent = paymentConfig.bank_transfer.account_number || '-';
+                document.getElementById('account-name').textContent = paymentConfig.bank_transfer.account_name || '-';
+                document.getElementById('bank-transfer-details').classList.remove('hidden');
+            }
+        }
+
+        // Saved addresses variables
+        let savedAddresses = [];
+        let selectedAddressId = null;
+
+        // Load saved addresses for authenticated users
+        async function loadSavedAddresses() {
+            try {
+                if (!CustomerAuth.isAuthenticated()) {
+                    return;
+                }
+
+                const storeId = window.storeConfig.store_id;
+                const apiBase = window.storeConfig.apiUrl;
+                const token = CustomerAuth.getToken();
+
+                const response = await fetch(`${apiBase}/stores/${storeId}/addresses`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.data && result.data.length > 0) {
+                    savedAddresses = result.data;
+                    renderSavedAddresses();
+                    document.getElementById('saved-addresses-section').classList.remove('hidden');
+                }
+
+                // Show save address checkbox for authenticated users
+                document.getElementById('save-address-container').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error loading saved addresses:', error);
+            }
+        }
+
+        // Render saved addresses
+        function renderSavedAddresses() {
+            const container = document.getElementById('saved-addresses-list');
+
+            container.innerHTML = savedAddresses.map(address => {
+                const isDefault = address.is_default;
+                return `
+                    <label class="flex items-start gap-3 p-4 border ${isDefault ? 'border-primary bg-primary/5' : 'border-slate-200'} rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
+                        <input type="radio" name="savedAddress" value="${address.id}" 
+                               class="mt-1 w-5 h-5 text-primary" 
+                               onchange="selectSavedAddress(${address.id})"
+                               ${isDefault ? 'checked' : ''}>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <p class="font-bold text-slate-900">${address.address_line1}</p>
+                                ${isDefault ? '<span class="px-2 py-0.5 bg-primary text-white text-xs font-bold rounded">Default</span>' : ''}
+                            </div>
+                            <p class="text-sm text-slate-600 mt-1">
+                                ${address.city}, ${address.state} ${address.postal_code}
+                            </p>
+                            ${address.full_name ? `<p class="text-xs text-slate-500 mt-1">${address.full_name} - ${address.phone || ''}</p>` : ''}
+                        </div>
+                    </label>
+                `;
+            }).join('');
+
+            // Auto-select default address if exists
+            const defaultAddress = savedAddresses.find(addr => addr.is_default);
+            if (defaultAddress) {
+                selectSavedAddress(defaultAddress.id);
+            }
+        }
+
+        // Select a saved address and autofill form
+        function selectSavedAddress(addressId) {
+            selectedAddressId = addressId;
+            const address = savedAddresses.find(addr => addr.id === addressId);
+
+            if (address) {
+                // Autofill shipping form
+                document.getElementById('address').value = address.address_line1 || '';
+                document.getElementById('city').value = address.city || '';
+                document.getElementById('state').value = address.state || '';
+                document.getElementById('postalCode').value = address.postal_code || '';
+
+                // Disable form fields when using saved address
+                const fields = ['address', 'city', 'state', 'postalCode'];
+                fields.forEach(field => {
+                    const input = document.getElementById(field);
+                    input.setAttribute('readonly', true);
+                    input.classList.add('bg-slate-100', 'cursor-not-allowed');
+                });
+
+                // Hide save address checkbox since we're using saved address
+                document.getElementById('save-address-container').classList.add('hidden');
+            }
+        }
+
+        // Use new address (clear form and enable editing)
+        function useNewAddress() {
+            selectedAddressId = null;
+
+            // Uncheck all saved address radios
+            document.querySelectorAll('input[name="savedAddress"]').forEach(radio => {
+                radio.checked = false;
+            });
+
+            // Clear form
+            document.getElementById('address').value = '';
+            document.getElementById('city').value = '';
+            document.getElementById('state').value = '';
+            document.getElementById('postalCode').value = '';
+
+            // Enable form fields
+            const fields = ['address', 'city', 'state', 'postalCode'];
+            fields.forEach(field => {
+                const input = document.getElementById(field);
+                input.removeAttribute('readonly');
+                input.classList.remove('bg-slate-100', 'cursor-not-allowed');
+            });
+
+            // Show save address checkbox
+            if (CustomerAuth.isAuthenticated()) {
+                document.getElementById('save-address-container').classList.remove('hidden');
+            }
+        }
+
+        // Save new address
+        async function saveNewAddress(addressData) {
+            try {
+                const storeId = window.storeConfig.store_id;
+                const apiBase = window.storeConfig.apiUrl;
+                const token = CustomerAuth.getToken();
+
+                const response = await fetch(`${apiBase}/stores/${storeId}/addresses`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(addressData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    console.log('Address saved successfully');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Error saving address:', error);
+                return false;
+            }
+        }
+
+        // Auto-fill customer data on page load
+        async function autoFillCustomerData() {
+            try {
+                const customer = CustomerAuth.getCustomer();
+                if (customer) {
+                    // Auto-fill contact information
+                    const emailInput = document.getElementById('email');
+                    const firstNameInput = document.getElementById('firstName');
+                    const lastNameInput = document.getElementById('lastName');
+                    const phoneInput = document.getElementById('phone');
+
+                    if (emailInput && customer.email) {
+                        emailInput.value = customer.email;
+                    }
+
+                    if (firstNameInput && lastNameInput && (customer.first_name || customer.last_name)) {
+                        firstNameInput.value = customer.first_name || '';
+                        lastNameInput.value = customer.last_name || '';
+                    }
+
+                    if (phoneInput && customer.phone) {
+                        phoneInput.value = customer.phone;
+                    }
+                }
+            } catch (error) {
+                console.error('Error auto-filling customer data:', error);
+            }
+        }
+
+        // Load cart and display order summary
+        async function loadOrderSummary() {
+            const cartItems = await cartService.getCartWithDetails(storeConfig.store_id);
+
+            if (cartItems.length === 0) {
+                window.location.href = 'cart.html';
+                return;
+            }
+
+            orderData.items = cartItems;
+
+            const summaryContainer = document.getElementById('order-items');
+            summaryContainer.innerHTML = cartItems.map(item => {
+                const product = item.product;
+                const image = product.images && product.images.length > 0 ? product.images[0].image_url : '';
+                return `
+                    <div class="flex gap-3">
+                        <div class="w-16 h-16 flex-shrink-0 bg-slate-100 rounded-lg overflow-hidden">
+                            ${image ? `<img src="${image}" alt="${product.name}" class="w-full h-full object-cover">` :
+                        `<div class="w-full h-full flex items-center justify-center">
+                                <span class="material-symbols-outlined text-slate-400 text-sm">inventory_2</span>
+                            </div>`}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-bold text-slate-900 truncate">${product.name}</p>
+                            <p class="text-xs text-slate-500">Qty: ${item.quantity}</p>
+                            <p class="text-sm font-extrabold mt-1" style="color: var(--primary);">${cartService.formatCurrency(product.price * item.quantity)}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            await updateSummaryTotals();
+        }
+
+        async function updateSummaryTotals() {
+            const totals = await cartService.calculateTotals();
+            orderData.totals = totals;
+
+            document.getElementById('summary-subtotal').textContent = cartService.formatCurrency(totals.subtotal);
+            document.getElementById('summary-total').textContent = cartService.formatCurrency(totals.total);
+        }
+
+        function nextStep(step) {
+            // Validate current step
+            if (step === 1) {
+                const contact = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value
+                };
+
+                const validation = CheckoutService.validateContact(contact);
+                if (!validation.isValid) {
+                    showErrors(validation.errors);
+                    return;
+                }
+
+                orderData.contact = contact;
+                showStep(2);
+            } else if (step === 2) {
+                const shipping = {
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value,
+                    postalCode: document.getElementById('postalCode').value
+                };
+
+                const validation = CheckoutService.validateShipping(shipping);
+                if (!validation.isValid) {
+                    showErrors(validation.errors);
+                    return;
+                }
+
+                orderData.shipping = shipping;
+                showStep(3);
+            }
+        }
+
+        function prevStep(step) {
+            showStep(step - 1);
+        }
+
+        function showStep(step) {
+            currentStep = step;
+
+            // Hide all steps
+            document.getElementById('contact-step').style.display = 'none';
+            document.getElementById('shipping-step').style.display = 'none';
+            document.getElementById('payment-step').style.display = 'none';
+
+            // Show current step
+            if (step === 1) document.getElementById('contact-step').style.display = 'block';
+            if (step === 2) document.getElementById('shipping-step').style.display = 'block';
+            if (step === 3) document.getElementById('payment-step').style.display = 'block';
+
+            // Update progress indicators
+            updateProgress(step);
+
+            // Scroll to top of form
+            document.getElementById('checkout-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updateProgress(step) {
+            for (let i = 1; i <= 3; i++) {
+                const stepEl = document.getElementById(`step-${i}`);
+                const circle = stepEl.querySelector('.w-10.h-10');
+
+                if (i < step) {
+                    // Completed step
+                    stepEl.classList.add('step-complete');
+                    stepEl.classList.remove('step-active', 'text-gray-400');
+                    circle.classList.remove('border-gray-300');
+                    circle.innerHTML = '<span class="material-symbols-outlined text-sm">check</span>';
+                } else if (i === step) {
+                    // Current active step
+                    stepEl.classList.add('step-active');
+                    stepEl.classList.remove('step-complete', 'text-gray-400');
+                    circle.classList.remove('border-gray-300');
+                    circle.textContent = i;
+                } else {
+                    // Future step
+                    stepEl.classList.remove('step-active', 'step-complete');
+                    stepEl.classList.add('text-gray-400');
+                    circle.classList.add('border-gray-300');
+                    circle.textContent = i;
+                }
+            }
+        }
+
+        function showErrors(errors) {
+            // Clear previous errors
+            document.querySelectorAll('[id$="-error"]').forEach(el => {
+                el.classList.add('hidden');
+                el.textContent = '';
+            });
+
+            // Show new errors
+            Object.keys(errors).forEach(field => {
+                const errorEl = document.getElementById(`${field}-error`);
+                if (errorEl) {
+                    errorEl.textContent = errors[field];
+                    errorEl.classList.remove('hidden');
+                }
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('place-order-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-spin material-symbols-outlined">progress_activity</span> <span>Processing...</span>';
+
+            // Get payment method
+            orderData.payment.method = document.querySelector('input[name="payment"]:checked').value;
+            orderData.notes = document.getElementById('notes').value;
+
+            // Check if user wants to save address (only if using new address, not saved one)
+            const saveAddressCheckbox = document.getElementById('saveAddress');
+            if (saveAddressCheckbox && saveAddressCheckbox.checked && !selectedAddressId && CustomerAuth.isAuthenticated()) {
+                // Save new address to customer addresses
+                const addressData = {
+                    full_name: `${orderData.contact.firstName} ${orderData.contact.lastName}`,
+                    phone: orderData.contact.phone,
+                    address_line1: orderData.shipping.address,
+                    city: orderData.shipping.city,
+                    state: orderData.shipping.state,
+                    postal_code: orderData.shipping.postalCode,
+                    country: 'Nigeria',
+                    address_type: 'shipping'
+                };
+
+                // Save in background (don't block order placement)
+                saveNewAddress(addressData).then(saved => {
+                    if (saved) {
+                        console.log('Address saved successfully');
+                    }
+                }).catch(err => {
+                    console.error('Failed to save address:', err);
+                });
+            }
+
+            // Place order
+            const result = await CheckoutService.placeOrder(orderData);
+
+            if (result.success) {
+                // Check if payment is configured
+                const paymentEnabled = await CheckoutService.isPaymentEnabled();
+
+                if (paymentEnabled && orderData.payment.method === 'card') {
+                    // Process payment with Paystack
+                    const customer = CheckoutService.getCustomer();
+                    const email = customer?.email || orderData.contact.email;
+                    const customerName = `${orderData.contact.firstName} ${orderData.contact.lastName}`;
+
+                    // Use the order total from the created order
+                    const totalAmount = parseFloat(result.order.total_amount);
+
+                    // Process payment
+                    const payment = await CheckoutService.processPayment(
+                        result.order.id,
+                        totalAmount,
+                        email,
+                        customerName,
+                        // Success callback
+                        function (order) {
+                            // Clear cart after successful payment
+                            localStorage.removeItem('cart_items');
+                            // Redirect to success page
+                            window.location.href = `order-success.html?order=${order.id}`;
+                        },
+                        // Close callback
+                        function () {
+                            // User closed the popup
+                            btn.disabled = false;
+                            btn.innerHTML = '<span class="material-symbols-outlined">shopping_bag</span> <span>Place Order</span>';
+                        }
+                    );
+
+                    if (!payment.success) {
+                        // Payment initialization failed - show error
+                        btn.disabled = false;
+                        btn.innerHTML = '<span class="material-symbols-outlined">shopping_bag</span> <span>Place Order</span>';
+                        alert(payment.error || 'Payment initialization failed. Please try again.');
+                    }
+                    // If payment.success is true, the popup is open and we wait for user action
+                } else {
+                    // No payment gateway or non-card payment - proceed to success page
+                    localStorage.removeItem('cart_items');
+                    window.location.href = `order-success.html?order=${result.order.id}`;
+                }
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-symbols-outlined">shopping_bag</span> <span>Place Order</span>';
+                alert(result.error || 'Failed to place order. Please try again.');
+            }
+        });
+
+        // Initialize
+        async function init() {
+            await loadPaymentOptions();
+            await autoFillCustomerData();
+            await loadSavedAddresses();
+            await loadOrderSummary();
+        }
+
+        init();
     </script>
 </body>
+
 </html>

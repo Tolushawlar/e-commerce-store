@@ -8,7 +8,9 @@ use App\Models\Product;
 use App\Models\ShoppingCart;
 use App\Models\StoreCustomer;
 use App\Models\CustomerAddress;
+use App\Models\Store;
 use App\Services\CustomerJWTService;
+use App\Services\NotificationService;
 
 /**
  * Checkout Controller
@@ -21,6 +23,8 @@ class CheckoutController extends Controller
     private ShoppingCart $cartModel;
     private StoreCustomer $customerModel;
     private CustomerAddress $addressModel;
+    private Store $storeModel;
+    private NotificationService $notificationService;
 
     public function __construct()
     {
@@ -29,6 +33,8 @@ class CheckoutController extends Controller
         $this->cartModel = new ShoppingCart();
         $this->customerModel = new StoreCustomer();
         $this->addressModel = new CustomerAddress();
+        $this->storeModel = new Store();
+        $this->notificationService = new NotificationService();
     }
 
     /**
@@ -82,7 +88,7 @@ class CheckoutController extends Controller
             $this->error('Invalid store', 403);
         }
 
-        $orders = $this->orderModel->getByCustomer($customerPayload['customer_id']);
+        $orders = $this->orderModel->getByCustomer($customerPayload['id']);
 
         $this->success($orders);
     }
@@ -149,7 +155,7 @@ class CheckoutController extends Controller
         }
 
         // If authenticated, verify ownership
-        if ($customerPayload && $order['customer_id'] != $customerPayload['customer_id']) {
+        if ($customerPayload && $order['customer_id'] != $customerPayload['id']) {
             $this->error('Access denied', 403);
         }
 
@@ -234,7 +240,7 @@ class CheckoutController extends Controller
             if ($customerPayload['store_id'] != $storeId) {
                 $this->error('Invalid store', 403);
             }
-            $customerId = $customerPayload['customer_id'];
+            $customerId = $customerPayload['id'];
             $isGuest = $customerPayload['is_guest'] ?? false;
         }
 
@@ -291,7 +297,7 @@ class CheckoutController extends Controller
             ];
         }
 
-        $shippingCost = $data['shipping_cost'] ?? 0;
+        $shippingCost = $data['shipping_cost'] ?? ($subtotal >= 10000 ? 0 : 1500);
         $totalAmount = $subtotal + $shippingCost;
 
         // Get or create shipping address
@@ -299,9 +305,17 @@ class CheckoutController extends Controller
         if (!empty($data['shipping_address_id'])) {
             $shippingAddressId = $data['shipping_address_id'];
         } elseif (!empty($data['shipping_address'])) {
+            // Build address array from individual fields
+            $addressData = [
+                'address_line1' => $data['shipping_address'],
+                'city' => $data['shipping_city'] ?? '',
+                'state' => $data['shipping_state'] ?? '',
+                'postal_code' => $data['shipping_postal_code'] ?? '',
+                'country' => $data['shipping_country'] ?? 'Nigeria'
+            ];
             $shippingAddressId = $this->createAddressFromData(
                 $customerId,
-                $data['shipping_address'],
+                $addressData,
                 'shipping'
             );
         }
@@ -318,6 +332,11 @@ class CheckoutController extends Controller
             'customer_phone' => $data['customer_phone'],
             'shipping_address_id' => $shippingAddressId,
             'billing_address_id' => $billingAddressId,
+            'shipping_address' => $data['shipping_address'] ?? null,
+            'shipping_city' => $data['shipping_city'] ?? null,
+            'shipping_state' => $data['shipping_state'] ?? null,
+            'shipping_postal_code' => $data['shipping_postal_code'] ?? null,
+            'shipping_country' => $data['shipping_country'] ?? 'Nigeria',
             'total_amount' => $totalAmount,
             'shipping_cost' => $shippingCost,
             'payment_method' => $data['payment_method'],
@@ -340,6 +359,16 @@ class CheckoutController extends Controller
 
         // Get full order details
         $order = $this->orderModel->getFullDetails($orderId);
+
+        // Send notification to store owner
+        $store = $this->storeModel->find($storeId);
+        if ($store && $store['client_id']) {
+            $this->notificationService->notifyOrderPlaced(
+                $store['client_id'],
+                $orderId,
+                $orderData
+            );
+        }
 
         $this->success($order, 'Order placed successfully', 201);
     }
@@ -412,15 +441,23 @@ class CheckoutController extends Controller
             ];
         }
 
-        $shippingCost = $data['shipping_cost'] ?? 0;
+        $shippingCost = $data['shipping_cost'] ?? ($subtotal >= 10000 ? 0 : 1500);
         $totalAmount = $subtotal + $shippingCost;
 
         // Create shipping address if provided
         $shippingAddressId = null;
         if (!empty($data['shipping_address'])) {
+            // Build address array from individual fields
+            $addressData = [
+                'address_line1' => $data['shipping_address'],
+                'city' => $data['shipping_city'] ?? '',
+                'state' => $data['shipping_state'] ?? '',
+                'postal_code' => $data['shipping_postal_code'] ?? '',
+                'country' => $data['shipping_country'] ?? 'Nigeria'
+            ];
             $shippingAddressId = $this->createAddressFromData(
                 $customerId,
-                $data['shipping_address'],
+                $addressData,
                 'shipping'
             );
         }
@@ -434,6 +471,11 @@ class CheckoutController extends Controller
             'customer_phone' => $data['customer_phone'],
             'shipping_address_id' => $shippingAddressId,
             'billing_address_id' => $shippingAddressId,
+            'shipping_address' => $data['shipping_address'] ?? null,
+            'shipping_city' => $data['shipping_city'] ?? null,
+            'shipping_state' => $data['shipping_state'] ?? null,
+            'shipping_postal_code' => $data['shipping_postal_code'] ?? null,
+            'shipping_country' => $data['shipping_country'] ?? 'Nigeria',
             'total_amount' => $totalAmount,
             'shipping_cost' => $shippingCost,
             'payment_method' => $data['payment_method'],
@@ -453,6 +495,16 @@ class CheckoutController extends Controller
 
         // Get full order details
         $order = $this->orderModel->getFullDetails($orderId);
+
+        // Send notification to store owner
+        $store = $this->storeModel->find($storeId);
+        if ($store && $store['client_id']) {
+            $this->notificationService->notifyOrderPlaced(
+                $store['client_id'],
+                $orderId,
+                $orderData
+            );
+        }
 
         $this->success($order, 'Order placed successfully', 201);
     }

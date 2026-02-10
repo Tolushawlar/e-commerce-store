@@ -3,6 +3,12 @@
 app/client/orders.php
 app/client/*.php
 
+# Ignore template files - they contain template variables ({{variable}}) that Prettier breaks
+store-templates/**/*.html
+
 # Ignore vendor and dependencies
 vendor/
 node_modules/
+
+# Ignore generated store files
+api/stores/*/

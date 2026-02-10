@@ -191,7 +191,7 @@
                 document.getElementById('cartItems').classList.add('hidden');
 
                 // Check if user is authenticated
-                isAuthenticated = !!localStorage.getItem('auth_token');
+                isAuthenticated = !!localStorage.getItem('customer_token');
 
                 if (isAuthenticated) {
                     // Load from API
@@ -211,7 +211,7 @@
                     document.getElementById('orderSummary').classList.add('hidden');
                 } else {
                     renderCart();
-                    updateSummary();
+                    await updateSummary();
                     document.getElementById('cartItems').classList.remove('hidden');
                     document.getElementById('orderSummary').classList.remove('hidden');
                 }
@@ -328,7 +328,7 @@
                 }
 
                 renderCart();
-                updateSummary();
+                await updateSummary();
                 updateCartCount();
             } catch (error) {
                 console.error('Error updating quantity:', error);
@@ -361,7 +361,7 @@
                     document.getElementById('emptyState').classList.remove('hidden');
                 } else {
                     renderCart();
-                    updateSummary();
+                    await updateSummary();
                 }
 
                 updateCartCount();
@@ -401,8 +401,8 @@
         }
 
         // Update summary
-        function updateSummary() {
-            const totals = cartService.calculateTotals(cartItems);
+        async function updateSummary() {
+            const totals = await cartService.calculateTotals(cartItems);
 
             document.getElementById('summaryItemCount').textContent = totals.itemCount;
             document.getElementById('summarySubtotal').textContent = cartService.formatCurrency(totals.subtotal);

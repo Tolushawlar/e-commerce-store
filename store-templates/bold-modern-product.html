@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Product Details - {{store_name}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script>
         tailwind.config = {
             theme: {
@@ -24,7 +27,8 @@
         }
     </script>
     <style>
-        .swiper-button-next, .swiper-button-prev {
+        .swiper-button-next,
+        .swiper-button-prev {
             color: var(--tw-color-primary);
             background: white;
             padding: 20px;
@@ -32,11 +36,13 @@
             width: 44px;
             height: 44px;
         }
+
         .swiper-pagination-bullet-active {
             background: var(--tw-color-primary);
         }
     </style>
 </head>
+
 <body class="bg-gray-50 font-display text-gray-900 antialiased">
     <!-- Bold Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
@@ -44,27 +50,31 @@
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center gap-3">
                     <a href="index.html" class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
                             <span class="material-symbols-outlined text-white text-2xl font-bold">bolt</span>
                         </div>
                         <span class="text-2xl font-black text-primary uppercase tracking-tight">{{store_name}}</span>
                     </a>
                 </div>
-                
+
                 <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
                     <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">NEW IN</a>
                     <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">TRENDING</a>
                     <a href="index.html" class="text-gray-700 hover:text-primary transition-colors">SALE</a>
                 </nav>
-                
+
                 <div class="flex items-center gap-2">
-                    <a href="index.html" class="px-4 py-2 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition-all flex items-center gap-2">
+                    <a href="index.html"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition-all flex items-center gap-2">
                         <span class="material-symbols-outlined">arrow_back</span>
                         <span class="hidden sm:inline">BACK</span>
                     </a>
-                    <a href="cart.html" class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all relative">
+                    <a href="cart.html"
+                        class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all relative">
                         <span class="material-symbols-outlined">shopping_cart</span>
-                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-accent text-primary text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold hidden">0</span>
+                        <span id="cart-badge"
+                            class="absolute -top-1 -right-1 bg-accent text-primary text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold hidden">0</span>
                     </a>
                 </div>
             </div>
@@ -89,7 +99,8 @@
             <div class="space-y-6">
                 <div class="swiper main-swiper rounded-3xl overflow-hidden shadow-xl bg-white">
                     <div class="swiper-wrapper" id="main-swiper-wrapper">
-                        <div class="swiper-slide flex items-center justify-center bg-gray-100" style="min-height: 500px;">
+                        <div class="swiper-slide flex items-center justify-center bg-gray-100"
+                            style="min-height: 500px;">
                             <div class="animate-pulse w-full h-full bg-gray-200"></div>
                         </div>
                     </div>
@@ -97,7 +108,7 @@
                     <div class="swiper-button-prev"></div>
                     <div class="swiper-pagination"></div>
                 </div>
-                
+
                 <div class="swiper thumbnail-swiper">
                     <div class="swiper-wrapper" id="thumbnail-swiper-wrapper"></div>
                 </div>
@@ -112,7 +123,8 @@
 
                 <!-- Product Title -->
                 <div>
-                    <h1 id="product-name" class="text-4xl lg:text-5xl font-black text-gray-900 mb-3 uppercase tracking-tight">
+                    <h1 id="product-name"
+                        class="text-4xl lg:text-5xl font-black text-gray-900 mb-3 uppercase tracking-tight">
                         <div class="animate-pulse h-12 bg-gray-200 rounded w-3/4"></div>
                     </h1>
                     <p id="product-sku" class="text-sm text-gray-500 font-semibold"></p>
@@ -166,27 +178,33 @@
                     <div class="flex items-center gap-6">
                         <label class="text-sm font-black text-gray-900 uppercase tracking-wide">QUANTITY:</label>
                         <div class="flex items-center border-2 border-gray-300 rounded-xl overflow-hidden">
-                            <button id="qty-decrease" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black">
+                            <button id="qty-decrease"
+                                class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black">
                                 <span class="material-symbols-outlined">remove</span>
                             </button>
-                            <input type="number" id="quantity" value="1" min="1" class="w-20 text-center font-black py-3 border-none focus:outline-none" />
-                            <button id="qty-increase" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black">
+                            <input type="number" id="quantity" value="1" min="1"
+                                class="w-20 text-center font-black py-3 border-none focus:outline-none" />
+                            <button id="qty-increase"
+                                class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black">
                                 <span class="material-symbols-outlined">add</span>
                             </button>
                         </div>
                     </div>
 
                     <div class="flex gap-4">
-                        <button id="add-to-cart" class="flex-1 py-5 rounded-xl font-black text-lg text-white transition-all duration-200 hover:scale-105 shadow-lg flex items-center justify-center gap-3 uppercase tracking-wide bg-primary">
+                        <button id="add-to-cart"
+                            class="flex-1 py-5 rounded-xl font-black text-lg text-white transition-all duration-200 hover:scale-105 shadow-lg flex items-center justify-center gap-3 uppercase tracking-wide bg-primary">
                             <span class="material-symbols-outlined">bolt</span>
                             ADD TO CART
                         </button>
-                        <button class="px-8 py-5 border-2 rounded-xl font-black text-lg transition-all duration-200 hover:scale-105 border-primary text-primary">
+                        <button
+                            class="px-8 py-5 border-2 rounded-xl font-black text-lg transition-all duration-200 hover:scale-105 border-primary text-primary">
                             <span class="material-symbols-outlined">favorite_border</span>
                         </button>
                     </div>
 
-                    <button class="w-full py-5 rounded-xl font-black text-lg text-primary transition-all duration-200 hover:scale-105 bg-accent uppercase tracking-wide">
+                    <button
+                        class="w-full py-5 rounded-xl font-black text-lg text-primary transition-all duration-200 hover:scale-105 bg-accent uppercase tracking-wide">
                         BUY NOW
                     </button>
                 </div>
@@ -197,15 +215,17 @@
         <section class="mt-20">
             <div class="flex items-center justify-between mb-12">
                 <div>
-                    <h2 class="text-4xl font-black text-gray-900 mb-2 uppercase tracking-tight">MORE FROM THIS CATEGORY</h2>
+                    <h2 class="text-4xl font-black text-gray-900 mb-2 uppercase tracking-tight">MORE FROM THIS CATEGORY
+                    </h2>
                     <div class="w-20 h-1 bg-primary rounded-full"></div>
                 </div>
-                <a href="index.html" class="text-sm font-black flex items-center gap-2 hover:underline text-primary uppercase tracking-wide">
+                <a href="index.html"
+                    class="text-sm font-black flex items-center gap-2 hover:underline text-primary uppercase tracking-wide">
                     VIEW ALL
                     <span class="material-symbols-outlined text-lg">arrow_forward</span>
                 </a>
             </div>
-            
+
             <div id="related-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div class="animate-pulse bg-white rounded-2xl p-6 shadow-md" style="height: 350px;"></div>
                 <div class="animate-pulse bg-white rounded-2xl p-6 shadow-md" style="height: 350px;"></div>
@@ -247,10 +267,12 @@
                 <div>
                     <h4 class="font-bold text-accent mb-4">CONNECT</h4>
                     <div class="flex gap-3">
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
+                        <a href="#"
+                            class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
                             <span class="material-symbols-outlined">tag</span>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
+                        <a href="#"
+                            class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:text-primary transition-all">
                             <span class="material-symbols-outlined">share</span>
                         </a>
                     </div>
@@ -263,7 +285,61 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Store Configuration (MUST be before other scripts) -->
+    <script>
+        window.API_BASE_URL = window.location.origin;
+        window.storeConfig = {
+            store_id: {{store_id}},
+            store_name: '{{store_name}}',
+            apiUrl: window.location.origin + '/api'
+        };
+    </script>
+
+    <!-- JavaScript files (copied to store folder during generation) -->
     <script src="cart.js"></script>
+    <script src="customer-auth.js"></script>
+    <script src="profile-header.js"></script>
     <script src="product-detail.js"></script>
+
+    <!-- Initialize Cart Badge -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const storeId = window.storeConfig.store_id;
+            const cartKey = `cart_${storeId}`;
+
+            async function updateCartBadge() {
+                try {
+                    const badge = document.getElementById('cart-badge');
+                    if (!badge) return;
+
+                    // Check if user is authenticated
+                    const isAuthenticated = typeof CustomerAuth !== 'undefined' && CustomerAuth.isAuthenticated();
+
+                    if (isAuthenticated) {
+                        // For authenticated users, get count from API
+                        const cartService = window.CartService;
+                        const cartItems = await cartService.getCartWithDetails(storeId, true);
+                        const count = cartItems.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    } else {
+                        // For guest users, get count from localStorage
+                        const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                        const count = cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+                        badge.textContent = count;
+                        badge.classList.toggle('hidden', count === 0);
+                    }
+                } catch (error) {
+                    console.error('Error updating cart badge:', error);
+                }
+            }
+
+            await updateCartBadge();
+            window.addEventListener('storage', updateCartBadge);
+            window.addEventListener('cartUpdated', updateCartBadge);
+        });
+    </script>
 </body>
+
 </html>
