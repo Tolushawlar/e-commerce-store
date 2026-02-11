@@ -26,6 +26,24 @@ use App\Controllers\DashboardController;
 use App\Controllers\NotificationController;
 use App\Middleware\AuthMiddleware;
 
+// ============================================================================
+// RATE LIMITING MIDDLEWARE
+// Apply rate limiting to all API requests before routing
+// ============================================================================
+
+use App\Middleware\RateLimitMiddleware;
+
+// Initialize rate limiting with configuration
+$config = config('rate_limiting');
+$rateLimitMiddleware = new RateLimitMiddleware($config);
+
+// Apply rate limiting to all API requests
+$rateLimitMiddleware->handle();
+
+// ============================================================================
+// ROUTER INITIALIZATION
+// ============================================================================
+
 $router = new Router();
 
 // Authentication Routes (Public)
