@@ -46,12 +46,7 @@ return [
     ],
 
     'cors' => [
-        'allowed_origins' => [
-            'http://localhost:3000',  // Development
-            'http://localhost:8000',  // Development
-            'https://livepetal.com', // Production
-            'https://www.livepetal.com'
-        ],
+        'allowed_origins' => ['*'],
         'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With'],
         'max_age' => 86400,
@@ -139,6 +134,8 @@ return [
             
             // Admin endpoints (higher limits)
             '/api/admin/*' => ['limit' => 200, 'window' => 60],
+            '/api/stores/*' => ['limit' => 200, 'window' => 60],
+            '/api/clients/*' => ['limit' => 200, 'window' => 60],
             
             // Public endpoints (lower limits)
             '/api/public/*' => ['limit' => 30, 'window' => 60],

@@ -24,6 +24,7 @@ use App\Controllers\AdminOrderController;
 use App\Controllers\PaymentController;
 use App\Controllers\DashboardController;
 use App\Controllers\NotificationController;
+
 use App\Middleware\AuthMiddleware;
 
 // ============================================================================
@@ -34,8 +35,8 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RateLimitMiddleware;
 
 // Initialize rate limiting with configuration
-$config = config('rate_limiting');
-$rateLimitMiddleware = new RateLimitMiddleware($config);
+$rateLimitConfig = config('rate_limiting');
+$rateLimitMiddleware = new RateLimitMiddleware($rateLimitConfig);
 
 // Apply rate limiting to all API requests
 $rateLimitMiddleware->handle();

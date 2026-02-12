@@ -969,8 +969,8 @@
                     </div>
                     <div class="mb-8">
                         <div class="flex items-baseline">
-                            <span class="text-5xl font-extrabold text-[#064E3B]">₦5000</span>
-                            <span class="text-gray-500 font-medium ml-2">/month</span>
+                            <span class="text-5xl font-extrabold text-[#064E3B]">₦100,000</span>
+                            <!-- <span class="text-gray-500 font-medium ml-2">/year</span> -->
                         </div>
                     </div>
                     <a class="block w-full py-4 px-6 text-center rounded-xl border-2 border-[#10b77f] text-[#10b77f] font-bold hover:bg-emerald-50 transition-colors mb-8" href="#">
@@ -1009,8 +1009,8 @@
                     </div>
                     <div class="mb-8">
                         <div class="flex items-baseline">
-                            <span class="text-5xl font-extrabold text-white">₦15,000</span>
-                            <span class="text-emerald-100/70 font-medium ml-2">/month</span>
+                            <span class="text-5xl font-extrabold text-white">₦250,000</span>
+                            <!-- <span class="text-emerald-100/70 font-medium ml-2">/year</span> -->
                         </div>
                     </div>
                     <a class="block w-full py-4 px-6 text-center rounded-xl bg-[#BEF264] text-[#064E3B] font-bold hover:bg-[#a3e635] transition-colors mb-8 shadow-lg shadow-[#BEF264]/20" href="#">

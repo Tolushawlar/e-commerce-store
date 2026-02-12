@@ -17,6 +17,11 @@ class JWT
     {
         $secret = $secret ?? config('security.jwt_secret');
 
+        // Validate secret is configured
+        if (empty($secret)) {
+            throw new \Exception('JWT secret not configured. Set JWT_SECRET in .env file or check config/config.php');
+        }
+
         // Add standard claims
         $payload['iat'] = time(); // Issued at
         $payload['exp'] = time() + ($expiration ?? config('security.session_lifetime', 7200)); // Expiration
@@ -63,6 +68,11 @@ class JWT
     public static function decode(string $token, ?string $secret = null): array
     {
         $secret = $secret ?? config('security.jwt_secret');
+
+        // Validate secret is configured
+        if (empty($secret)) {
+            throw new \Exception('JWT secret not configured. Set JWT_SECRET in .env file or check config/config.php');
+        }
 
         // Split token
         $parts = explode('.', $token);

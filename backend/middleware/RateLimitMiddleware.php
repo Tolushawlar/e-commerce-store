@@ -59,21 +59,27 @@ class RateLimitMiddleware
 
     /**
      * Get unique identifier for rate limiting
-     * Prioritizes: User ID > API Key > IP Address
+     * Prioritizes: JWT User ID > IP Address
      * 
      * @return string
      */
     private function getIdentifier(): string
     {
-        // Check for authenticated user
-        if (isset($_SESSION['user_id'])) {
-            return 'user:' . $_SESSION['user_id'];
-        }
-
-        // Check for API key
-        $apiKey = $this->getApiKey();
-        if ($apiKey) {
-            return 'api_key:' . $apiKey;
+        // Check for JWT token and extract user ID
+        $token = $this->getJWTToken();
+        if ($token) {
+            try {
+                // Decode JWT to get user ID without full validation (for rate limiting only)
+                $parts = explode('.', $token);
+                if (count($parts) === 3) {
+                    $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
+                    if (isset($payload['user_id'])) {
+                        return 'user:' . $payload['user_id'];
+                    }
+                }
+            } catch (\Exception $e) {
+                // If JWT decode fails, fall back to IP
+            }
         }
 
         // Fall back to IP address
@@ -114,11 +120,11 @@ class RateLimitMiddleware
     }
 
     /**
-     * Get API key from request
+     * Get JWT token from request
      * 
      * @return string|null
      */
-    private function getApiKey(): ?string
+    private function getJWTToken(): ?string
     {
         // Check Authorization header
         if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
@@ -129,9 +135,9 @@ class RateLimitMiddleware
             }
         }
 
-        // Check X-API-Key header
-        if (isset($_SERVER['HTTP_X_API_KEY'])) {
-            return $_SERVER['HTTP_X_API_KEY'];
+        // Check query parameter
+        if (isset($_GET['token'])) {
+            return $_GET['token'];
         }
 
         return null;
