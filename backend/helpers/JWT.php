@@ -25,6 +25,7 @@ class JWT
         // Add standard claims
         $payload['iat'] = time(); // Issued at
         $payload['exp'] = time() + ($expiration ?? config('security.session_lifetime', 7200)); // Expiration
+        $payload['jti'] = bin2hex(random_bytes(16)); // JWT ID (unique identifier for revocation)
 
         // Create header
         $header = [

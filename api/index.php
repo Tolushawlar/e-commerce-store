@@ -24,6 +24,7 @@ use App\Controllers\AdminOrderController;
 use App\Controllers\PaymentController;
 use App\Controllers\DashboardController;
 use App\Controllers\NotificationController;
+use App\Controllers\SecurityController;
 
 use App\Middleware\AuthMiddleware;
 
@@ -281,6 +282,20 @@ $router->delete('/api/notifications/{id}', [NotificationController::class, 'dele
 $router->get('/api/notification-preferences', [NotificationController::class, 'getPreferences'])
     ->middleware([AuthMiddleware::class, 'handle']);
 $router->put('/api/notification-preferences', [NotificationController::class, 'updatePreferences'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+
+// ============================================================================
+// SECURITY ROUTES (Protected - All authenticated users)
+// Device management and security event monitoring
+// ============================================================================
+
+$router->get('/api/security/devices', [SecurityController::class, 'getDevices'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->delete('/api/security/devices/{id}', [SecurityController::class, 'revokeDevice'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/api/security/devices/revoke-all', [SecurityController::class, 'revokeAllDevices'])
+    ->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/api/security/events', [SecurityController::class, 'getSecurityEvents'])
     ->middleware([AuthMiddleware::class, 'handle']);
 
 // API Documentation Routes

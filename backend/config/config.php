@@ -62,6 +62,10 @@ return [
         'jwt_secret' => getenv('JWT_SECRET') ?: 'your-secret-key-change-in-production',
         'password_min_length' => 8,
         'session_lifetime' => 7200, // 2 hours
+        
+        // Device fingerprinting security
+        'strict_device_fingerprint' => getenv('SECURITY_STRICT_FINGERPRINT') === 'true',
+        'require_device_verification' => getenv('SECURITY_REQUIRE_DEVICE_VERIFICATION') === 'true',
     ],
 
     'pagination' => [

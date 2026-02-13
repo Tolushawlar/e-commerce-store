@@ -8,6 +8,7 @@ use App\Models\SuperAdmin;
 use App\Models\PasswordReset;
 use App\Helpers\JWT;
 use App\Services\NotificationService;
+use App\Services\TokenSecurityService;
 
 /**
  * Authentication Controller
@@ -394,7 +395,7 @@ class AuthController extends Controller
      *     path="/api/auth/logout",
      *     tags={"Authentication"},
      *     summary="Logout",
-     *     description="Logout user (client-side token removal)",
+     *     description="Logout user and revoke current token",
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
@@ -402,14 +403,35 @@ class AuthController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Logged out successfully")
-     *         )
+         )
      *     )
      * )
      */
     public function logout(): void
     {
-        // With JWT, logout is handled client-side by removing the token
-        // Optionally, implement token blacklist here
+        $token = JWT::getTokenFromRequest();
+        
+        if ($token) {
+            try {
+                $payload = JWT::decode($token);
+                
+                // Blacklist this specific token if it has a JTI
+                if (isset($payload['jti'])) {
+                    $securityService = new TokenSecurityService();
+                    $userType = $payload['type'] === 'super_admin' ? 'admin' : ($payload['type'] ?? 'client');
+                    
+                    $securityService->blacklistToken(
+                        $payload['jti'],
+                        $payload['user_id'],
+                        $userType,
+                        $payload['exp'],
+                        'user_logout'
+                    );
+                }
+            } catch (\Exception $e) {
+                // Token already invalid, proceed with logout
+            }
+        }
 
         $this->success(null, 'Logged out successfully');
     }
@@ -496,6 +518,11 @@ class AuthController extends Controller
         } else {
             $clientModel->update($authUser['user_id'], ['password' => $hashedPassword]);
         }
+
+        // Revoke all existing tokens for security (user must login again with new password)
+        $securityService = new TokenSecurityService();
+        $userType = $authUser['type'] === 'super_admin' ? 'admin' : $authUser['type'];
+        $securityService->blacklistAllUserTokens($authUser['user_id'], $userType, 'password_change');
 
         $this->success(null, 'Password changed successfully');
     }
@@ -727,6 +754,10 @@ class AuthController extends Controller
 
         // Delete the used token
         $passwordResetModel->deleteToken($resetData['id']);
+
+        // Revoke all existing tokens for security (user must login again)
+        $securityService = new TokenSecurityService();
+        $securityService->blacklistAllUserTokens($resetData['user_id'], $resetData['user_type'], 'password_reset');
 
         // Send confirmation notification
         $notificationService = new NotificationService();
